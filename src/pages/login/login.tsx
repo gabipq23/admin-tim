@@ -38,11 +38,11 @@ export function Login() {
 
   return (
     <div className=" flex flex-col items-center bg-neutral-100 justify-center h-screen ">
-      <div className="flex flex-col md:w-[400px] lg:w-[400px] bg-[#44066b] justify-start gap-10 shadow-lg  rounded-lg p-6 h-[400px]">
-        <div className="flex justify-between items-center  mb-4">
-          <img src="\assets\Group 9.png" className="h-10 "></img>
+      <div className="flex flex-col md:w-[400px] lg:w-[400px] bg-[#c5c5c5] justify-start gap-10 shadow-lg  rounded-lg p-6 h-[400px]">
+        <div className="flex justify-center items-center  mb-4">
+
           <img
-            src="\assets\logo-site.png"
+            src="\assets\tim.svg"
             className="h-8 hover:cursor-pointer"
           ></img>
         </div>
@@ -54,7 +54,7 @@ export function Login() {
             })}
             className="flex flex-col gap-5"
           >
-            <p className="text-[14px] text-neutral-300">Email: </p>
+            <p className="text-[14px] text-neutral-500">Email: </p>
 
             <Controller
               name="email"
@@ -64,7 +64,7 @@ export function Login() {
                 <Input {...field} placeholder="Digite seu email" />
               )}
             />
-            <p className="text-[14px] text-neutral-300">Senha: </p>
+            <p className="text-[14px] text-neutral-500">Senha: </p>
 
             <Controller
               name="senha"

@@ -52,7 +52,7 @@ export default function App() {
           path="/admin"
           element={
             user ? (
-              <Navigate to="/admin/pedidos-aparelhos-pj" replace />
+              <Navigate to="/admin/pedidos-banda-larga-pj" replace />
             ) : (
               <Login />
             )
@@ -118,7 +118,7 @@ export default function App() {
           path="*"
           element={
             user ? (
-              <Navigate to="/admin/pedidos-aparelhos-pj" replace />
+              <Navigate to="/admin/pedidos-banda-larga-pj" replace />
             ) : (
               <NotFound />
             )
