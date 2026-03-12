@@ -8,7 +8,7 @@ import {
 export class ConsultAvailabilityService {
   async consultAvailability(
     cep: string,
-    numero?: string
+    numero?: string,
   ): Promise<IAvailability> {
     const params: any = { cep };
     if (numero && numero.trim() !== "") {
@@ -20,7 +20,6 @@ export class ConsultAvailabilityService {
     });
     return res.data;
   }
-
   async searchAvailability(
     cep?: string,
     numero?: string,
@@ -28,7 +27,7 @@ export class ConsultAvailabilityService {
     bairro?: string | string[],
     cidade?: string,
     limite?: number,
-    page?: number
+    page?: number,
   ): Promise<ISearchAvailabilityResponse> {
     const params = new URLSearchParams();
 
@@ -68,7 +67,7 @@ export class ConsultAvailabilityService {
   async consultAvailabilityBulk(
     dados: Array<{ cep: string; numero?: string }>,
     limite?: number,
-    page?: number
+    page?: number,
   ): Promise<IBulkAvailabilityResponse> {
     const params = new URLSearchParams();
 
@@ -79,7 +78,7 @@ export class ConsultAvailabilityService {
       `/disponibilidade/consultar-massa?${params.toString()}`,
       {
         dados,
-      }
+      },
     );
     return res.data;
   }
