@@ -37,6 +37,7 @@ import MonthOffers from "./pages/offers/monthOffers/monthOffers";
 import { Chats } from "./pages/chats/chats";
 import Evolution from "./pages/evolution/evolution";
 import AdminLayout from "./layouts/adminLayout";
+import PublicLayout from "./layouts/publicLayout";
 
 export default function App() {
   const { user, checkAuth } = useAuthContext();
@@ -114,16 +115,9 @@ export default function App() {
           </Route>
         </Route>
 
-        <Route
-          path="*"
-          element={
-            user ? (
-              <Navigate to="/admin/pedidos-banda-larga-pj" replace />
-            ) : (
-              <NotFound />
-            )
-          }
-        />
+        <Route element={<PublicLayout />}>
+          <Route path="*" element={<NotFound />} />
+        </Route>
       </Routes>
 
       {/* componente do Toast. Só aparece quando da import no lugar desejado: "import { toast } from "sonner";" */}
