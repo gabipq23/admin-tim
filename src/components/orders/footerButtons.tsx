@@ -1,3 +1,4 @@
+import { blueOutlineButtonClass, redOutlineButtonClass } from "@/utils/buttonStyles";
 import { Button } from "antd";
 
 interface FooterButtonsProps {
@@ -17,23 +18,15 @@ export default function FooterButtons({
   editText = "Editar",
   deleteText = "Deletar pedido",
 }: FooterButtonsProps) {
-
-  const outlineButtonClass =
-    "!border-[#0026d9] !text-[#0026d9] hover:!border-[#0026d9] hover:!bg-[#0026d914]";
-
-  const redOutlineButtonClass =
-    "!border-[#ef4444] !text-[#ef4444] hover:!border-[#ef4444] hover:!bg-[#ef444414]";
-
-
   return (
     <>
       <div className="mt-4 flex gap-4 justify-end">
-        <Button onClick={onGeneratePDF} className={outlineButtonClass}>
+        <Button onClick={onGeneratePDF} className={blueOutlineButtonClass}>
           {generatePDFText}
         </Button>
         <Button
           onClick={onEdit}
-          className={outlineButtonClass}
+          className={blueOutlineButtonClass}
 
           style={{
             color: "#0026d9",
@@ -44,8 +37,7 @@ export default function FooterButtons({
         </Button>
         <Button
           onClick={onDelete}
-          // color="red"
-          // variant="outlined"
+
           className={redOutlineButtonClass}
           style={{
             fontSize: "14px",
