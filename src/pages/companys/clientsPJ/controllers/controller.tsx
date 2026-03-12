@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { ICompany, ICompanyResponse } from "@/interfaces/consult";
 import { useState } from "react";
 
 import { ClientsService } from "@/services/clients";
@@ -10,6 +9,7 @@ import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import { useNavigate } from "react-router-dom";
 import { formatCEP } from "@/utils/formatCEP";
 import { capitalizeWords } from "@/utils/capitaliWords";
+import { ICompany, ICompanyResponse } from "@/interfaces/consult";
 
 const clietsService = new ClientsService();
 const useStyle = createStyles(({ css }) => {

@@ -1,4 +1,4 @@
-import { ICompany } from "@/interfaces/consult";
+
 import { useState } from "react";
 
 import { createStyles } from "antd-style";
@@ -8,6 +8,7 @@ import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import { useNavigate } from "react-router-dom";
 
 import { capitalizeWords } from "@/utils/capitaliWords";
+import { ICompany } from "@/interfaces/consult";
 
 const useStyle = createStyles(({ css }) => {
   return {

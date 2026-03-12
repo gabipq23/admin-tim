@@ -1,9 +1,10 @@
-import { ICompany } from "@/interfaces/consult";
+
 import { capitalizeWords } from "@/utils/capitaliWords";
 import { formatCNPJ } from "@/utils/formatCNPJ";
 import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 import { Button, Modal } from "antd";
+import { ICompany } from "@/interfaces/consult";
 
 export function ClientPFInfoModal({
   isModalOpen,

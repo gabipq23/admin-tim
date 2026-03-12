@@ -1,7 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { ConfigProvider, Table } from "antd";
-import { ICompany } from "@/interfaces/consult";
 
 import { useNavigate } from "react-router-dom";
 import { useClientsFilterController } from "./controllers/filtersController";
@@ -11,6 +10,7 @@ import { ClientInfoModal } from "./modals/clienteInfo";
 import { useState } from "react";
 import { TableProps } from "antd/lib";
 import { customLocale } from "@/utils/customLocale";
+import { ICompany } from "@/interfaces/consult";
 
 export default function Clients() {
   const queryClient = new QueryClient();

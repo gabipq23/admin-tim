@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { Alert, ConfigProvider, Table } from "antd";
-import { ICompany } from "@/interfaces/consult";
+
 
 import { useClientsFilterController } from "./controllers/filtersController";
 import { useClientsController } from "./controllers/controller";
@@ -10,6 +10,7 @@ import { ClientPFInfoModal } from "./modals/clientePFInfo";
 import { useState } from "react";
 import { TableProps } from "antd/lib";
 import { customLocale } from "@/utils/customLocale";
+import { ICompany } from "@/interfaces/consult";
 
 export default function ClientsPF() {
   const queryClient = new QueryClient();

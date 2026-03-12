@@ -8,7 +8,6 @@ import {
   Dropdown,
 } from "antd";
 import { DownloadOutlined, FilterOutlined } from "@ant-design/icons";
-import { ICompanyFilter } from "@/interfaces/consult";
 import { Control, Controller, UseFormHandleSubmit } from "react-hook-form";
 import { InputNumber } from "antd";
 import { PatternFormat, PatternFormatProps } from "react-number-format";
@@ -16,6 +15,7 @@ import { useClientsController } from "../controllers/controller";
 import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 import { customLocale } from "@/utils/customLocale";
 import { handleExportXLSX } from "../controllers/exportXLSX";
+import { ICompanyFilter } from "@/interfaces/consult";
 
 interface FiltroPedidosFormProps {
   control: Control<ICompanyFilter>;
