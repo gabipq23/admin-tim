@@ -1,6 +1,7 @@
 import { Button, ConfigProvider, Input, Modal } from "antd";
 import { useState, useEffect } from "react";
 import { MonthOffer, UpdateMonthOfferData } from "@/interfaces/monthOffer";
+import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 
 export function ModalObs({
   showModal,
@@ -89,7 +90,7 @@ export function ModalObs({
             }}
           >
             <Button
-              variant="outlined"
+              className={blueOutlineButtonClass}
               onClick={handleClose}
               style={{
                 fontSize: "14px",
@@ -98,7 +99,7 @@ export function ModalObs({
               Cancelar
             </Button>
             <Button
-              variant="outlined"
+              className={blueOutlineButtonClass}
               onClick={handleSave}
               style={{
                 fontSize: "14px",

@@ -4,6 +4,7 @@ import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import { CopyOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { formatDateTimeBR } from "@/utils/formatDateTimeBR";
+import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 
 const useStyle = createStyles(({ css }) => {
   return {
@@ -163,7 +164,8 @@ M: ${record.m || "-"}`;
               styles={{ body: { fontSize: "12px" } }}
             >
               <Button
-                className="w-6 h-6"
+                style={{ width: "28px", height: "28px", padding: "0" }}
+                className={blueOutlineButtonClass}
                 onClick={() => copyDataToClipboard(record)}
               >
                 <CopyOutlined />

@@ -1,3 +1,4 @@
+import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 import { Button, ConfigProvider, Input, Modal } from "antd";
 import { useState } from "react";
 
@@ -53,7 +54,7 @@ export function ModalCreateEvolution({
                 colorBorder: "#0026d9",
                 colorText: "#0026d9",
                 colorPrimary: "#0026d9",
-                colorPrimaryHover: "#883fa2",
+
               },
             },
           }}
@@ -97,7 +98,7 @@ export function ModalCreateEvolution({
             }}
           >
             <Button
-              variant="outlined"
+              className={blueOutlineButtonClass}
               onClick={handleClose}
               style={{
                 fontSize: "14px",
@@ -106,7 +107,7 @@ export function ModalCreateEvolution({
               Cancelar
             </Button>
             <Button
-              variant="outlined"
+              className={blueOutlineButtonClass}
               onClick={handleSave}
               style={{
                 fontSize: "14px",

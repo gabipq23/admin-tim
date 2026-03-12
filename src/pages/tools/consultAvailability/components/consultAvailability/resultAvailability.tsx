@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import DisplayGenerator from "@/components/displayGenerator";
 import OperatorAvailability from "@/components/operatorAvailability";
+import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 
 export default function ResultAvailability() {
   const location = useLocation();
@@ -47,9 +48,8 @@ export default function ResultAvailability() {
           >
             <div className=" self-end">
               <Button
-                type="default"
-                variant="solid"
-                className=""
+                className={blueOutlineButtonClass}
+
                 onClick={() => {
                   navigate("/admin/consulta-disponibilidade");
                 }}

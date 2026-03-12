@@ -1,3 +1,4 @@
+import { blueOutlineButtonClass, redOutlineButtonClass } from "@/utils/buttonStyles";
 import { Button, Modal } from "antd";
 
 interface ConfirmDeleteModalProps {
@@ -36,7 +37,7 @@ export default function ConfirmDeleteModal({
       open={isOpen}
       onCancel={onClose}
       footer={[
-        <Button key="cancel" onClick={onClose}>
+        <Button key="cancel" onClick={onClose} className={blueOutlineButtonClass}>
           {cancelButtonText}
         </Button>,
         <Button
@@ -45,6 +46,7 @@ export default function ConfirmDeleteModal({
           danger={isDanger}
           loading={isLoading}
           onClick={handleConfirm}
+          className={redOutlineButtonClass}
         >
           {confirmButtonText}
         </Button>,

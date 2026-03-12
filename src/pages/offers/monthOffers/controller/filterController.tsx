@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStyle } from "@/style/tableStyle";
+import { blueOutlineButtonClass, redOutlineButtonClass } from "@/utils/buttonStyles";
 
 interface MonthOffersFilterControllerProps {
   onEditDescription: (item: MonthOffer) => void;
@@ -151,7 +152,8 @@ export function useMonthOffersFilterController({
               styles={{ body: { fontSize: "12px" } }}
             >
               <Button
-                className="w-6 h-6"
+                style={{ width: "28px", height: "28px", padding: "0" }}
+                className={blueOutlineButtonClass}
                 onClick={() => onEditDescription(record)}
               >
                 <EditOutlined />
@@ -163,7 +165,8 @@ export function useMonthOffersFilterController({
               styles={{ body: { fontSize: "12px" } }}
             >
               <Button
-                className="w-6 h-6"
+                style={{ width: "28px", height: "28px", padding: "0" }}
+                className={blueOutlineButtonClass}
                 onClick={() => onDownloadItem(record)}
               >
                 <DownloadOutlined />
@@ -176,7 +179,8 @@ export function useMonthOffersFilterController({
             >
               <Button
                 onClick={() => onDeleteItem(record)}
-                className="w-6 h-6"
+                style={{ width: "28px", height: "28px", padding: "0" }}
+                className={redOutlineButtonClass}
                 danger
               >
                 <DeleteOutlined />

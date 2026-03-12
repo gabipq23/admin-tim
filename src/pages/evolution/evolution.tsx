@@ -6,6 +6,7 @@ import { useState } from "react";
 import { ModalCreateEvolution } from "./modals/modalCreate";
 import ModalQRCode from "./modals/modalQRCode";
 import { useEvolutionController } from "./controllers/dataController";
+import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 // import { useEvolutionController } from "./controllers/dataController";
 
 export default function Evolution() {
@@ -64,12 +65,12 @@ export default function Evolution() {
                           colorBorder: "#0026d9",
                           colorText: "#0026d9",
                           colorPrimary: "#0026d9",
-                          colorPrimaryHover: "#883fa2",
+
                         },
                       },
                     }}
                   >
-                    <Button onClick={() => setShowModal(true)}>
+                    <Button className={blueOutlineButtonClass} onClick={() => setShowModal(true)}>
                       Conectar conta
                     </Button>
                   </ConfigProvider>

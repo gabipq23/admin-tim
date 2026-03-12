@@ -458,7 +458,7 @@ export function FilterClients({
             )}
             trigger={["click"]}
           >
-            <Button>Selecionar Colunas</Button>
+            <Button className={blueOutlineButtonClass}>Selecionar Colunas</Button>
           </Dropdown>
         </ConfigProvider>
       </div>

@@ -11,6 +11,7 @@ import {
   useExportAvailabilityTXTController,
 } from "../../controller/exportSearch";
 import { useSearchAvailabilityController } from "../../controller/searchAvailabilityController";
+import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 interface SearchParams {
   uf?: string;
   cidade?: string;
@@ -270,7 +271,7 @@ export default function ResultSearchAvailability() {
                   )}
                   trigger={["click", "hover"]}
                 >
-                  <Button>Selecionar Colunas</Button>
+                  <Button className={blueOutlineButtonClass}>Selecionar Colunas</Button>
                 </Dropdown>
               </ConfigProvider>
             </div>
@@ -288,9 +289,8 @@ export default function ResultSearchAvailability() {
             >
               <div className=" self-end">
                 <Button
-                  type="default"
-                  variant="solid"
-                  className=""
+                  className={blueOutlineButtonClass}
+
                   onClick={() => {
                     navigate("/admin/consulta-disponibilidade");
                   }}

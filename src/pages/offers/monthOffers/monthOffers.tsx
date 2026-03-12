@@ -6,7 +6,7 @@ import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import { Controller } from "react-hook-form";
 import { customLocale } from "@/utils/customLocale";
-import { blueOutlineButtonClass } from "@/utils/buttonStyles";
+import { blueOutlineButtonClass, redOutlineButtonClass } from "@/utils/buttonStyles";
 import { useMonthOffersController } from "./controller/dataController";
 import { ModalObs } from "./components/modalObs";
 import { ModalUpload } from "./components/modalUpload";
@@ -208,12 +208,13 @@ export default function MonthOffers() {
                       colorBorder: "#0026d9",
                       colorText: "#0026d9",
                       colorPrimary: "#0026d9",
-                      colorPrimaryHover: "#883fa2",
+
                     },
                   },
                 }}
               >
                 <Button
+                  className={blueOutlineButtonClass}
                   icon={<UploadOutlined />}
                   onClick={() => setShowUploadModal(true)}
                 >
@@ -342,7 +343,7 @@ export function ModalDelete({
             }}
           >
             <Button
-              variant="outlined"
+              className={blueOutlineButtonClass}
               onClick={() => setShowDeleteModal(false)}
               style={{
                 fontSize: "14px",
@@ -351,7 +352,7 @@ export function ModalDelete({
               Cancelar
             </Button>
             <Button
-              variant="outlined"
+              className={redOutlineButtonClass}
               onClick={handleDelete}
               style={{
                 fontSize: "14px",

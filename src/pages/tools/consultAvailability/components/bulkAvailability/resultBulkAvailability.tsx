@@ -17,6 +17,7 @@ import { ConsultAvailabilityService } from "@/services/consultAvailability";
 import { useBulkAvailabilityStore } from "../../context/bulkAvailabilityContext";
 import { tableColumns } from "./tableColumns";
 import { useStyle } from "@/style/tableStyle";
+import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 
 export default function ResultBulkAvailability() {
   const location = useLocation();
@@ -142,8 +143,7 @@ export default function ResultBulkAvailability() {
               }}
             >
               <Button
-                type="default"
-                variant="solid"
+                className={blueOutlineButtonClass}
                 onClick={() => {
                   navigate("/admin/consulta-disponibilidade");
                 }}

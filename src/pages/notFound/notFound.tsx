@@ -5,10 +5,10 @@ export default function NotFound() {
         <img
           className="h-16 w-16"
           src="\assets\tim.svg"
-          style={{
-            filter:
-              "invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%)",
-          }}
+        // style={{
+        //   filter:
+        //     "invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%)",
+        // }}
         />
         <p className="text-[16px]">Página não encontrada.</p>
       </div>

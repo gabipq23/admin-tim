@@ -2,6 +2,7 @@ import { Button, ConfigProvider, Input, Modal, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import type { UploadProps, UploadFile } from "antd";
+import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 
 export function ModalUpload({
   showModal,
@@ -110,7 +111,7 @@ export function ModalUpload({
           <div className="flex flex-col gap-4 mt-2">
             <div>
               <Upload {...uploadProps}>
-                <Button icon={<UploadOutlined />} style={{ width: "100%" }}>
+                <Button icon={<UploadOutlined />} style={{ width: "100%" }} className={blueOutlineButtonClass}>
                   Selecionar arquivo
                 </Button>
               </Upload>
@@ -145,7 +146,7 @@ export function ModalUpload({
             }}
           >
             <Button
-              variant="outlined"
+              className={blueOutlineButtonClass}
               onClick={handleClose}
               style={{
                 fontSize: "14px",
@@ -155,7 +156,7 @@ export function ModalUpload({
               Cancelar
             </Button>
             <Button
-              variant="outlined"
+              className={blueOutlineButtonClass}
               onClick={handleSave}
               style={{
                 fontSize: "14px",
