@@ -39,6 +39,7 @@ export function useAllOrdersController() {
         return response;
       },
     });
+
   const { mutate: updateBandaLargaOrder, isPending: isUpdatePurchaseFetching } =
     useMutation({
       mutationFn: async ({ id, data }: { id: number; data: any }) =>
@@ -93,8 +94,32 @@ export function useAllOrdersController() {
     },
   });
 
-  const orderBandaLargaPF = ordersBandaLarga?.orders
+  const orderBandaLargaPF = ordersBandaLarga?.orders?.filter(
+    (order) => order.client_type === "PF"
+  );
 
+  const updateDataIdCRMAndConsultorResponsavel = (
+    id: string | undefined,
+    values: any,
+  ) => {
+    if (!id) {
+      toast.error("ID do pedido inválido.");
+      return;
+    }
+
+    const dadosGerais = {
+      responsible_consultant: values.responsible_consultant,
+      corporate_id: values.corporate_id,
+      crm_id: values.crm_id,
+      credit: values.credit,
+
+    };
+
+    updateBandaLargaOrder({
+      id: Number(id),
+      data: dadosGerais,
+    });
+  };
 
   return {
     ordersBandaLarga,
@@ -108,5 +133,6 @@ export function useAllOrdersController() {
     removeBandaLargaOrder,
     isRemoveBandaLargaOrderFetching,
     changeBandaLargaOrderStatus,
+    updateDataIdCRMAndConsultorResponsavel
   };
 }

@@ -24,6 +24,7 @@ export default function OrdersBandaLargaPF() {
     removeBandaLargaOrder,
     isRemoveBandaLargaOrderFetching,
     changeBandaLargaOrderStatus,
+    updateDataIdCRMAndConsultorResponsavel
   } = useAllOrdersController();
   const navigate = useNavigate();
   const planBLPF: any[] = [];
@@ -50,16 +51,16 @@ export default function OrdersBandaLargaPF() {
 
   const rowClassName = (record: OrderBandaLargaPF) => {
     const hasAvaiability = record?.availability;
-    const isCoveredByRange = record?.encontrado_via_range;
-    const hasUnicCep = record?.cep_unico;
-    if (record?.status === "fechado") {
+    const isCoveredByRange = record?.found_via_range;
+    const hasUnicCep = record?.single_zip_code;
+    if (record?.status === "FECHADO") {
       if (
         hasAvaiability === false ||
         hasAvaiability === null ||
         hasAvaiability === 0
       ) {
         return "ant-table-row-red";
-      } else if (isCoveredByRange === 1 || hasUnicCep === 1) {
+      } else if (isCoveredByRange || hasUnicCep) {
         return "ant-table-row-yellow";
       }
 
@@ -169,7 +170,7 @@ export default function OrdersBandaLargaPF() {
             selectedId={selectedBLOrder}
             removeOrderData={removeBandaLargaOrder}
             isRemoveOrderFetching={isRemoveBandaLargaOrderFetching}
-
+            updateDataIdCRMAndConsultorResponsavel={updateDataIdCRMAndConsultorResponsavel}
             changeBandaLargaOrderStatus={changeBandaLargaOrderStatus}
           />
         </div>

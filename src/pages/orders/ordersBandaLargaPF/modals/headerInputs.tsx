@@ -4,24 +4,24 @@ export default function HeaderInputs({
   localData,
   setLocalData,
   selectedId,
-  updateDataIdVivoAndConsultorResponsavel,
+  updateDataIdCRMAndConsultorResponsavel,
   changeBandaLargaOrderStatus,
   consultor,
   setConsultor,
-  idVivo,
-  setIdVivo,
   idCRM,
   setIdCRM,
   statusOptions,
   updateOrderData,
   setCredito,
   credito,
+  idCORP,
+  setIdCORP
 }: any) {
   return (
     <>
       <div className="flex  flex-col md:flex-row lg:flex-row gap-4 mg:items-start lg:items-start justify-between">
         <span style={{ color: "#252525" }}>
-          Pedido Nº {localData.ordernumber || localData.id}
+          Pedido Nº {localData.order_number || localData.id}
         </span>
         <div className="flex flex-col  flex-wrap items-center gap-4 ">
           <ConfigProvider
@@ -53,32 +53,31 @@ export default function HeaderInputs({
                   value={consultor}
                   onChange={(e) => setConsultor(e.target.value)}
                   onPressEnter={() => {
-                    updateDataIdVivoAndConsultorResponsavel(selectedId?.id, {
-                      consultor_responsavel: consultor,
+                    updateDataIdCRMAndConsultorResponsavel(selectedId?.id, {
+                      responsible_consultant: consultor,
                     });
                   }}
                 />
               </div>
               <div className="flex items-center gap-2 ">
-                <span className="text-[14px] font-semibold"> ID Vivo: </span>
+                <span className="text-[14px] font-semibold">ID CORP: </span>
                 <Input
                   size="small"
-                  value={idVivo}
-                  placeholder="ID Vivo"
+                  value={idCORP}
+                  placeholder="ID CORP"
                   style={{
-                    width: "150px",
+                    width: "120px",
                     fontWeight: "400",
                   }}
-                  maxLength={13}
-                  onChange={(e) => setIdVivo(e.target.value)}
+                  maxLength={8}
+                  onChange={(e) => setIdCORP(e.target.value)}
                   onPressEnter={() => {
-                    updateDataIdVivoAndConsultorResponsavel(selectedId?.id, {
-                      id_vivo_corp: idVivo,
+                    updateDataIdCRMAndConsultorResponsavel(selectedId?.id, {
+                      corporate_id: String(idCORP || ""),
                     });
                   }}
                 />
               </div>
-
               <div className="flex items-center gap-2 ">
                 <span className="text-[14px] font-semibold"> ID CRM: </span>
                 <Input
@@ -90,10 +89,10 @@ export default function HeaderInputs({
                     fontWeight: "400",
                   }}
                   maxLength={8}
-                  onChange={(e) => setIdCRM(Number(e.target.value))}
+                  onChange={(e) => setIdCRM(e.target.value)}
                   onPressEnter={() => {
-                    updateDataIdVivoAndConsultorResponsavel(selectedId?.id, {
-                      id_crm: idCRM,
+                    updateDataIdCRMAndConsultorResponsavel(selectedId?.id, {
+                      crm_id: String(idCRM || ""),
                     });
                   }}
                 />
@@ -117,9 +116,9 @@ export default function HeaderInputs({
                     });
                   }}
                   options={[
-                    { value: "aberto", label: "Aberto" },
-                    { value: "fechado", label: "Fechado" },
-                    { value: "cancelado", label: "Cancelado" },
+                    { value: "ABERTO", label: "Aberto" },
+                    { value: "FECHADO", label: "Fechado" },
+                    { value: "CANCELADO", label: "Cancelado" },
                   ]}
                 />
               </div>
@@ -128,18 +127,18 @@ export default function HeaderInputs({
                 <Select
                   placeholder="Selecione o status"
                   size="small"
-                  value={localData?.status_pos_venda}
+                  value={localData?.after_sales_status}
                   style={{
                     width: "340px",
                     fontWeight: "400",
                   }}
                   onChange={(value) => {
                     setLocalData((prev: any) =>
-                      prev ? { ...prev, status_pos_venda: value } : null,
+                      prev ? { ...prev, after_sales_status: value } : null,
                     );
                     updateOrderData({
                       id: selectedId?.id,
-                      data: { pedido: { status_pos_venda: value } },
+                      data: { pedido: { after_sales_status: value } },
                     });
                   }}
                   options={statusOptions?.map((status: string) => ({
@@ -150,7 +149,7 @@ export default function HeaderInputs({
               </div>
               <div className="flex items-center gap-2 ">
                 <span className="text-[14px] font-semibold">Equipe:</span>
-                <span className="font-normal">{selectedId?.equipe || "-"}</span>
+                <span className="font-normal">{selectedId?.team || "-"}</span>
               </div>
             </div>
 
@@ -168,8 +167,16 @@ export default function HeaderInputs({
                   maxLength={13}
                   onChange={(e) => setCredito(e.target.value)}
                   onPressEnter={() => {
-                    updateDataIdVivoAndConsultorResponsavel(selectedId?.id, {
-                      credito: credito,
+                    const normalizedCredit = Number(
+                      String(credito ?? "")
+                        .replace(/\s+/g, "")
+                        .replace(",", "."),
+                    );
+
+                    updateDataIdCRMAndConsultorResponsavel(selectedId?.id, {
+                      credit: Number.isNaN(normalizedCredit)
+                        ? 0
+                        : normalizedCredit,
                     });
                   }}
                 />
@@ -179,18 +186,18 @@ export default function HeaderInputs({
                 <Select
                   placeholder=""
                   size="small"
-                  value={localData?.atendimento}
+                  value={localData?.service}
                   style={{
                     width: "200px",
                     fontWeight: "400",
                   }}
                   onChange={(value) => {
                     setLocalData((prev: any) =>
-                      prev ? { ...prev, atendimento: value } : null,
+                      prev ? { ...prev, service: value } : null,
                     );
                     updateOrderData({
                       id: selectedId?.id,
-                      data: { pedido: { atendimento: value } },
+                      data: { pedido: { service: value } },
                     });
                   }}
                   options={[
@@ -202,7 +209,7 @@ export default function HeaderInputs({
               <div className="flex items-center gap-2 ">
                 <span className="text-[14px] font-semibold">Instalação:</span>
                 <span className="font-normal">
-                  {selectedId?.instalacao || "-"}
+                  {selectedId?.installation || "-"}
                 </span>
               </div>
             </div>

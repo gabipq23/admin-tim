@@ -3,9 +3,6 @@ import {
   Form,
   Select,
   DatePicker,
-  Input,
-  Checkbox,
-  ConfigProvider,
 } from "antd";
 import { FormInstance } from "antd/es/form";
 import { OrderBandaLargaPF } from "@/interfaces/bandaLargaPF";
@@ -143,7 +140,7 @@ export function OrderBandaLargaPFEdit({
 
               {/* Vencimento */}
               <div className="w-20 flex justify-center">
-                <Form.Item name="dueday" className="mb-0">
+                <Form.Item name="due_day" className="mb-0">
                   <Select
                     size="small"
                     placeholder="Dia"
@@ -177,47 +174,7 @@ export function OrderBandaLargaPFEdit({
                   <Select.Option value={false}>Indisponível</Select.Option>
                 </Select>
               </Form.Item>
-              <ConfigProvider
-                theme={{
-                  components: {
-                    Checkbox: {
-                      colorBorder: "#0026d9",
-                      colorPrimary: "#0026d9",
-                      colorPrimaryHover: "#0026d9",
-                    },
-                  },
-                }}
-              >
-                {localData?.availability_pap === true && (
-                  <>
-                    <Form.Item
-                      name="availability_pap_via_range"
-                      className="mb-0"
-                      valuePropName="checked"
-                    >
-                      <Checkbox>Via Range Numérico</Checkbox>
-                    </Form.Item>
 
-                    <Form.Item name="pap_range_min" className="mb-0">
-                      <Input
-                        size="small"
-                        placeholder="Range mín"
-                        type="number"
-                        className="w-20"
-                      />
-                    </Form.Item>
-
-                    <Form.Item name="pap_range_max" className="mb-0">
-                      <Input
-                        size="small"
-                        placeholder="Range máx"
-                        type="number"
-                        className="w-20"
-                      />
-                    </Form.Item>
-                  </>
-                )}
-              </ConfigProvider>
             </div>
           </div>
         </div>
@@ -235,8 +192,8 @@ export function OrderBandaLargaPFEdit({
               <div className="flex flex-col gap-1">
                 <InputGenerator
                   title="Nome Completo:"
-                  formItemName="fullname"
-                  formItemValue={localData.fullname || ""}
+                  formItemName="full_name"
+                  formItemValue={localData.full_name || ""}
                   placeholder="Nome completo"
                 />
 
@@ -248,8 +205,8 @@ export function OrderBandaLargaPFEdit({
                 />
                 <InputGenerator
                   title="Data de Nascimento:"
-                  formItemName="birthdate"
-                  formItemValue={localData.birthdate || ""}
+                  formItemName="birth_date"
+                  formItemValue={localData.birth_date || ""}
                   placeholder="Data de nascimento"
                 />
                 <InputGenerator
@@ -264,8 +221,8 @@ export function OrderBandaLargaPFEdit({
               <div className="flex flex-col gap-1">
                 <InputGenerator
                   title="Nome da Mãe:"
-                  formItemName="motherfullname"
-                  formItemValue={localData.motherfullname || ""}
+                  formItemName="mother_full_name"
+                  formItemValue={localData.mother_full_name || ""}
                   placeholder="Nome da mãe"
                 />
 
@@ -278,8 +235,8 @@ export function OrderBandaLargaPFEdit({
 
                 <InputGenerator
                   title="Telefone Adicional:"
-                  formItemName="phoneAdditional"
-                  formItemValue={localData.phoneAdditional || ""}
+                  formItemName="additional_phone"
+                  formItemValue={localData.additional_phone || ""}
                   placeholder="Telefone"
                 />
               </div>
@@ -307,33 +264,33 @@ export function OrderBandaLargaPFEdit({
                 />
                 <InputGenerator
                   title="Número:"
-                  formItemName="addressnumber"
-                  formItemValue={localData.addressnumber || ""}
+                  formItemName="address_number"
+                  formItemValue={localData.address_number || ""}
                   placeholder="Número"
                 />
                 <InputGenerator
                   title="Complemento:"
-                  formItemName="addresscomplement"
-                  formItemValue={localData.addresscomplement || ""}
+                  formItemName="address_complement"
+                  formItemValue={localData.address_complement || ""}
                   placeholder="Complemento"
                 />
                 <InputGenerator
                   title="Andar:"
-                  formItemName="addressFloor"
-                  formItemValue={localData.addressFloor || ""}
+                  formItemName="address_floor"
+                  formItemValue={localData.address_floor || ""}
                   placeholder="Andar"
                 />
                 <InputGenerator
                   title="Lote:"
-                  formItemName="addresslot"
-                  formItemValue={localData.addresslot || ""}
+                  formItemName="address_lot"
+                  formItemValue={localData.address_lot || ""}
                   placeholder="Lote"
                 />
 
                 <InputGenerator
                   title="Quadra:"
-                  formItemName="addressblock"
-                  formItemValue={localData.addressblock || ""}
+                  formItemName="address_block"
+                  formItemValue={localData.address_block || ""}
                   placeholder="Quadra"
                 />
 
@@ -354,7 +311,7 @@ export function OrderBandaLargaPFEdit({
                     </p>
                   </div>
                   <div className="flex flex-1">
-                    <Form.Item name="buildingorhouse" className="mb-0 ">
+                    <Form.Item name="building_or_house" className="mb-0 ">
                       <Select
                         placeholder="Tipo de imóvel"
                         className="min-w-[150px]"
@@ -392,8 +349,9 @@ export function OrderBandaLargaPFEdit({
 
                 <InputGenerator
                   title="CEP:"
-                  formItemName="cep"
-                  formItemValue={localData.cep || ""}
+                  formItemName="zip_code"
+                  formItemValue={localData.zip_code
+                    || ""}
                   placeholder="CEP"
                 />
                 <div className="flex h-9 gap-4 text-[14px] w-full text-neutral-700">
@@ -403,7 +361,7 @@ export function OrderBandaLargaPFEdit({
                     </p>
                   </div>
                   <div className="flex flex-1">
-                    <Form.Item name="cep_unico" className="mb-0 ">
+                    <Form.Item name="single_zip_code" className="mb-0 ">
                       <Select
                         placeholder="CEP único"
                         className="min-w-[150px]"

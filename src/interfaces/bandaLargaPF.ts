@@ -87,9 +87,8 @@ export interface OrderBandaLargaPF {
   rfb_mother_name?: string | null;
   rfb_gender?: string | null;
   client_ip: string;
-  fingerprint?: object | null;
   fingerprint_id?: string | null;
-  whatsapp?: object | null;
+  whatsapp?: WhatsAppInfo | null;
   geolocation?: {
     success: boolean;
     latitude: string;
@@ -145,7 +144,7 @@ export interface OrderBandaLargaPF {
   consulta?: boolean;
   dueday?: number;
   equipe?: string;
-  finger_print?: {
+  fingerprint?: {
     os: { name: string; version: string };
     browser: { name: string; version: string };
     device: string;
