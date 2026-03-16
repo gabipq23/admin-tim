@@ -1,5 +1,5 @@
 import { IContact } from "@/interfaces/contacts";
-import { convertData } from "@/utils/convertData";
+
 import { formatCNPJ } from "@/utils/formatCNPJ";
 import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import { CopyOutlined } from "@ant-design/icons";
@@ -25,7 +25,7 @@ export function ContactInfoModal({
       formattedDate = `${match[3]}-${match[2]}-${match[1]} ${match[4]}`;
     }
 
-    const converted = convertData(formattedDate);
+    const converted = (formattedDate);
     if (type === "hora") {
       return converted.split(",")[1].trim().slice(0, 5);
     }
@@ -46,12 +46,12 @@ export function ContactInfoModal({
     setTimeout(() => setTooltip("Copiar"), 2000);
   };
   const [localStatus, setLocalStatus] = useState(
-    selectedId?.status_mensagem ?? ""
+    selectedId?.status_message ?? ""
   );
 
   useEffect(() => {
-    setLocalStatus(selectedId?.status_mensagem ?? "");
-  }, [selectedId?.status_mensagem]);
+    setLocalStatus(selectedId?.status_message ?? "");
+  }, [selectedId?.status_message]);
 
   const copyComponent = (text: string) => {
     return (
@@ -106,8 +106,8 @@ export function ContactInfoModal({
                   }
                 }}
                 options={[
-                  { label: "Visualizada", value: "Visualizada" },
-                  { label: "Respondida", value: "Respondida" },
+                  { label: "Visualizada", value: "LIDA" },
+                  { label: "Respondida", value: "RESPONDIDA" },
                 ]}
               />
             </div>
@@ -121,21 +121,21 @@ export function ContactInfoModal({
     >
       <div className="flex flex-col mr-4">
         <p className="flex text-[22px] gap-2 ">
-          {selectedId?.assunto} {copyComponent(selectedId?.assunto ?? "")}
+          {selectedId?.subject} {copyComponent(selectedId?.subject ?? "")}
         </p>
         <div className="flex ">
           <div className="flex flex-col md:flex-row lg:flex-row w-full justify-between text-[#666666]">
             <p className="flex gap-2 text-[15px]">
-              {selectedId?.nome} {copyComponent(selectedId?.nome ?? "")} &bull;{" "}
-              {formatPhoneNumber(selectedId?.telefone ?? "")} &bull;{" "}
+              {selectedId?.name} {copyComponent(selectedId?.name ?? "")} &bull;{" "}
+              {formatPhoneNumber(selectedId?.phone ?? "")} &bull;{" "}
               {formatCNPJ(selectedId?.cnpj ?? "")} &bull; {selectedId?.email}{" "}
               {copyComponent(selectedId?.email ?? "")}{" "}
             </p>
             <div className="flex gap-2">
-              {selectedId?.data_criacao && (
+              {selectedId?.created_at && (
                 <p>
-                  {getTimeOrDate(selectedId?.data_criacao, "data")},{" "}
-                  {getTimeOrDate(selectedId?.data_criacao, "hora")}
+                  {getTimeOrDate(selectedId?.created_at, "data")},{" "}
+                  {getTimeOrDate(selectedId?.created_at, "hora")}
                 </p>
               )}
             </div>
@@ -143,18 +143,18 @@ export function ContactInfoModal({
         </div>
         <div className="bg-[#eeeeee] mt-8 p-1 text-[15px] text-[#666666]">
           Mensagem
-          {selectedId?.empresa ? (
+          {selectedId?.company ? (
             <>
               {" da empresa"}{" "}
-              {<span className="text-[#555]">{selectedId?.empresa}</span>}:
+              {<span className="text-[#555]">{selectedId?.company}</span>}:
             </>
           ) : (
             ":"
           )}
         </div>
         <div className="flex items-center border-1 p-1 border-[#eeeeee] text-[16px] text-[#666666] justify-between">
-          <span>{selectedId?.mensagem}</span>
-          {copyComponent(selectedId?.mensagem ?? "")}
+          <span>{selectedId?.message}</span>
+          {copyComponent(selectedId?.message ?? "")}
         </div>
       </div>
 

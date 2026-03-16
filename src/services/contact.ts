@@ -3,43 +3,19 @@ import { IContactResponse } from "src/interfaces/contacts";
 
 export class ContactService {
   async allContacts({
-    nome,
-    email,
-    cnpj,
-    data_ate,
-    data_de,
-    sort,
-    order,
-    status_mensagem,
-    assunto,
+    data_to,
+    data_from,
     page,
-    limit,
   }: {
-    nome?: string | number;
-    email?: string;
-    cnpj?: string | number;
-    data_ate?: string;
-    data_de?: string;
-    status_mensagem?: string | null;
-    sort?: string;
-    order?: "asc" | "desc" | null;
-    assunto?: string | null;
-    page?: string | number;
-    limit?: string | number;
+    page?: number | string;
+    data_to?: string;
+    data_from?: string;
   }): Promise<IContactResponse> {
-    const res = await apiPurchase.get(`/contatos`, {
+    const res = await apiPurchase.get(`/messages`, {
       params: {
-        nome: nome,
-        email: email,
-        cnpj: cnpj,
-        data_ate: data_ate,
-        data_de: data_de,
-        sort: sort || "data_criacao",
-        order: order || "desc",
-        status_mensagem: status_mensagem || undefined,
-        assunto: assunto || undefined,
-        page: page || 1,
-        limit: limit || 200,
+        page,
+        data_to,
+        data_from,
       },
     });
     return res.data;
@@ -50,14 +26,14 @@ export class ContactService {
     status_mensagem,
   }: {
     id: number;
-    status_mensagem: "Visualizada" | "Respondida";
+    status_mensagem: "LIDA" | "RESPONDIDA";
   }) {
-    return apiPurchase.patch(`/contatos/${id}/status-mensagem`, {
+    return apiPurchase.patch(`/messages/${id}/status`, {
       status_mensagem: status_mensagem,
     });
   }
 
   async removeContact(id: number) {
-    await apiPurchase.delete(`/contatos/${id}`);
+    await apiPurchase.delete(`/messages/${id}`);
   }
 }

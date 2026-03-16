@@ -13,36 +13,12 @@ export function useContactsController() {
   const { data: contactsQuery, isFetching: isContactFetching } =
     useQuery<IContactResponse>({
       refetchOnWindowFocus: false,
-      queryKey: [
-        "purchases",
-        filters.nome || "",
-        filters.email || "",
-        filters.cnpj || "",
-        filters.data_de || undefined,
-        filters.data_ate || undefined,
-        filters.status_mensagem || "",
-        filters.assunto || "",
-        filters.page || 1,
-        filters.limit || 100,
-        filters.sort || "data_criacao",
-        filters.order || "desc",
-      ],
+      queryKey: ["messages", filters.page, filters.data_to, filters.data_from],
       queryFn: async (): Promise<IContactResponse> => {
         const response = await contactService.allContacts({
-          nome: filters.nome || "",
-          email: filters.email || "",
-          cnpj: filters.cnpj || "",
-          data_de: filters.data_de || undefined,
-          data_ate: filters.data_ate || undefined,
-          status_mensagem: filters.status_mensagem || "",
-          assunto: filters.assunto || "",
-          page: filters.page || 1,
-          limit: filters.limit || 100,
-          sort: filters.sort || "data_criacao",
-          order:
-            filters.order === "asc" || filters.order === "desc"
-              ? filters.order
-              : "desc",
+          page: filters.page,
+          data_to: filters.data_to,
+          data_from: filters.data_from,
         });
         return response;
       },
@@ -54,7 +30,7 @@ export function useContactsController() {
       status_mensagem,
     }: {
       id: number;
-      status_mensagem: "Visualizada" | "Respondida";
+      status_mensagem: "LIDA" | "RESPONDIDA";
     }) => {
       const response = await contactService.changeContactStatus({
         id,
@@ -102,11 +78,15 @@ export function useContactsController() {
   const showModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
+  const contacts =
+    contactsQuery?.messages?.filter((contact) => contact.company === "VR") ||
+    [];
+
   return {
     changeContactStatus,
     contactsQuery,
-    contacts: contactsQuery?.data,
-    totalContacts: contactsQuery?.total || 0,
+    contacts,
+    totalContacts: contactsQuery?.pagination?.total || 0,
     isModalOpen,
     showModal,
     closeModal,

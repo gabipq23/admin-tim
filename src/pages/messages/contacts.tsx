@@ -23,6 +23,7 @@ function Contacts() {
     changeContactStatus,
     setRemoveContactIds,
     removeContacts,
+
   } = useContactsController();
 
   const {

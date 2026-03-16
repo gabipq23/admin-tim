@@ -1,23 +1,28 @@
 export interface IContact {
   id: number;
-  nome: string;
-  empresa: string;
-  telefone: string;
+  company: string;
+  name: string;
+  phone: string;
   email: string;
-  assunto: string;
-  mensagem: string;
-  data_criacao: string;
+  subject: string;
+  message: string;
+  created_at: string;
   status: string;
-  status_mensagem: string;
-  cnpj: string;
+  status_message: string;
+  cnpj?: string;
   total?: string;
 }
+
 export interface IContactResponse {
-  total: number;
-  page: number;
-  limit: number;
-  data: IContact[];
-  assunto_enum: string[];
+  success: boolean;
+  messages: IContact[];
+  pagination: {
+    page: number;
+    per_page: number;
+    total: number;
+    total_pages: number;
+  };
+  assunto_enum?: string[];
 }
 export interface IFilters {
   cnpj?: string | null;

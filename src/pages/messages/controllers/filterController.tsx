@@ -116,18 +116,18 @@ export function useContactFilterController({
     },
     {
       title: "Nome",
-      dataIndex: "nome",
+      dataIndex: "name",
       width: 130,
       ellipsis: {
         showTitle: false,
       },
-      render: (nome) => (
+      render: (name) => (
         <Tooltip
           placement="topLeft"
-          title={nome}
+          title={name}
           styles={{ body: { fontSize: "12px" } }}
         >
-          {nome}
+          {name}
         </Tooltip>
       ),
     },
@@ -138,7 +138,7 @@ export function useContactFilterController({
     },
     {
       title: "Telefone",
-      dataIndex: "telefone",
+      dataIndex: "phone",
       width: 100,
       render: (value) => formatPhoneNumber(value),
     },
@@ -150,28 +150,28 @@ export function useContactFilterController({
     },
     {
       title: "Assunto",
-      dataIndex: "assunto",
+      dataIndex: "subject",
       width: 160,
       ellipsis: {
         showTitle: false,
       },
-      render: (assunto) => (
+      render: (subject) => (
         <Tooltip
           placement="topLeft"
-          title={assunto}
+          title={subject}
           styles={{ body: { fontSize: "12px" } }}
         >
-          {assunto}
+          {subject}
         </Tooltip>
       ),
     },
     {
       title: "Data de Envio",
-      dataIndex: "data_criacao",
+      dataIndex: "created_at",
       width: 120,
       sorter: true,
       sortOrder:
-        filters.sort === "data_criacao"
+        filters.sort === "created_at"
           ? filters.order === "asc"
             ? "ascend"
             : filters.order === "desc"
@@ -181,11 +181,11 @@ export function useContactFilterController({
       onHeaderCell: () => ({
         onClick: () => {
           const newOrder =
-            filters.sort === "data_criacao" && filters.order === "asc"
+            filters.sort === "created_at" && filters.order === "asc"
               ? "desc"
               : "asc";
           const params = new URLSearchParams(window.location.search);
-          params.set("sort", "data_criacao");
+          params.set("sort", "created_at");
           params.set("order", newOrder);
           params.set("page", "1");
           navigate(`?${params.toString()}`);
@@ -195,9 +195,9 @@ export function useContactFilterController({
     },
     {
       title: "Status",
-      dataIndex: "status_mensagem",
+      dataIndex: "status_message",
       width: 110,
-      render: (_value, record) => getStatus(record.status_mensagem),
+      render: (_value, record) => getStatus(record.status_message),
     },
   ];
 

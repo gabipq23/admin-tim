@@ -37,11 +37,11 @@ function MobileCard({
               className="bg-white rounded-lg shadow p-4 mb-4 text-[14px] flex flex-col gap-2"
             >
               {getMobileRow("ID do Pedido", contact.id)}
-              {getMobileRow("Nome", contact.nome)}
+              {getMobileRow("Nome", contact.name)}
               {getMobileRow("Email", contact.email)}
               {getMobileRow("CNPJ", contact.cnpj)}
-              {getMobileRow("Assunto", contact.assunto)}
-              {getMobileRow("Data de Criação", contact.data_criacao)}
+              {getMobileRow("Assunto", contact.subject)}
+              {getMobileRow("Data de Criação", contact.created_at)}
 
               <div className="flex justify-center mt-2">
                 <Button
