@@ -1,18 +1,15 @@
 import {
+  Button,
   Form,
   Select,
   DatePicker,
-  Button,
-  ConfigProvider,
-  Checkbox,
-  Input,
 } from "antd";
 import { FormInstance } from "antd/es/form";
 import { OrderBandaLargaPJ } from "@/interfaces/bandaLargaPJ";
 import InputGenerator from "@/components/inputGenerator";
-import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
-import { formatCPF } from "@/utils/formatCPF";
 import { blueOutlineButtonClass } from "@/utils/buttonStyles";
+import { formatCPF } from "@/utils/formatCPF";
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 
 interface OrderBandaLargaPJEditProps {
   localData: OrderBandaLargaPJ;
@@ -40,16 +37,16 @@ export function OrderBandaLargaPJEdit({
       className="flex flex-col h-full gap-4"
       onFinish={handleSave}
     >
-      <div className="flex flex-col w-full gap-2">
-        {/* Detalhes do Plano */}
+      <div className="flex flex-col  w-full gap-2">
+        {/* Detalhes dos Planos */}
         <div className="flex flex-col   bg-neutral-100 mb-3 rounded-[4px] p-3 ">
           <div className="flex items-center">
             <h2 className="text-[14px] text-[#666666]">Detalhes dos Planos</h2>
           </div>
 
-          <div className="mt-4 flex w-full flex-col   text-neutral-700">
+          <div className="mt-4 flex w-full flex-col  text-neutral-700">
             {/* Header da tabela */}
-            <div className="flex items-center justify-between px-8 font-semibold text-[#666666] text-[14px]">
+            <div className="flex items-center  px-8 justify-between font-semibold text-[#666666] text-[14px]">
               <p className="w-66 text-center">Plano</p>
               <p className="w-28 text-center">Data Instalação 1</p>
               <p className="w-20 text-center">Período 1</p>
@@ -57,7 +54,7 @@ export function OrderBandaLargaPJEdit({
               <p className="w-20 text-center">Período 2</p>
               <p className="w-20 text-center">Vencimento</p>
             </div>
-            <hr className="border-t border-neutral-300 mx-2" />
+            <hr className="border-t border-neutral-300 " />
 
             {/* Linha editável */}
             <div className="flex px-8 items-center justify-between py-4 pb-0 text-[14px]">
@@ -74,6 +71,7 @@ export function OrderBandaLargaPJEdit({
                   />
                 </Form.Item>
               </div>
+
               {/* Data Instalação 1 */}
               <div className="w-28 flex justify-center">
                 <Form.Item
@@ -144,7 +142,7 @@ export function OrderBandaLargaPJEdit({
 
               {/* Vencimento */}
               <div className="w-20 flex justify-center">
-                <Form.Item name="dueday" className="mb-0">
+                <Form.Item name="due_day" className="mb-0">
                   <Select
                     size="small"
                     placeholder="Dia"
@@ -163,7 +161,7 @@ export function OrderBandaLargaPJEdit({
             <hr className="border-t border-neutral-300 mx-2" />
           </div>
         </div>
-        {/* Seção de Ofertas */}
+        {/* Seção de Disponibilidade */}
         <div className="flex flex-col bg-neutral-100 mb-3 rounded-[4px] p-3 pb-0 w-full">
           <div>
             <h2 className="text-[14px] text-[#666666]">Disponibilidade PAP</h2>
@@ -178,50 +176,11 @@ export function OrderBandaLargaPJEdit({
                   <Select.Option value={false}>Indisponível</Select.Option>
                 </Select>
               </Form.Item>
-              <ConfigProvider
-                theme={{
-                  components: {
-                    Checkbox: {
-                      colorBorder: "#0026d9",
-                      colorPrimary: "#0026d9",
-                      colorPrimaryHover: "#0026d9",
-                    },
-                  },
-                }}
-              >
-                {localData?.availability_pap === true && (
-                  <>
-                    <Form.Item
-                      name="availability_pap_via_range"
-                      className="mb-0"
-                      valuePropName="checked"
-                    >
-                      <Checkbox>Via Range Numérico</Checkbox>
-                    </Form.Item>
 
-                    <Form.Item name="pap_range_min" className="mb-0">
-                      <Input
-                        size="small"
-                        placeholder="Range mín"
-                        type="number"
-                        className="w-20"
-                      />
-                    </Form.Item>
-
-                    <Form.Item name="pap_range_max" className="mb-0">
-                      <Input
-                        size="small"
-                        placeholder="Range máx"
-                        type="number"
-                        className="w-20"
-                      />
-                    </Form.Item>
-                  </>
-                )}
-              </ConfigProvider>
             </div>
           </div>
         </div>
+
         {/* Informações da Empresa */}
         <div className="flex flex-col bg-neutral-100 mb-3 rounded-[4px] p-3  w-full">
           <div className="flex items-center mb-1">
@@ -245,8 +204,8 @@ export function OrderBandaLargaPJEdit({
               <div className="flex flex-col gap-1">
                 <InputGenerator
                   title="Razão Social:"
-                  formItemName="razaosocial"
-                  formItemValue={localData.razaosocial || ""}
+                  formItemName="company_legal_name"
+                  formItemValue={localData.company_legal_name || ""}
                   placeholder="Razão Social"
                 />
               </div>
@@ -267,14 +226,14 @@ export function OrderBandaLargaPJEdit({
               <div className="flex flex-col gap-1">
                 <InputGenerator
                   title="Nome:"
-                  formItemName={["manager", "name"]}
-                  formItemValue={localData?.manager?.name || ""}
+                  formItemName="manager_name"
+                  formItemValue={localData?.manager_name || ""}
                   placeholder="Nome"
                 />
                 <InputGenerator
                   title="CPF:"
-                  formItemName={["manager", "cpf"]}
-                  formItemValue={formatCPF(localData?.manager?.cpf) || ""}
+                  formItemName="cpf"
+                  formItemValue={formatCPF(localData?.cpf) || ""}
                   placeholder="CPF"
                 />
               </div>
@@ -283,30 +242,33 @@ export function OrderBandaLargaPJEdit({
               <div className="flex flex-col gap-1">
                 <InputGenerator
                   title="Telefone:"
-                  formItemName={["manager", "phone"]}
+                  formItemName="phone"
                   formItemValue={
-                    formatPhoneNumber(localData?.manager?.phone) || ""
+                    formatPhoneNumber(localData?.phone) || ""
                   }
                   placeholder="Telefone"
                 />
                 <InputGenerator
                   title="Telefone adicional:"
-                  formItemName="phoneAdditional"
+                  formItemName="additional_phone"
                   formItemValue={
-                    formatPhoneNumber(localData?.phoneAdditional || "") || ""
+                    localData?.additional_phone
+                      ? formatPhoneNumber(localData.additional_phone)
+                      : ""
                   }
                   placeholder="Telefone adicional"
                 />
                 <InputGenerator
                   title="Email:"
-                  formItemName={["manager", "email"]}
-                  formItemValue={localData?.manager?.email || ""}
+                  formItemName="email"
+                  formItemValue={localData?.email || ""}
                   placeholder="Email"
                 />
               </div>
             </div>
           </div>
         </div>
+
         {/* Informações de Endereço */}
         <div className="flex flex-col bg-neutral-100 mb-3 rounded-[4px] p-3  w-full">
           <div className="flex items-center mb-1">
@@ -327,36 +289,41 @@ export function OrderBandaLargaPJEdit({
                 />
                 <InputGenerator
                   title="Número:"
-                  formItemName="addressnumber"
-                  formItemValue={localData.addressnumber || ""}
+                  formItemName="address_number"
+                  formItemValue={localData.address_number || ""}
                   placeholder="Número"
                 />
-
                 <InputGenerator
                   title="Complemento:"
-                  formItemName="addresscomplement"
-                  formItemValue={localData.addresscomplement || ""}
+                  formItemName="address_complement"
+                  formItemValue={localData.address_complement || ""}
                   placeholder="Complemento"
                 />
                 <InputGenerator
+                  title="Andar:"
+                  formItemName="address_floor"
+                  formItemValue={localData.address_floor || ""}
+                  placeholder="Andar"
+                />
+                <InputGenerator
                   title="Lote:"
-                  formItemName="addresslot"
-                  formItemValue={localData.addresslot || ""}
+                  formItemName="address_lot"
+                  formItemValue={localData.address_lot || ""}
                   placeholder="Lote"
                 />
 
                 <InputGenerator
                   title="Quadra:"
-                  formItemName="addressblock"
-                  formItemValue={localData.addressblock || ""}
+                  formItemName="address_block"
+                  formItemValue={localData.address_block || ""}
                   placeholder="Quadra"
                 />
 
                 <InputGenerator
-                  title="Ponto de Referência:"
+                  title="Ponto de Referência"
                   formItemName="addressreferencepoint"
                   formItemValue={localData.addressreferencepoint || ""}
-                  placeholder="Ponto de referência"
+                  placeholder="Ponto de Referência"
                 />
               </div>
 
@@ -369,7 +336,7 @@ export function OrderBandaLargaPJEdit({
                     </p>
                   </div>
                   <div className="flex flex-1">
-                    <Form.Item name="buildingorhouse" className="mb-0 ">
+                    <Form.Item name="building_or_house" className="mb-0 ">
                       <Select
                         placeholder="Tipo de imóvel"
                         className="min-w-[150px]"
@@ -383,41 +350,59 @@ export function OrderBandaLargaPJEdit({
                     </Form.Item>
                   </div>
                 </div>
-                <InputGenerator
-                  title="Andar:"
-                  formItemName="addressFloor"
-                  formItemValue={localData.addressFloor || ""}
-                  placeholder="Andar"
-                />
+
                 <InputGenerator
                   title="Bairro:"
                   formItemName="district"
                   formItemValue={localData.district || ""}
                   placeholder="Bairro"
                 />
+
                 <InputGenerator
                   title="Cidade:"
                   formItemName="city"
                   formItemValue={localData.city || ""}
                   placeholder="Cidade"
                 />
+
                 <InputGenerator
                   title="UF:"
                   formItemName="state"
                   formItemValue={localData.state || ""}
                   placeholder="UF"
                 />
+
                 <InputGenerator
                   title="CEP:"
-                  formItemName="cep"
-                  formItemValue={localData.cep || ""}
+                  formItemName="zip_code"
+                  formItemValue={localData.zip_code
+                    || ""}
                   placeholder="CEP"
                 />
+                <div className="flex h-9 gap-4 text-[14px] w-full text-neutral-700">
+                  <div className="flex ">
+                    <p>
+                      <strong>CEP único:</strong>
+                    </p>
+                  </div>
+                  <div className="flex flex-1">
+                    <Form.Item name="single_zip_code" className="mb-0 ">
+                      <Select
+                        placeholder="CEP único"
+                        className="min-w-[150px]"
+                        size="small"
+                      >
+                        <Select.Option value={1}>Sim</Select.Option>
+                        <Select.Option value={0}>Não</Select.Option>
+                      </Select>
+                    </Form.Item>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>{" "}
+      </div>
       <div
         className="flex justify-end gap-4 z-10"
         style={{

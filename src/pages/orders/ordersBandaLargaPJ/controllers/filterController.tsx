@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { Button, TableColumnsType, Tooltip } from "antd";
-import { createStyles } from "antd-style";
+import { TableColumnsType, Tooltip, Button } from "antd";
 import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
-import { formatCNPJ } from "@/utils/formatCNPJ";
-import { StatusType } from "@/interfaces/purchase";
-import { BandaLargaPJFilters } from "@/interfaces/bandaLargaPJ";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
-import { formatBRL } from "@/utils/formatBRL";
 import { formatCPF } from "@/utils/formatCPF";
+import {
+  formatBrowserDisplay,
+  formatOSDisplay,
+} from "@/utils/formatClientEnvironment";
+import { BandaLargaFilters } from "@/interfaces/bandaLargaPJ";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import {
   CheckCircle2,
   XCircle,
@@ -20,183 +20,61 @@ import {
   DollarSign,
   MapIcon,
   MapPinned,
-  Mars,
   Venus,
+  Mars,
 } from "lucide-react";
-
-import {
-  formatBrowserDisplay,
-  formatOSDisplay,
-} from "@/utils/formatClientEnvironment";
-import { convertData } from "@/utils/convertData";
 import { Thermometer } from "@/components/chat/common/thermometer";
+import { useStyle } from "@/style/tableStyle";
+import { capitalizeWords } from "@/utils/capitaliWords";
+import { formatCNPJ } from "@/utils/formatCNPJ";
 
-function getFiltersFromURL(): BandaLargaPJFilters {
+function getFiltersFromURL(): BandaLargaFilters {
   const params = new URLSearchParams(window.location.search);
-  const rawStatus = params.get("status");
-  const allowedStatus: StatusType[] = ["aberto", "fechado", "cancelado"];
-  const status = allowedStatus.includes(rawStatus as StatusType)
-    ? (rawStatus as StatusType)
-    : null;
-  const rawInitialStatus = params.get("initial_status");
-  const initial_status =
-    rawInitialStatus === "consulta"
-      ? "consulta"
-      : rawInitialStatus === "pedido"
-        ? "pedido"
-        : "";
-  const availability = params.get("availability");
-  let availabilityBool: boolean | undefined = undefined;
-  if (availability === "true") availabilityBool = true;
-  if (availability === "false") availabilityBool = false;
-  const plan = params.get("plan") || undefined;
-  const fullname = params.get("fullname") || undefined;
-  const phone = params.get("phone") || undefined;
-  const cnpj = params.get("cnpj") || undefined;
-  const razaosocial = params.get("razaosocial") || undefined;
-  const ordernumber = params.get("ordernumber") || undefined;
-  const data_ate = params.get("data_ate") || undefined;
-  const data_de = params.get("data_de") || undefined;
+
   const page = parseInt(params.get("page") || "1", 10);
-  const limit = parseInt(params.get("limit") || "200", 10);
-  const order = params.get("order") as "asc" | "desc" | null;
-  const sort = params.get("sort") || undefined;
-  const status_pos_venda = params.get("status_pos_venda") || null;
+  const per_page = parseInt(params.get("per_page") || "20", 10);
+  const data_to = params.get("data_ate") || undefined;
+  const data_from = params.get("data_de") || undefined;
+  const status = params.get("status") || undefined;
+
 
   return {
-    availability: availabilityBool,
-    plan,
-    fullname,
-    phone,
-    cnpj,
-    razaosocial,
-    status,
-    ordernumber,
-    data_ate,
-    data_de,
-    page,
-    limit,
-    order: order === "asc" || order === "desc" ? order : undefined,
-    sort,
-    status_pos_venda,
-    initial_status,
+    page, per_page, data_to, data_from, status
   };
 }
-const useStyle = createStyles(({ css }) => {
-  return {
-    customTable: css`
-      .ant-table-container .ant-table-body,
-      .ant-table-container .ant-table-content {
-        scrollbar-width: thin;
-        scrollbar-color: #eaeaea transparent;
-        scrollbar-gutter: stable;
-      }
-      /* Diminui fonte do header */
-      .ant-table-thead > tr > th {
-        font-size: 12px !important;
-      }
-      /* Diminui fonte do body */
-      .ant-table-tbody > tr > td {
-        font-size: 12px !important;
-      }
-      /* Cor de fundo do header */
-      .ant-table-thead > tr > th {
-        background: #e9e9e9 !important;
-      }
-      .ant-table-tbody > tr {
-        background: #fff !important;
-      }
-      /* Cor de fundo do body */
-      .ant-table-tbody > td {
-        background: #fff !important;
-      }
-      /* Cor de fundo do body */
-      .ant-table-row-green > td {
-        background-color: #e6ffed !important;
-      }
-      .ant-table-row-yellow > td {
-        background-color: #fff6c7 !important;
-      }
-      .ant-table-row-red > td {
-        background-color: #ffeaea !important;
-      }
-      .ant-table-row-geekblue > td {
-        background-color: #f5e6ff !important;
-      }
-      /* Destaca a linha ao passar o mouse (mantém o efeito padrão do Ant Design) */
-      .ant-table-tbody > tr.ant-table-row:hover > td {
-        background: #e9e9e9 !important;
-      }
-      .ant-table-pagination {
-        display: flex;
-        justify-content: center;
-        margin-top: 16px; /* opcional: dá um espaçamento
-        colorText: "#0026d9",
-        colorTextActive: "#550088", */
-      }
-    `,
-  };
-});
+
+
 
 export function useAllOrdersFilterController() {
   const navigate = useNavigate();
   const filters = getFiltersFromURL();
 
   const [selectedBLOrder, setSelectedBLOrder] = useState<any | null>(null);
-
+  const [isModalAvatarOpen, setIsModalAvatarOpen] = useState(false);
+  const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
   const currentPage = filters.page;
-  const pageSize = filters.limit;
+  const pageSize = filters.per_page;
 
-  const { handleSubmit, reset, control } = useForm<BandaLargaPJFilters>({
+  const { handleSubmit, reset, control } = useForm<BandaLargaFilters>({
     defaultValues: {
-      availability: undefined,
-      plan: "",
-      fullname: "",
-      phone: "",
-      cnpj: "",
-      razaosocial: "",
-      status: null,
-      status_pos_venda: "",
-      initial_status: filters.initial_status || "",
-
-      ordernumber: "",
-      data_ate: "",
-      data_de: "",
-      order: undefined,
-      sort: "",
+      page: currentPage,
+      per_page: filters.per_page,
+      data_to: filters.data_to,
+      data_from: filters.data_from,
+      status: filters.status,
     },
   });
 
   const [isFiltered, setIsFiltered] = useState<boolean>(false);
 
-  const onSubmit = (data: BandaLargaPJFilters) => {
+  const onSubmit = (data: BandaLargaFilters) => {
     const params = new URLSearchParams();
-    if (data.availability !== undefined)
-      params.set("availability", String(data.availability));
-    if (data.plan) params.set("plan", data.plan);
-    if (data.fullname) params.set("fullname", data.fullname);
-    if (data.phone) {
-      const phoneSemMascara = data.phone.replace(/\D/g, "");
-      params.set("phone", phoneSemMascara);
-    }
-    if (data.cnpj) {
-      const cnpjSemMascara = data.cnpj.replace(/\D/g, "");
-      params.set("cnpj", cnpjSemMascara);
-    }
-    if (data.initial_status) params.set("initial_status", data.initial_status);
 
-    if (data.razaosocial) params.set("razaosocial", data.razaosocial);
-    if (data.ordernumber) params.set("ordernumber", data.ordernumber);
-    if (data.data_de) params.set("data_de", data.data_de);
-    if (data.data_ate) params.set("data_ate", data.data_ate);
+    if (data.page) params.set("page", String(data.page));
+    if (data.per_page) params.set("per_page", String(data.per_page));
+    if (data.data_to) params.set("data_ate", data.data_to);
+    if (data.data_from) params.set("data_de", data.data_from);
     if (data.status) params.set("status", data.status);
-    if (data.status_pos_venda)
-      params.set("status_pos_venda", data.status_pos_venda);
-
-    params.set("page", "1");
-    params.set("limit", "200");
-    if (data.order) params.set("order", data.order);
-    if (data.sort) params.set("sort", data.sort);
 
     navigate(`?${params.toString()}`);
     setIsFiltered(true);
@@ -209,22 +87,20 @@ export function useAllOrdersFilterController() {
   };
 
   const { styles } = useStyle();
-  const capitalizeWords = (text: string) => {
-    return text.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
-  };
 
-  const columns: TableColumnsType<any> = [
+  // --- Seleção de colunas ---
+  const allTableColumns: TableColumnsType<any> = [
     {
       title: "",
-      dataIndex: "observacao_consultor",
+      dataIndex: "consultant_observation",
       width: 30,
-      render: (observacao_consultor) => (
+      render: (consultant_observation) => (
         <Tooltip
           placement="top"
-          title={observacao_consultor || "Sem observações"}
+          title={consultant_observation || "Sem observações"}
           styles={{ body: { fontSize: "12px" } }}
         >
-          {observacao_consultor && <ExclamationCircleOutlined />}
+          {consultant_observation && <ExclamationCircleOutlined />}
         </Tooltip>
       ),
     },
@@ -233,84 +109,103 @@ export function useAllOrdersFilterController() {
       dataIndex: ["whatsapp", "avatar"],
       width: 80,
       render: (avatar, record) => {
+        const avatarSrc = avatar || "/assets/anonymous_avatar.png";
+        const handleAvatarClick = (event: React.MouseEvent) => {
+          event.stopPropagation();
+          setSelectedAvatar(avatarSrc);
+          setIsModalAvatarOpen(true);
+        };
+
         if (record.temperatura_pf === 10) {
           return (
             <div className="flex bg-[#d63535] rounded-full w-9 h-9 items-center justify-center relative">
-              <img
-                src={avatar || "/assets/anonymous_avatar.png"}
-                className="rounded-full w-9 h-9"
-              />
-              <div className="text-sm absolute -top-1 -right-1 flex items-center justify-center">
-                🔥
-              </div>
+
+              <button
+                type="button"
+                className="appearance-none bg-transparent border-0 rounded-full w-9 h-9 p-0 m-0 min-w-0 flex items-center justify-center overflow-hidden cursor-pointer"
+                onClick={handleAvatarClick}
+              >
+                <img
+                  src={avatarSrc}
+                  className="rounded-full w-9 h-9 object-cover"
+                />
+                <div className="text-sm absolute -top-1 -right-1 flex items-center justify-center">
+                  🔥
+                </div>
+              </button>
             </div>
           );
         }
         return (
-          <img
-            src={avatar || "/assets/anonymous_avatar.png"}
-            className="h-9 w-9 rounded-full"
-          />
+          <button
+            type="button"
+            className="appearance-none bg-transparent border-0 rounded-full w-9 h-9 p-0 m-0 min-w-0 flex items-center justify-center overflow-hidden cursor-pointer"
+            onClick={handleAvatarClick}
+          >
+            <img
+              src={avatarSrc}
+              className="h-9 w-9 rounded-full"
+              onClick={handleAvatarClick}
+            /></button>
         );
       },
     },
     {
       title: "Temperatura",
-      dataIndex: "temperatura_pf",
+      dataIndex: "pf_temperature",
       width: 140,
-      render: (temperatura_pf) => (
+      render: (pf_temperature) => (
         <div className="flex w-[120px] h-2 items-center gap-1 mr-4">
           {" "}
-          <Thermometer min={0} max={10} value={temperatura_pf || 0} />
+          <Thermometer min={0} max={10} value={pf_temperature || 0} />
         </div>
       ),
     },
     {
       title: "ID do Pedido",
-      dataIndex: "ordernumber",
+      dataIndex: "order_number",
       width: 110,
-      render: (ordernumber, record) =>
-        ordernumber ? ordernumber : record.id || "-",
+      render: (order_number, record) =>
+        order_number ? order_number : record.id || "-",
     },
 
     {
       title: "Abertura",
       dataIndex: "created_at",
-
       width: 110,
-      sorter: true,
-      sortOrder:
-        filters.sort === "created_at"
-          ? filters.order === "asc"
-            ? "ascend"
-            : filters.order === "desc"
-              ? "descend"
-              : undefined
-          : undefined,
-      onHeaderCell: () => ({
-        onClick: () => {
-          const newOrder =
-            filters.sort === "created_at" && filters.order === "asc"
-              ? "desc"
-              : "asc";
-          const params = new URLSearchParams(window.location.search);
-          params.set("sort", "created_at");
-          params.set("order", newOrder);
-          params.set("page", "1");
-          navigate(`?${params.toString()}`);
-        },
-        style: { cursor: "pointer" },
-      }),
+      // sorter: true,
+      // sortOrder:
+      //   filters.sort === "created_at"
+      //     ? filters.order === "asc"
+      //       ? "ascend"
+      //       : filters.order === "desc"
+      //         ? "descend"
+      //         : undefined
+      //     : undefined,
+      // onHeaderCell: () => ({
+      //   onClick: () => {
+      //     const newOrder =
+      //       filters.sort === "created_at" && filters.order === "asc"
+      //         ? "desc"
+      //         : "asc";
+      //     const params = new URLSearchParams(window.location.search);
+      //     params.set("sort", "created_at");
+      //     params.set("order", newOrder);
+      //     params.set("page", "1");
+      //     navigate(`?${params.toString()}`);
+      //   },
+      //   style: { cursor: "pointer" },
+      // }),
     },
     {
       title: "Pedido",
       dataIndex: "status",
       render: (status: string) =>
-        status === "aberto"
+        status === "ABERTO"
           ? "Aberto"
-          : status === "fechado"
+          : status === "FECHADO"
             ? "Fechado"
-            : status === "cancelado"
+            : status === "CANCELADO"
               ? "Cancelado"
               : "-",
       width: 80,
@@ -320,38 +215,38 @@ export function useAllOrdersFilterController() {
       ellipsis: {
         showTitle: false,
       },
-      dataIndex: "status_pos_venda",
+      dataIndex: "after_sales_status",
       width: 155,
-      sorter: true,
-      sortOrder:
-        filters.sort === "status_pos_venda"
-          ? filters.order === "asc"
-            ? "ascend"
-            : filters.order === "desc"
-              ? "descend"
-              : undefined
-          : undefined,
-      onHeaderCell: () => ({
-        onClick: () => {
-          const newOrder =
-            filters.sort === "status_pos_venda" && filters.order === "asc"
-              ? "desc"
-              : "asc";
-          const params = new URLSearchParams(window.location.search);
-          params.set("sort", "status_pos_venda");
-          params.set("order", newOrder);
-          params.set("page", "1");
-          navigate(`?${params.toString()}`);
-        },
-        style: { cursor: "pointer" },
-      }),
-      render: (status_pos_venda) => (
+      // sorter: true,
+      // sortOrder:
+      //   filters.sort === "status_pos_venda"
+      //     ? filters.order === "asc"
+      //       ? "ascend"
+      //       : filters.order === "desc"
+      //         ? "descend"
+      //         : undefined
+      //     : undefined,
+      // onHeaderCell: () => ({
+      //   onClick: () => {
+      //     const newOrder =
+      //       filters.sort === "status_pos_venda" && filters.order === "asc"
+      //         ? "desc"
+      //         : "asc";
+      //     const params = new URLSearchParams(window.location.search);
+      //     params.set("sort", "status_pos_venda");
+      //     params.set("order", newOrder);
+      //     params.set("page", "1");
+      //     navigate(`?${params.toString()}`);
+      //   },
+      //   style: { cursor: "pointer" },
+      // }),
+      render: (after_sales_status) => (
         <Tooltip
           placement="topLeft"
-          title={status_pos_venda}
+          title={after_sales_status}
           styles={{ body: { fontSize: "12px" } }}
         >
-          {status_pos_venda || "-"}
+          {after_sales_status || "-"}
         </Tooltip>
       ),
     },
@@ -394,11 +289,12 @@ export function useAllOrdersFilterController() {
           </div>
         ),
     },
+
     {
       title: "Recadastro",
-      dataIndex: ["second_call", ["number_attempts"]],
+      dataIndex: "number_attempts_second_call",
       width: 110,
-      render: (number_attempts) => number_attempts || "-",
+      render: (number_attempts_second_call) => number_attempts_second_call || "-",
     },
     {
       title: "CNPJ",
@@ -436,30 +332,31 @@ export function useAllOrdersFilterController() {
     },
     {
       title: "Razão Social ",
-      dataIndex: "razaosocial",
+      dataIndex: "company_legal_name",
       ellipsis: {
         showTitle: false,
       },
-      render: (razaosocial) => (
+      render: (company_legal_name) => (
         <Tooltip
           placement="topLeft"
-          title={capitalizeWords(razaosocial)}
+          title={capitalizeWords(company_legal_name)}
           styles={{ body: { fontSize: "12px" } }}
         >
-          {capitalizeWords(razaosocial) || "-"}
+          {capitalizeWords(company_legal_name) || "-"}
         </Tooltip>
       ),
       width: 150,
     },
     {
       title: "Nome",
-      dataIndex: ["manager", "name"],
+      dataIndex: "manager_name",
       ellipsis: {
         showTitle: false,
       },
-      render: (name, record) => {
+      render: (manager_name, record) => {
         const compareNames = (name1: string, name2: string) => {
           if (!name1 || !name2) return null;
+
           const normalizeText = (text: string) => {
             return text
               .toLowerCase()
@@ -467,14 +364,18 @@ export function useAllOrdersFilterController() {
               .normalize("NFD")
               .replace(/[\u0300-\u036f]/g, "");
           };
+
           return normalizeText(name1) === normalizeText(name2);
         };
-        const isNamesMatch = compareNames(name, record.nome_receita);
+
+        const isNamesMatch = compareNames(manager_name, record.rfb_name
+        );
+
         return (
           <>
-            {name ? (
+            {manager_name ? (
               <span className="flex items-center gap-1">
-                {name}
+                {manager_name}
                 {isNamesMatch === true ? (
                   <Tooltip
                     title="Nome confere com RFB"
@@ -501,44 +402,10 @@ export function useAllOrdersFilterController() {
       },
       width: 240,
     },
-    {
-      title: "Nome (RFB)",
-      dataIndex: "nome_receita",
 
-      ellipsis: {
-        showTitle: false,
-      },
-      render: (nome_receita) => (
-        <Tooltip
-          placement="topLeft"
-          title={nome_receita}
-          styles={{ body: { fontSize: "12px" } }}
-        >
-          {nome_receita || "-"}
-        </Tooltip>
-      ),
-      width: 150,
-    },
-    {
-      title: "Gênero",
-      dataIndex: "genero_receita",
-      width: 80,
-      render: (genero_receita) =>
-        genero_receita === "M" ? (
-          <div className="flex items-center justify-center">
-            <Mars color="blue" size={17} />
-          </div>
-        ) : genero_receita === "F" ? (
-          <div className="flex items-center justify-center">
-            <Venus color="magenta" size={18} />
-          </div>
-        ) : (
-          <div className="flex items-center justify-center">-</div>
-        ),
-    },
     {
       title: "CPF",
-      dataIndex: ["manager", "cpf"],
+      dataIndex: "cpf",
       width: 120,
       render: (cpf) => (cpf ? formatCPF(cpf) : "-"),
       filters: [
@@ -566,42 +433,124 @@ export function useAllOrdersFilterController() {
         return true;
       },
     },
-    // {
-    //   title: "Crédito",
-    //   dataIndex: "credito",
-    //   width: 80,
-    //   render: (credito) => {
-    //     if (credito === null || credito === undefined) {
-    //       return "-";
-    //     }
 
-    //     return credito ? (
-    //       <div className="flex items-center justify-center ">
-    //         <Tooltip
-    //           placement="top"
-    //           styles={{ body: { fontSize: "12px" } }}
-    //           title="Possui crédito"
-    //         >
-    //           <div className="bg-green-500 h-5 w-5 rounded-full text-white font-bold text-[16px] flex items-center justify-center">
-    //             <DollarSign size={15} />
-    //           </div>
-    //         </Tooltip>
-    //       </div>
-    //     ) : (
-    //       <div className="flex items-center justify-center ">
-    //         <Tooltip
-    //           placement="top"
-    //           styles={{ body: { fontSize: "12px" } }}
-    //           title="Não possui crédito"
-    //         >
-    //           <div className="bg-red-500 h-5 w-5 rounded-full text-white font-bold text-[16px] flex items-center justify-center">
-    //             <DollarSign size={15} />
-    //           </div>
-    //         </Tooltip>
-    //       </div>
-    //     );
-    //   },
-    // },
+    {
+      title: "Gênero",
+      dataIndex: "rfb_gender",
+      width: 80,
+      render: (rfb_gender) =>
+        rfb_gender === "M" ? (
+          <div className="flex items-center justify-center">
+            <Mars color="blue" size={17} />
+          </div>
+        ) : rfb_gender === "F" ? (
+          <div className="flex items-center justify-center">
+            <Venus color="magenta" size={18} />
+          </div>
+        ) : (
+          <div className="flex items-center justify-center">-</div>
+        ),
+    },
+    {
+      title: "Data de Nascimento",
+      dataIndex: "birth_date",
+      width: 150,
+      render: (birth_date, record) => {
+        const compareDates = (date1: string, date2: string) => {
+          if (!date1 || !date2) return null;
+          return date1.trim() === date2.trim();
+        };
+
+        const isDatesMatch =
+          birth_date && birth_date !== "00/00/0000"
+            ? compareDates(birth_date, record.rfb_birth_date
+            )
+            : null;
+
+        return (
+          <span className="flex items-center gap-1">
+            {birth_date && birth_date !== "00/00/0000" ? birth_date : "-"}
+            {isDatesMatch === true ? (
+              <Tooltip
+                title="Data de nascimento confere com RFB"
+                placement="top"
+                styles={{ body: { fontSize: "12px" } }}
+              >
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+              </Tooltip>
+            ) : isDatesMatch === false ? (
+              <Tooltip
+                title="Data de nascimento diferente da RFB"
+                placement="top"
+                styles={{ body: { fontSize: "12px" } }}
+              >
+                <XCircle className="h-4 w-4 text-red-500" />
+              </Tooltip>
+            ) : null}
+          </span>
+        );
+      },
+    },
+
+    {
+      title: "Nome da Mãe",
+      dataIndex: "mother_full_name",
+      ellipsis: {
+        showTitle: false,
+      },
+      render: (mother_full_name, record) => {
+        const compareNames = (name1: string, name2: string) => {
+          if (!name1 || !name2) return null;
+
+          const normalizeText = (text: string) => {
+            return text
+              .toLowerCase()
+              .trim()
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "");
+          };
+
+          return normalizeText(name1) === normalizeText(name2);
+        };
+
+        const isNamesMatch = compareNames(
+          mother_full_name,
+          record.rfb_mother_name,
+        );
+
+        return (
+          <>
+            {mother_full_name ? (
+              <span className="flex items-center gap-1">
+                {mother_full_name}
+                {isNamesMatch === true ? (
+                  <Tooltip
+                    title="Nome da mãe confere com RFB"
+                    placement="top"
+                    styles={{ body: { fontSize: "12px" } }}
+                  >
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  </Tooltip>
+                ) : isNamesMatch === false ? (
+                  <Tooltip
+                    title="Nome da mãe diferente da RFB"
+                    placement="top"
+                    styles={{ body: { fontSize: "12px" } }}
+                  >
+                    <XCircle className="h-4 w-4 text-red-500" />
+                  </Tooltip>
+                ) : null}
+              </span>
+            ) : (
+              "-"
+            )}
+          </>
+        );
+      },
+      width: 220,
+    },
+
+
     {
       title: "MEI",
       dataIndex: "is_mei",
@@ -622,17 +571,17 @@ export function useAllOrdersFilterController() {
     },
     {
       title: "Empresas",
-      dataIndex: "socios_empresas",
+      dataIndex: "company_partners",
       width: 210,
       ellipsis: {
         showTitle: false,
       },
-      render: (socios_empresas) => {
-        if (!socios_empresas || socios_empresas.length === 0) {
+      render: (company_partners) => {
+        if (!company_partners || company_partners.length === 0) {
           return "-";
         }
 
-        const empresasFormatadas = socios_empresas
+        const empresasFormatadas = company_partners
           .map(
             (empresa: { cnpj: string; nome: string; porte: string }) =>
               `${empresa.cnpj}, ${empresa.nome}, ${empresa.porte}`,
@@ -654,14 +603,16 @@ export function useAllOrdersFilterController() {
     },
     {
       title: "Telefone",
-      dataIndex: ["manager", "phone"],
+      dataIndex: "phone",
       width: 150,
       render: (_, record) => {
-        if (!record.manager?.phone) return "-";
-        const isValid = record.numero_valido;
+        if (!record.phone) return "-";
+
+        const isValid = record.phone_valid;
+
         return (
           <span className="flex items-center gap-1">
-            {formatPhoneNumber(record.manager.phone)}
+            {formatPhoneNumber(record.phone)}
             {isValid === 1 ? (
               <Tooltip
                 title="Válido na ANATEL"
@@ -692,19 +643,20 @@ export function useAllOrdersFilterController() {
           value: "vazio",
         },
       ],
+
       onFilter: (value, record) => {
         if (value === "preenchido") {
           return (
-            record.manager?.phone !== null &&
-            record.manager?.phone !== undefined &&
-            record.manager?.phone !== ""
+            record.phone !== null &&
+            record.phone !== undefined &&
+            record.phone !== ""
           );
         }
         if (value === "vazio") {
           return (
-            record.manager?.phone === null ||
-            record.manager?.phone === undefined ||
-            record.manager?.phone === ""
+            record.phone === null ||
+            record.phone === undefined ||
+            record.phone === ""
           );
         }
         return true;
@@ -712,7 +664,7 @@ export function useAllOrdersFilterController() {
     },
     {
       title: "Operadora",
-      dataIndex: "operadora",
+      dataIndex: "operator",
       width: 120,
       ellipsis: {
         showTitle: false,
@@ -720,46 +672,32 @@ export function useAllOrdersFilterController() {
       render: (_, record) => (
         <Tooltip
           placement="topLeft"
-          title={record.operadora}
+          title={record.operator}
           styles={{ body: { fontSize: "12px" } }}
         >
-          {record.operadora || "-"}
+          {record.operator || "-"}
         </Tooltip>
       ),
     },
     {
       title: "Portado",
-      dataIndex: "portabilidade",
+      dataIndex: "portability",
       width: 90,
-      render: (portabilidade) => portabilidade || "-",
+      render: (
+        portability) =>
+        portability || "-",
     },
     {
       title: "Data da Portabilidade",
-      dataIndex: "data_portabilidade",
+      dataIndex: "portability_date",
       width: 160,
       render: (_, record) =>
-        record.data_portabilidade
-          ? convertData(record.data_portabilidade)
+        record.portability_date
+          ? (record.portability_date)
           : "-",
     },
-    // {
-    //   title: "Titular",
-    //   dataIndex: "titular_pf_pj",
-    //   width: 120,
-    //   render: (titular_pf_pj) => (titular_pf_pj ? titular_pf_pj : "-"),
-    // },
-    // {
-    //   title: "Titularidade",
-    //   dataIndex: "titularidade",
-    //   width: 120,
-    //   render: (titularidade) => (titularidade ? titularidade : "-"),
-    // },
-    // {
-    //   title: "Título WA",
-    //   dataIndex: "nome_whatsapp",
-    //   width: 120,
-    //   render: (nome_whatsapp) => (nome_whatsapp ? nome_whatsapp : "-"),
-    // },
+
+
     {
       title: "Whatsapp",
       dataIndex: ["whatsapp", "is_comercial"],
@@ -814,7 +752,69 @@ export function useAllOrdersFilterController() {
         );
       },
     },
+    {
+      title: "Telefone Adicional",
+      dataIndex: "additional_phone",
+      width: 180,
+      render: (_, record) => {
+        if (!record.additional_phone) return "-";
 
+        const isValid = record.
+          additional_phone_valid
+          ;
+
+        return (
+          <span className="flex items-center gap-1">
+            {formatPhoneNumber(record.additional_phone)}
+            {isValid === 1 ? (
+              <Tooltip
+                title="Válido na ANATEL"
+                placement="top"
+                styles={{ body: { fontSize: "12px" } }}
+              >
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+              </Tooltip>
+            ) : isValid === 0 ? (
+              <Tooltip
+                title="Inválido na ANATEL"
+                placement="top"
+                styles={{ body: { fontSize: "12px" } }}
+              >
+                <XCircle className="h-4 w-4 text-red-500" />
+              </Tooltip>
+            ) : null}
+          </span>
+        );
+      },
+      filters: [
+        {
+          text: "Preenchido",
+          value: "preenchido",
+        },
+        {
+          text: "Vazio",
+          value: "vazio",
+        },
+      ],
+
+      onFilter: (value, record) => {
+        if (value === "preenchido") {
+          return (
+            record.phone !== null &&
+            record.phone !== undefined &&
+            record.phone !== ""
+          );
+        }
+        if (value === "vazio") {
+          return (
+            record.phone === null ||
+            record.phone === undefined ||
+            record.phone === ""
+          );
+        }
+        return true;
+      },
+    },
     // {
     //   title: "Status",
     //   dataIndex: ["whatsapp", "recado"],
@@ -867,13 +867,7 @@ export function useAllOrdersFilterController() {
       ),
       width: 240,
     },
-    // {
-    //   title: "Email Válido",
-    //   dataIndex: "is_email_valido",
-    //   width: 100,
-    //   render: (is_email_valido) =>
-    //     is_email_valido ? "Sim" : is_email_valido === undefined ? "-" : "Não",
-    // },
+
     {
       title: "Plano",
       dataIndex: ["plan", "name"],
@@ -887,7 +881,7 @@ export function useAllOrdersFilterController() {
           styles={{ body: { fontSize: "12px" } }}
         >
           {record.plan?.name
-            ? record.plan?.name + " - " + record.plan?.speed
+            ? record.plan?.name
             : "-"}
         </Tooltip>
       ),
@@ -895,68 +889,32 @@ export function useAllOrdersFilterController() {
     },
     {
       title: "Valor do Plano",
-      dataIndex: ["plan", "price"],
+      dataIndex: ["plan", "value"],
       width: 120,
       render: (_, record) =>
-        record.plan?.price ? ` ${formatBRL(record.plan.price)}` : "-",
+        record.plan?.value ? `R$ ${record.plan.value}` : "-",
     },
-
     {
       title: "Vencimento",
-      dataIndex: "dueday",
+      dataIndex: "due_day",
       width: 120,
     },
-    // {
-    //   title: "TV",
-    //   dataIndex: "tv",
-    //   width: 70,
-    //   render: (tv) => (tv ? "Sim" : tv === undefined ? "-" : "Não"),
-    // },
-    // {
-    //   title: "Pacote TV",
-    //   dataIndex: "tv_package",
-    //   width: 120,
-    //   render: (tv_package) => (tv_package ? tv_package : "-"),
-    // },
-    // {
-    //   title: "APP",
-    //   dataIndex: "app",
-    //   width: 70,
-    //   render: (app) => (app ? "Sim" : app === undefined ? "-" : "Não"),
-    // },
-    // {
-    //   title: "Pacote APP",
-    //   dataIndex: "app_package",
-    //   width: 120,
-    //   render: (app_package) => (app_package ? app_package : "-"),
-    // },
-    // {
-    //   title: "Voz Fixa",
-    //   dataIndex: "voz_fixa",
-    //   width: 120,
-    //   render: (voz_fixa) => (voz_fixa ? voz_fixa : "-"),
-    // },
-    // {
-    //   title: "IP Fixo",
-    //   dataIndex: "ip_fixo",
-    //   width: 70,
-    //   render: (ip_fixo) =>
-    //     ip_fixo ? "Sim" : ip_fixo === undefined ? "-" : "Não",
-    // },
+
+
     {
       title: "CEP",
-      dataIndex: "cep",
+      dataIndex: "zip_code",
       width: 130,
       render: (_, record) => {
-        if (!record.cep) return "-";
+        if (!record.zip_code) return "-";
 
         const isValidCep =
           record.address && record.district && record.city && record.state;
-        const isCepUnico = record.cep_unico;
+        const isCepUnico = record.single_zip_code;
 
         return (
           <span className="flex items-center gap-1">
-            {record.cep}
+            {record.zip_code}
             {isCepUnico ? (
               <Tooltip
                 title="CEP único para localidade. Dados inseridos manualmente pelo usuário. Sujeito a erro de digitação."
@@ -998,16 +956,16 @@ export function useAllOrdersFilterController() {
           title={address}
           styles={{ body: { fontSize: "12px" } }}
         >
-          {address}
+          {address || "-"}
         </Tooltip>
       ),
       width: 140,
     },
     {
       title: "Número",
-      dataIndex: "addressnumber",
-      render: (addressnumber) => (addressnumber ? addressnumber : "-"),
+      dataIndex: "address_number",
       width: 80,
+      render: (addressnumber) => (addressnumber ? addressnumber : "-"),
     },
     {
       title: "Complemento",
@@ -1016,6 +974,7 @@ export function useAllOrdersFilterController() {
       render: (address_complement) =>
         address_complement ? address_complement : "-",
     },
+
     {
       title: "Bairro",
       dataIndex: "district",
@@ -1029,7 +988,7 @@ export function useAllOrdersFilterController() {
           title={district}
           styles={{ body: { fontSize: "12px" } }}
         >
-          {district}
+          {district || "-"}
         </Tooltip>
       ),
     },
@@ -1038,6 +997,9 @@ export function useAllOrdersFilterController() {
       title: "Cidade",
       dataIndex: "city",
       width: 120,
+      ellipsis: {
+        showTitle: false,
+      },
       render: (city) => (
         <Tooltip
           placement="topLeft"
@@ -1052,21 +1014,20 @@ export function useAllOrdersFilterController() {
       title: "UF",
       dataIndex: "state",
       width: 60,
-      render: (state) => (state ? state : "-"),
     },
     {
       title: "Coordenadas",
-      dataIndex: "geolocalizacao",
+      dataIndex: "geolocation",
       width: 180,
-      render: (geolocalizacao) => {
+      render: (geolocation) => {
         if (
-          !geolocalizacao ||
-          !geolocalizacao.latitude ||
-          !geolocalizacao.longitude
+          !geolocation ||
+          !geolocation.latitude ||
+          !geolocation.longitude
         ) {
           return "-";
         }
-        const coordenadas = `Lat: ${geolocalizacao.latitude}\nLong: ${geolocalizacao.longitude}`;
+        const coordenadas = `Lat: ${geolocation.latitude}\nLong: ${geolocation.longitude}`;
         return (
           <Tooltip
             placement="topLeft"
@@ -1074,8 +1035,8 @@ export function useAllOrdersFilterController() {
             styles={{ body: { fontSize: "12px" } }}
           >
             <div style={{ whiteSpace: "nowrap" }}>
-              <div>Lat: {geolocalizacao.latitude}</div>
-              <div>Long: {geolocalizacao.longitude}</div>
+              <div>Lat: {geolocation.latitude}</div>
+              <div>Long: {geolocation.longitude}</div>
             </div>
           </Tooltip>
         );
@@ -1083,17 +1044,17 @@ export function useAllOrdersFilterController() {
     },
     {
       title: "Maps",
-      dataIndex: ["geolocalizacao", "link_maps"],
+      dataIndex: ["geolocation", "maps_link"],
       width: 80,
       ellipsis: {
         showTitle: false,
       },
-      render: (link_maps) =>
-        link_maps ? (
+      render: (maps_link) =>
+        maps_link ? (
           <div className="flex items-center justify-center">
             <Tooltip
               placement="topLeft"
-              title={link_maps}
+              title={maps_link}
               styles={{ body: { fontSize: "12px" } }}
             >
               <Button
@@ -1106,7 +1067,7 @@ export function useAllOrdersFilterController() {
                 size="small"
                 onClick={(e) => {
                   e.stopPropagation();
-                  window.open(link_maps, "_blank");
+                  window.open(maps_link, "_blank");
                 }}
                 tabIndex={0}
               >
@@ -1122,17 +1083,17 @@ export function useAllOrdersFilterController() {
     },
     {
       title: "Street View",
-      dataIndex: ["geolocalizacao", "link_street_view"],
+      dataIndex: ["geolocation", "street_view_link"],
       width: 110,
       ellipsis: {
         showTitle: false,
       },
-      render: (link_street_view) =>
-        link_street_view ? (
+      render: (street_view_link) =>
+        street_view_link ? (
           <div className="flex items-center justify-center">
             <Tooltip
               placement="topLeft"
-              title={link_street_view}
+              title={street_view_link}
               styles={{ body: { fontSize: "12px" } }}
             >
               <Button
@@ -1145,7 +1106,7 @@ export function useAllOrdersFilterController() {
                 size="small"
                 onClick={(e) => {
                   e.stopPropagation();
-                  window.open(link_street_view, "_blank");
+                  window.open(street_view_link, "_blank");
                 }}
                 tabIndex={0}
               >
@@ -1172,7 +1133,7 @@ export function useAllOrdersFilterController() {
           title={url}
           styles={{ body: { fontSize: "12px" } }}
         >
-          {url}
+          {url || "-"}
         </Tooltip>
       ),
     },
@@ -1201,26 +1162,26 @@ export function useAllOrdersFilterController() {
     },
     {
       title: "Tipo de acesso",
-      dataIndex: "ip_tipo_acesso",
+      dataIndex: "ip_access_type",
       width: 120,
-      render: (ip_tipo_acesso) =>
-        ip_tipo_acesso === "movel"
+      render: (ip_access_type) =>
+        ip_access_type === "movel"
           ? "Móvel"
-          : ip_tipo_acesso === "fixo"
+          : ip_access_type === "fixo"
             ? "Fixo"
-            : ip_tipo_acesso === "hosting"
+            : ip_access_type === "hosting"
               ? "Hosting"
-              : ip_tipo_acesso === "proxy"
+              : ip_access_type === "proxy"
                 ? "Proxy"
-                : ip_tipo_acesso === "local"
+                : ip_access_type === "local"
                   ? "Local"
-                  : ip_tipo_acesso === "desconhecido"
+                  : ip_access_type === "desconhecido"
                     ? "Desconhecido"
                     : "-",
     },
     {
       title: "Dispositivo",
-      dataIndex: ["finger_print", "device"],
+      dataIndex: ["fingerprint", "device"],
       width: 100,
       render: (device) => (
         <div className="flex items-center justify-center">
@@ -1256,19 +1217,19 @@ export function useAllOrdersFilterController() {
     },
     {
       title: "Plataforma",
-      dataIndex: ["finger_print", "os"],
+      dataIndex: ["fingerprint", "os"],
       width: 140,
       render: (os) => formatOSDisplay(os),
     },
     {
       title: "Browser",
-      dataIndex: ["finger_print", "browser"],
+      dataIndex: ["fingerprint", "browser"],
       width: 120,
       render: (browser) => formatBrowserDisplay(browser),
     },
     {
       title: "TimeZone",
-      dataIndex: ["finger_print", "timezone"],
+      dataIndex: ["fingerprint", "timezone"],
       width: 210,
       ellipsis: {
         showTitle: false,
@@ -1290,7 +1251,7 @@ export function useAllOrdersFilterController() {
     },
     {
       title: "Resolução",
-      dataIndex: ["finger_print", "resolution"],
+      dataIndex: ["fingerprint", "resolution"],
       width: 120,
       render: (resolution) => {
         if (resolution && resolution.width && resolution.height) {
@@ -1301,30 +1262,31 @@ export function useAllOrdersFilterController() {
     },
     {
       title: "ID Fingerprint",
-      dataIndex: "fingerprintId",
+      dataIndex: "fingerprint_id",
       width: 120,
       render: (fingerprintId) => fingerprintId || "-",
     },
+
+
     {
-      title: "ID Vivo",
-      dataIndex: "id_vivo_corp",
+      title: "Consultor",
+      dataIndex: "responsible_consultant",
       width: 120,
-      render: (id_vivo_corp) => (id_vivo_corp ? id_vivo_corp : "-"),
+      render: (responsible_consultant) =>
+        responsible_consultant ? responsible_consultant : "-",
     },
     {
       title: "ID CRM",
-      dataIndex: "id_crm",
+      dataIndex: "crm_id",
       width: 120,
-      render: (id_crm) => (id_crm ? id_crm : "-"),
+      render: (crm_id) => (crm_id ? crm_id : "-"),
     },
     {
-      title: "Consultor",
-      dataIndex: "consultor_responsavel",
-      width: 120,
-      render: (consultor_responsavel) =>
-        consultor_responsavel ? consultor_responsavel : "-",
+      title: "Atendimento",
+      dataIndex: "service",
+      width: 110,
+      render: (service) => service || "-",
     },
-    // colocar p baixo
     {
       title: "PAP",
       dataIndex: "availability_pap",
@@ -1365,27 +1327,21 @@ export function useAllOrdersFilterController() {
         ),
     },
     {
-      title: "Atendimento",
-      dataIndex: "atendimento",
-      width: 110,
-      render: (atendimento) => atendimento || "-",
-    },
-    {
       title: "Instalação",
-      dataIndex: "instalacao",
+      dataIndex: "installation",
       width: 110,
-      render: (instalacao) => instalacao || "-",
+      render: (installation) => installation || "-",
     },
     {
       title: "Crédito",
-      dataIndex: "credito",
+      dataIndex: "credit",
       width: 80,
-      render: (credito) => {
-        if (credito === null || credito === undefined) {
+      render: (credit) => {
+        if (credit === null || credit === undefined) {
           return "-";
         }
 
-        return credito ? (
+        return credit ? (
           <div className="flex items-center justify-center ">
             <Tooltip
               placement="top"
@@ -1415,6 +1371,51 @@ export function useAllOrdersFilterController() {
     //
   ];
 
+  const alwaysVisibleKeys = ["consultant_observation", "whatsapp,avatar"];
+
+  const allColumnOptions = allTableColumns
+    .filter(
+      (col) =>
+        "dataIndex" in col &&
+        !alwaysVisibleKeys.includes(String(col.dataIndex)),
+    )
+    .map((col) => ({
+      label:
+        typeof col.title === "function"
+          ? String(col.key || ("dataIndex" in col ? col.dataIndex : ""))
+          : String(col.title),
+      value: String(col.key || ("dataIndex" in col ? col.dataIndex : "")),
+    }));
+
+  const selectableKeys = allTableColumns
+    .filter(
+      (col) =>
+        "dataIndex" in col &&
+        !alwaysVisibleKeys.includes(String(col.dataIndex)),
+    )
+    .map((col) => String(col.key || ("dataIndex" in col ? col.dataIndex : "")));
+
+  const [visibleColumns, setVisibleColumns] =
+    useState<string[]>(selectableKeys);
+  const handleColumnsChange = (checkedValues: string[]) => {
+    setVisibleColumns(checkedValues);
+  };
+
+  const columns = [
+    ...allTableColumns.filter(
+      (col) =>
+        "dataIndex" in col && alwaysVisibleKeys.includes(String(col.dataIndex)),
+    ),
+    ...allTableColumns.filter(
+      (col) =>
+        "dataIndex" in col &&
+        !alwaysVisibleKeys.includes(String(col.dataIndex)) &&
+        visibleColumns.includes(
+          String(col.key || ("dataIndex" in col ? col.dataIndex : "")),
+        ),
+    ),
+  ];
+
   return {
     isFiltered,
     control,
@@ -1427,5 +1428,11 @@ export function useAllOrdersFilterController() {
     pageSize,
     columns,
     styles: { customTable: styles.customTable },
+    allColumnOptions,
+    visibleColumns,
+    handleColumnsChange,
+    isModalAvatarOpen,
+    setIsModalAvatarOpen,
+    selectedAvatar,
   };
 }

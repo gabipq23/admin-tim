@@ -1,4 +1,4 @@
-import { OrderBandaLargaPFResponse } from "@/interfaces/bandaLargaPF";
+import { OrderBandaLargaPJResponse } from "@/interfaces/bandaLargaPJ";
 import { BandaLargaService } from "@/services/bandaLarga";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -16,57 +16,26 @@ export function useAllOrdersController() {
   const closeModal = () => setIsModalOpen(false);
 
   const { data: ordersBandaLarga, isLoading } =
-    useQuery<OrderBandaLargaPFResponse>({
+    useQuery<OrderBandaLargaPJResponse>({
       refetchOnWindowFocus: false,
       queryKey: [
         "ordersBandaLargaPJ",
-        filters.availability || true,
-        filters.status_pos_venda || "",
+        filters.page,
+        filters.per_page,
+        filters.data_to,
+        filters.data_from,
+        filters.status,
 
-        filters.plan || "",
-        filters.fullname || "",
-        filters.phone || "",
-        filters.cnpj || "",
-        filters.razaosocial || "",
-        filters.ordernumber || "",
-        filters.page || 1,
-        filters.limit || 200,
-        filters.data_de || undefined,
-        filters.data_ate || undefined,
-        filters.sort || "data_criacao",
-        filters.status || "",
-        filters.initial_status || "",
-
-        filters.order || "desc",
       ],
-      queryFn: async (): Promise<OrderBandaLargaPFResponse> => {
+      queryFn: async (): Promise<OrderBandaLargaPJResponse> => {
         const response = await bandaLargaService.allBandaLargaFiltered({
-          availability:
-            filters.availability === "true"
-              ? true
-              : filters.availability === "false"
-                ? false
-                : undefined,
-          status_pos_venda: filters.status_pos_venda || "",
-
-          plan: filters.plan || "",
-          fullname: filters.fullname || "",
-          phone: filters.phone || "",
-          cnpj: filters.cnpj || "",
-          razaosocial: filters.razaosocial || "",
-          ordernumber: filters.ordernumber || "",
-          page: filters.page || 1,
-          limit: filters.limit || 200,
-          data_de: filters.data_de || undefined,
-          data_ate: filters.data_ate || undefined,
-          status: filters.status || "",
-          sort: filters.sort || "data_criacao",
-          order:
-            filters.order === "asc" || filters.order === "desc"
-              ? filters.order
-              : "desc",
-          initial_status: filters.initial_status || "",
+          page: filters.page,
+          per_page: filters.per_page,
+          data_to: filters.data_to,
+          data_from: filters.data_from,
+          status: filters.status,
         });
+
         return response;
       },
     });
@@ -86,10 +55,10 @@ export function useAllOrdersController() {
         console.error(error.message);
       },
     });
-  // Remoção de pedido completo
+
   const {
-    mutate: removeBandaLargaPJOrder,
-    isPending: isRemoveBandaLargaPJOrderFetching,
+    mutate: removeBandaLargaOrder,
+    isPending: isRemoveBandaLargaOrderFetching,
   } = useMutation({
     mutationFn: async ({ id }: { id: number }) =>
       bandaLargaService.removeBandaLargaOrder(id),
@@ -105,7 +74,7 @@ export function useAllOrdersController() {
     },
   });
 
-  const { mutate: changeBandaLargaPJOrderStatus } = useMutation({
+  const { mutate: changeBandaLargaOrderStatus } = useMutation({
     mutationFn: async ({
       id,
       data,
@@ -125,7 +94,11 @@ export function useAllOrdersController() {
     },
   });
 
-  const updateDataIdVivoAndConsultorResponsavel = (
+  const orderBandaLargaPJ = ordersBandaLarga?.orders?.filter(
+    (order) => order.client_type === "PJ"
+  );
+
+  const updateDataIdCRMAndConsultorResponsavel = (
     id: string | undefined,
     values: any,
   ) => {
@@ -135,12 +108,11 @@ export function useAllOrdersController() {
     }
 
     const dadosGerais = {
-      pedido: {
-        consultor_responsavel: values.consultor_responsavel,
-        id_vivo_corp: values.id_vivo_corp,
-        id_crm: values.id_crm,
-        credito: values.credito,
-      },
+      responsible_consultant: values.responsible_consultant,
+      corporate_id: values.corporate_id,
+      crm_id: values.crm_id,
+      credit: values.credit,
+
     };
 
     updateBandaLargaOrder({
@@ -148,13 +120,6 @@ export function useAllOrdersController() {
       data: dadosGerais,
     });
   };
-  const orderBandaLargaPJ = ordersBandaLarga?.pedidos?.filter(
-    (order: any) =>
-      order.typeclient === "PJ" &&
-      order.manager?.phone !== null &&
-      order.manager?.phone !== "" &&
-      order.manager?.phone !== undefined,
-  );
 
   return {
     ordersBandaLarga,
@@ -165,9 +130,9 @@ export function useAllOrdersController() {
     isLoading,
     updateBandaLargaOrder,
     isUpdatePurchaseFetching,
-    removeBandaLargaPJOrder,
-    isRemoveBandaLargaPJOrderFetching,
-    changeBandaLargaPJOrderStatus,
-    updateDataIdVivoAndConsultorResponsavel,
+    removeBandaLargaOrder,
+    isRemoveBandaLargaOrderFetching,
+    changeBandaLargaOrderStatus,
+    updateDataIdCRMAndConsultorResponsavel
   };
 }

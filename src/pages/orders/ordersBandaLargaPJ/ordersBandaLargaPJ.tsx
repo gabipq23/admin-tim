@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import { ConfigProvider, Table } from "antd";
+import { ConfigProvider, Modal, Table } from "antd";
 import { customLocale } from "@/utils/customLocale";
 import { useAllOrdersController } from "./controllers/dataController";
 import { useAllOrdersFilterController } from "./controllers/filterController";
@@ -12,22 +12,22 @@ import { TableProps } from "antd/lib";
 import { useState } from "react";
 export default function OrdersBandaLargaPJ() {
   const queryClient = new QueryClient();
-
   const {
-    showModal,
     ordersBandaLarga,
+
+    showModal,
     closeModal,
     isModalOpen,
     isLoading,
     orderBandaLargaPJ,
     updateBandaLargaOrder,
-    removeBandaLargaPJOrder,
-    isRemoveBandaLargaPJOrderFetching,
-    updateDataIdVivoAndConsultorResponsavel,
-    changeBandaLargaPJOrderStatus,
+    removeBandaLargaOrder,
+    isRemoveBandaLargaOrderFetching,
+    changeBandaLargaOrderStatus,
+    updateDataIdCRMAndConsultorResponsavel
   } = useAllOrdersController();
   const navigate = useNavigate();
-  const planBLPJ: any[] = [];;
+  const planBLPJ: any[] = [];
   const {
     control,
     onSubmit,
@@ -39,22 +39,28 @@ export default function OrdersBandaLargaPJ() {
     pageSize,
     columns,
     styles,
+    allColumnOptions,
+    visibleColumns,
+    handleColumnsChange,
+    isModalAvatarOpen,
+    setIsModalAvatarOpen,
+    selectedAvatar,
   } = useAllOrdersFilterController();
 
   const totalItems = 0;
 
   const rowClassName = (record: OrderBandaLargaPJ) => {
     const hasAvaiability = record?.availability;
-    const isCoveredByRange = record?.encontrado_via_range;
-    const hasUnicCep = record?.cep_unico;
-    if (record?.status === "fechado") {
+    const isCoveredByRange = record?.found_via_range;
+    const hasUnicCep = record?.single_zip_code;
+    if (record?.status === "FECHADO") {
       if (
         hasAvaiability === false ||
         hasAvaiability === null ||
         hasAvaiability === 0
       ) {
         return "ant-table-row-red";
-      } else if (isCoveredByRange === 1 || hasUnicCep === 1) {
+      } else if (isCoveredByRange || hasUnicCep) {
         return "ant-table-row-yellow";
       }
 
@@ -70,16 +76,16 @@ export default function OrdersBandaLargaPJ() {
       setSelectedRowKeys(newSelectedRowKeys);
     },
   };
+  console.log(orderBandaLargaPJ)
   return (
     <>
       <QueryClientProvider client={queryClient}>
         <div className="px-6 md:px-10 lg:px-14">
-          <div className="flex justify-between  mt-6  mb-4">
+          <div className="flex justify-between mt-6 mb-4 items-center">
             <div>
-              <div className="flex  gap-8 justify-between">
-                <h1 className="text-[22px]  pl-16">Pedidos Banda Larga PJ</h1>
+              <div className="flex gap-8 justify-between pb-2">
+                <h1 className="text-[22px] pl-16 ">Pedidos Banda Larga PJ</h1>
               </div>
-
               {/* Filtro */}
               <FiltroOrdersBandaLargaPJForm
                 control={control}
@@ -87,9 +93,13 @@ export default function OrdersBandaLargaPJ() {
                 onSubmit={onSubmit}
                 selectedRowKeys={selectedRowKeys}
                 onClear={clearFilters}
-                orderBandaLargaPJ={orderBandaLargaPJ}
                 statusOptions={ordersBandaLarga?.status_pos_venda_enum}
+                orderBandaLargaPJ={orderBandaLargaPJ}
                 planBLPJStock={planBLPJ}
+                allColumnOptions={allColumnOptions}
+                visibleColumns={visibleColumns}
+                handleColumnsChange={handleColumnsChange}
+                tableColumns={columns}
               />
             </div>
           </div>
@@ -132,8 +142,8 @@ export default function OrdersBandaLargaPJ() {
                   style: { cursor: "pointer" },
                 })}
                 pagination={{
-                  current: currentPage,
-                  pageSize: pageSize,
+                  current: currentPage ? Number(currentPage) : 1,
+                  pageSize: pageSize ? Number(pageSize) : 50,
                   total: totalItems,
                   showSizeChanger: true,
                   pageSizeOptions: ["50", "100", "200", "500"],
@@ -158,17 +168,32 @@ export default function OrdersBandaLargaPJ() {
             isModalOpen={isModalOpen}
             closeModal={closeModal}
             selectedId={selectedBLOrder}
-            removeBandaLargaPJOrder={removeBandaLargaPJOrder}
-            isRemoveBandaLargaPJOrderFetching={
-              isRemoveBandaLargaPJOrderFetching
-            }
-            updateDataIdVivoAndConsultorResponsavel={
-              updateDataIdVivoAndConsultorResponsavel
-            }
-            changeBandaLargaPJOrderStatus={changeBandaLargaPJOrderStatus}
+            removeOrderData={removeBandaLargaOrder}
+            isRemoveOrderFetching={isRemoveBandaLargaOrderFetching}
+            updateDataIdCRMAndConsultorResponsavel={updateDataIdCRMAndConsultorResponsavel}
+            changeBandaLargaOrderStatus={changeBandaLargaOrderStatus}
           />
         </div>
+        {isModalAvatarOpen && (
+          <Modal
+            open={isModalAvatarOpen}
+            onCancel={() => setIsModalAvatarOpen(false)}
+            title="Foto de perfil"
+            footer={null}
+          >
+            <div className="w-full flex items-center justify-center py-2">
+              <img
+                className="w-60 h-60 max-w-full rounded-md object-cover object-center"
+                src={selectedAvatar ?? "/assets/anonymous_avatar.png"}
+                alt="Avatar"
+              />
+            </div>
+          </Modal>
+
+        )}
+
       </QueryClientProvider>
     </>
   );
 }
+

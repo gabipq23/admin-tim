@@ -124,7 +124,6 @@ export const handleExportXLSX = (
     "company_partners",
     "is_mei",
     "is_socio",
-    "company_legal_name",
     "responsible_consultant",
     "crm_id",
     "team",
@@ -204,7 +203,7 @@ export const handleExportXLSX = (
     company_partners: "Empresas",
     is_mei: "É MEI",
     is_socio: "E Socio",
-    company_legal_name: "Razao Social",
+
     url: "URL",
     crm_id: "ID CRM",
     responsible_consultant: "Consultor Responsavel",

@@ -1,12 +1,10 @@
 import { ConfigProvider, Modal, Form } from "antd";
 import { useState, useEffect } from "react";
+import { OrderBandaLargaPJ } from "@/interfaces/bandaLargaPJ";
 import { OrderBandaLargaPJDisplay } from "./BLPJDisplay";
 import { OrderBandaLargaPJEdit } from "./BLPJEdit";
-import { OrderBandaLargaPJ } from "@/interfaces/bandaLargaPJ";
-import dayjs from "dayjs";
-
 import HeaderInputs from "./headerInputs";
-
+import dayjs from "dayjs";
 import ConfirmDeleteModal from "@/components/confirmDeleteModal";
 import FooterButtons from "@/components/orders/footerButtons";
 import { generatePDF } from "../controllers/exportPDF";
@@ -16,23 +14,23 @@ export function OrderBandaLargaPJDetailsModal({
   closeModal,
   selectedId,
   updateOrderData,
-  updateDataIdVivoAndConsultorResponsavel,
-  removeBandaLargaPJOrder,
-  isRemoveBandaLargaPJOrderFetching,
-  changeBandaLargaPJOrderStatus,
-  statusOptions,
+  removeOrderData,
+  isRemoveOrderFetching,
+  changeBandaLargaOrderStatus,
   planBLPJStock,
+  statusOptions,
+  updateDataIdCRMAndConsultorResponsavel
 }: {
   isModalOpen: boolean;
   closeModal: () => void;
   selectedId: OrderBandaLargaPJ | null;
   updateOrderData?: (params: { id: number; data: any }) => void;
-  updateDataIdVivoAndConsultorResponsavel: any;
-  removeBandaLargaPJOrder: any;
-  isRemoveBandaLargaPJOrderFetching: boolean;
-  changeBandaLargaPJOrderStatus: any;
-  statusOptions: string[] | undefined;
+  removeOrderData: any;
+  isRemoveOrderFetching: boolean;
+  changeBandaLargaOrderStatus: any;
   planBLPJStock: any;
+  statusOptions: string[] | undefined;
+  updateDataIdCRMAndConsultorResponsavel: any
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -41,7 +39,8 @@ export function OrderBandaLargaPJDetailsModal({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [consultor, setConsultor] = useState<string>("");
   const [idVivo, setIdVivo] = useState<string>("");
-  const [idCRM, setIdCRM] = useState<number>(0);
+  const [idCRM, setIdCRM] = useState<string>("");
+  const [idCORP, setIdCORP] = useState<string>("");
   const [credito, setCredito] = useState<number | string>(0);
 
   useEffect(() => {
@@ -53,11 +52,11 @@ export function OrderBandaLargaPJDetailsModal({
   const planOptions = Array.isArray(planBLPJStock)
     ? planBLPJStock.map((plan: any) => ({
       value: plan.id,
-      label: `${plan.plan_name} ${plan.plan_speed ? "- " + plan.plan_speed : ""
-        } - R$ ${plan.plan_price_to}`,
+      label: `${plan.plan_name} 
+        } - R$ ${plan.value}`,
       name: plan.plan_name,
-      price: plan.plan_price_to,
-      speed: plan.plan_speed,
+      price: plan.value,
+
     }))
     : [];
 
@@ -66,7 +65,7 @@ export function OrderBandaLargaPJDetailsModal({
     if (selectedPlan) {
       form.setFieldsValue({
         plan_name: selectedPlan.name,
-        plan_price: selectedPlan.price,
+        value: selectedPlan.value,
         id: localData?.plan?.id || "",
       });
 
@@ -76,8 +75,8 @@ export function OrderBandaLargaPJDetailsModal({
             ...prev,
             plan: {
               name: selectedPlan.name,
-              price: parseFloat(selectedPlan.price),
-              speed: selectedPlan.speed,
+              value: parseFloat(selectedPlan.value),
+
               id: selectedPlan.value,
             },
           }
@@ -87,10 +86,12 @@ export function OrderBandaLargaPJDetailsModal({
   };
 
   useEffect(() => {
-    setConsultor(localData?.consultor_responsavel || "");
-    setIdVivo(localData?.id_vivo_corp || "");
-    setIdCRM(localData?.id_crm || 0);
-    setCredito(localData?.credito || 0);
+    setConsultor(localData?.responsible_consultant
+      || "");
+
+    setIdCORP(localData?.corporate_id ? String(localData.corporate_id) : "");
+    setIdCRM(localData?.crm_id ? String(localData.crm_id) : "");
+    setCredito(localData?.credit || 0);
   }, [selectedId, localData]);
 
   useEffect(() => {
@@ -98,27 +99,26 @@ export function OrderBandaLargaPJDetailsModal({
       form.setFieldsValue({
         plan_id: localData.plan?.id || "",
         plan_name: localData.plan?.name || "",
-        plan_price: localData.plan?.price?.toString() || "",
-        fullname: localData.fullname,
-
-        cnpj: localData.cnpj,
-        razaosocial: localData.razaosocial,
-
+        plan_value: localData.plan?.value?.toString() || "",
+        full_name: localData.full_name,
+        cpf: localData.cpf,
+        birth_date: localData.birth_date,
+        mother_full_name: localData.mother_full_name,
         phone: localData.phone,
-        phoneAdditional: localData.phoneAdditional,
-
+        additional_phone: localData.additional_phone,
+        email: localData.email,
         address: localData.address,
-        addressnumber: localData.addressnumber,
-        addresscomplement: localData.addresscomplement,
-        addresslot: localData.addresslot,
-        addressblock: localData.addressblock,
-        buildingorhouse: localData.buildingorhouse,
+        address_number: localData.address_number,
+        address_complement: localData.address_complement,
+        address_lot: localData.address_lot,
+        address_floor: localData.address_floor,
+        address_block: localData.address_block,
+        building_or_house: localData.building_or_house,
         district: localData.district,
         city: localData.city,
         state: localData.state,
-        cep: localData.cep,
-        addressreferencepoint: localData.addressreferencepoint,
-
+        zip_code: localData.zip_code,
+        single_zip_code: localData.single_zip_code,
         installation_preferred_date_one:
           localData.installation_preferred_date_one
             ? dayjs(localData.installation_preferred_date_one, "DD/MM/YYYY")
@@ -131,20 +131,18 @@ export function OrderBandaLargaPJDetailsModal({
 
         installation_preferred_period_one:
           localData.installation_preferred_period_one,
+
         installation_preferred_period_two:
           localData.installation_preferred_period_two,
-        dueday: localData.dueday,
+
+        due_day: localData.due_day,
         accept_offers: localData.accept_offers,
         terms_accepted: localData.terms_accepted,
-        status: localData.status,
         url: localData.url,
-        manager: {
-          cpf: localData.manager?.cpf,
-          email: localData.manager?.email,
-          name: localData.manager?.name,
-          phone: localData.manager?.phone,
-          hasLegalAuthorization: localData.manager?.hasLegalAuthorization,
-        },
+        status: localData.status,
+        cnpj: localData.cnpj,
+        company_legal_name: localData.company_legal_name,
+        manager_name: localData.manager_name,
       });
     }
   }, [localData, isEditing, form]);
@@ -153,40 +151,76 @@ export function OrderBandaLargaPJDetailsModal({
     try {
       setLoading(true);
       const values = await form.validateFields();
-      const selectedPlan = planBLPJStock.find(
-        (plan: any) => plan.id === values.plan_id,
-      );
-      if (values.installation_preferred_date_one) {
-        values.installation_preferred_date_one = dayjs(
-          values.installation_preferred_date_one,
-        ).format("DD/MM/YYYY");
-      }
-      if (values.installation_preferred_date_two) {
-        values.installation_preferred_date_two = dayjs(
-          values.installation_preferred_date_two,
-        ).format("DD/MM/YYYY");
-      }
-      if (updateOrderData && localData && localData.id) {
-        const formattedData = {
-          pedido: { ...values },
-          itens: [
-            {
-              plan: {
-                id: selectedPlan.id,
-                name: selectedPlan.plan_name,
-                price: selectedPlan.plan_price_to,
-                speed: selectedPlan.plan_speed,
-              },
-            },
-          ],
-        };
 
+      const normalizedValues = {
+        ...values,
+        full_name: values.full_name,
+        birth_date: values.birth_date,
+        mother_full_name: values.mother_full_name,
+        additional_phone: values.additional_phone,
+        address_number: values.address_number,
+        address_complement: values.address_complement,
+        address_lot: values.address_lot,
+        address_floor: values.address_floor,
+        address_block: values.address_block,
+        building_or_house: values.building_or_house,
+        zip_code: values.zip_code,
+        single_zip_code: values.single_zip_code,
+        due_day: values.due_day,
+        company_legal_name: values.company_legal_name,
+        cnpj: values.cnpj,
+        manager_name: values.manager_name,
+      };
+
+      let selectedPlan = planBLPJStock.find(
+        (plan: any) => plan.id === normalizedValues.plan_id,
+      );
+      if (!selectedPlan && localData?.plan) {
+        selectedPlan = localData.plan;
+      }
+      if (normalizedValues.installation_preferred_date_one) {
+        normalizedValues.installation_preferred_date_one = dayjs(
+          normalizedValues.installation_preferred_date_one,
+        ).format("DD/MM/YYYY");
+      }
+      if (normalizedValues.installation_preferred_date_two) {
+        normalizedValues.installation_preferred_date_two = dayjs(
+          normalizedValues.installation_preferred_date_two,
+        ).format("DD/MM/YYYY");
+      }
+      const formattedData: any = {
+
+        ...normalizedValues,
+
+      };
+
+      if (selectedPlan && selectedPlan.id) {
+        formattedData.itens = [
+          {
+            plan: {
+              id: selectedPlan.id,
+              name: selectedPlan.plan_name || selectedPlan.name,
+              price: selectedPlan.plan_price_to || selectedPlan.price,
+              speed: selectedPlan.plan_speed || selectedPlan.speed,
+            },
+          },
+        ];
+      }
+
+      if (updateOrderData && localData && localData.id) {
         await updateOrderData({
           id: localData.id,
           data: formattedData,
         });
 
-        setLocalData((prev) => (prev ? { ...prev, ...values } : null));
+        setLocalData((prev) =>
+          prev
+            ? {
+              ...prev,
+              ...normalizedValues,
+            }
+            : null,
+        );
         setIsEditing(false);
       }
     } catch (error) {
@@ -235,14 +269,11 @@ export function OrderBandaLargaPJDetailsModal({
         title={
           <HeaderInputs
             updateOrderData={updateOrderData}
-            statusOptions={statusOptions}
             localData={localData}
             setLocalData={setLocalData}
             selectedId={selectedId}
-            updateDataIdVivoAndConsultorResponsavel={
-              updateDataIdVivoAndConsultorResponsavel
-            }
-            changeBandaLargaPJOrderStatus={changeBandaLargaPJOrderStatus}
+            statusOptions={statusOptions}
+            changeBandaLargaOrderStatus={changeBandaLargaOrderStatus}
             consultor={consultor}
             setConsultor={setConsultor}
             idVivo={idVivo}
@@ -251,6 +282,9 @@ export function OrderBandaLargaPJDetailsModal({
             setIdCRM={setIdCRM}
             credito={credito}
             setCredito={setCredito}
+            idCORP={idCORP}
+            setIdCORP={setIdCORP}
+            updateDataIdCRMAndConsultorResponsavel={updateDataIdCRMAndConsultorResponsavel}
           />
         }
         open={isModalOpen}
@@ -271,8 +305,8 @@ export function OrderBandaLargaPJDetailsModal({
             />
           ) : (
             <OrderBandaLargaPJDisplay
-              updateOrderData={updateOrderData}
               localData={localData}
+              updateOrderData={updateOrderData}
             />
           )}
         </div>
@@ -290,10 +324,10 @@ export function OrderBandaLargaPJDetailsModal({
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={() => {
-          removeBandaLargaPJOrder({ id: selectedId?.id });
+          removeOrderData({ id: selectedId?.id });
           closeModal();
         }}
-        isLoading={isRemoveBandaLargaPJOrderFetching}
+        isLoading={isRemoveOrderFetching}
         message="Tem certeza que deseja excluir o pedido"
         itemToDelete={selectedId?.ordernumber || selectedId?.id}
       />
