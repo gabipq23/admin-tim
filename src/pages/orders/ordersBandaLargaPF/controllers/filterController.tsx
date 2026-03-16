@@ -9,7 +9,6 @@ import {
   formatBrowserDisplay,
   formatOSDisplay,
 } from "@/utils/formatClientEnvironment";
-import { StatusType } from "@/interfaces/purchase";
 import { BandaLargaFilters } from "@/interfaces/bandaLargaPF";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import {
@@ -30,55 +29,16 @@ import { Thermometer } from "@/components/chat/common/thermometer";
 
 function getFiltersFromURL(): BandaLargaFilters {
   const params = new URLSearchParams(window.location.search);
-  const rawStatus = params.get("status");
-  const rawInitialStatus = params.get("initial_status");
-  const initial_status =
-    rawInitialStatus === "consulta"
-      ? "consulta"
-      : rawInitialStatus === "pedido"
-        ? "pedido"
-        : "";
-  const allowedStatus: StatusType[] = ["aberto", "fechado", "cancelado"];
-  const status = allowedStatus.includes(rawStatus as StatusType)
-    ? (rawStatus as StatusType)
-    : null;
-  const availability = params.get("availability");
-  let availabilityBool: boolean | undefined = undefined;
-  if (availability === "true") availabilityBool = true;
-  if (availability === "false") availabilityBool = false;
-  const plan = params.get("plan") || undefined;
-  const fullname = params.get("fullname") || undefined;
-  const phone = params.get("phone") || undefined;
-  const cpf = params.get("cpf") || undefined;
-  const cnpj = params.get("cnpj") || undefined;
-  const razaosocial = params.get("razaosocial") || undefined;
-  const ordernumber = params.get("ordernumber") || undefined;
-  const data_ate = params.get("data_ate") || undefined;
-  const data_de = params.get("data_de") || undefined;
+
   const page = parseInt(params.get("page") || "1", 10);
-  const limit = parseInt(params.get("limit") || "200", 10);
-  const order = params.get("order") as "asc" | "desc" | null;
-  const sort = params.get("sort") || undefined;
-  const status_pos_venda = params.get("status_pos_venda") || null;
+  const per_page = parseInt(params.get("per_page") || "20", 10);
+  const data_to = params.get("data_ate") || undefined;
+  const data_from = params.get("data_de") || undefined;
+  const status = params.get("status") || undefined;
+
 
   return {
-    availability: availabilityBool,
-    plan,
-    fullname,
-    phone,
-    cpf,
-    cnpj,
-    razaosocial,
-    ordernumber,
-    data_ate,
-    data_de,
-    page,
-    limit,
-    order: order === "asc" || order === "desc" ? order : undefined,
-    status,
-    sort,
-    status_pos_venda,
-    initial_status,
+    page, per_page, data_to, data_from, status
   };
 }
 
@@ -146,25 +106,15 @@ export function useAllOrdersFilterController() {
   const [isModalAvatarOpen, setIsModalAvatarOpen] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
   const currentPage = filters.page;
-  const pageSize = filters.limit;
+  const pageSize = filters.per_page;
 
   const { handleSubmit, reset, control } = useForm<BandaLargaFilters>({
     defaultValues: {
-      availability: undefined,
-      plan: "",
-      fullname: "",
-      phone: "",
-      cpf: "",
-      cnpj: "",
-      razaosocial: "",
-      ordernumber: "",
-      data_ate: "",
-      data_de: "",
-      order: undefined,
-      sort: "",
-      status: null,
-      status_pos_venda: "",
-      initial_status: filters.initial_status || "",
+      page: currentPage,
+      per_page: filters.per_page,
+      data_to: filters.data_to,
+      data_from: filters.data_from,
+      status: filters.status,
     },
   });
 
@@ -173,35 +123,11 @@ export function useAllOrdersFilterController() {
   const onSubmit = (data: BandaLargaFilters) => {
     const params = new URLSearchParams();
 
-    if (data.availability !== undefined)
-      params.set("availability", String(data.availability));
-    if (data.plan) params.set("plan", data.plan);
-    if (data.fullname) params.set("fullname", data.fullname);
-    if (data.phone) {
-      const phoneSemMascara = data.phone.replace(/\D/g, "");
-      params.set("phone", phoneSemMascara);
-    }
-    if (data.status_pos_venda)
-      params.set("status_pos_venda", data.status_pos_venda);
-    if (data.cpf) {
-      const cpfSemMascara = data.cpf.replace(/\D/g, "");
-      params.set("cpf", cpfSemMascara);
-    }
-    if (data.cnpj) {
-      const cnpjSemMascara = data.cnpj.replace(/\D/g, "");
-      params.set("cnpj", cnpjSemMascara);
-    }
-    if (data.razaosocial) params.set("razaosocial", data.razaosocial);
-    if (data.ordernumber) params.set("ordernumber", data.ordernumber);
-    if (data.data_de) params.set("data_de", data.data_de);
-    if (data.data_ate) params.set("data_ate", data.data_ate);
+    if (data.page) params.set("page", String(data.page));
+    if (data.per_page) params.set("per_page", String(data.per_page));
+    if (data.data_to) params.set("data_ate", data.data_to);
+    if (data.data_from) params.set("data_de", data.data_from);
     if (data.status) params.set("status", data.status);
-    if (data.initial_status) params.set("initial_status", data.initial_status);
-
-    params.set("page", "1");
-    params.set("limit", "200");
-    if (data.order) params.set("order", data.order);
-    if (data.sort) params.set("sort", data.sort);
 
     navigate(`?${params.toString()}`);
     setIsFiltered(true);
@@ -300,29 +226,29 @@ export function useAllOrdersFilterController() {
       title: "Abertura",
       dataIndex: "created_at",
       width: 110,
-      sorter: true,
-      sortOrder:
-        filters.sort === "created_at"
-          ? filters.order === "asc"
-            ? "ascend"
-            : filters.order === "desc"
-              ? "descend"
-              : undefined
-          : undefined,
-      onHeaderCell: () => ({
-        onClick: () => {
-          const newOrder =
-            filters.sort === "created_at" && filters.order === "asc"
-              ? "desc"
-              : "asc";
-          const params = new URLSearchParams(window.location.search);
-          params.set("sort", "created_at");
-          params.set("order", newOrder);
-          params.set("page", "1");
-          navigate(`?${params.toString()}`);
-        },
-        style: { cursor: "pointer" },
-      }),
+      // sorter: true,
+      // sortOrder:
+      //   filters.sort === "created_at"
+      //     ? filters.order === "asc"
+      //       ? "ascend"
+      //       : filters.order === "desc"
+      //         ? "descend"
+      //         : undefined
+      //     : undefined,
+      // onHeaderCell: () => ({
+      //   onClick: () => {
+      //     const newOrder =
+      //       filters.sort === "created_at" && filters.order === "asc"
+      //         ? "desc"
+      //         : "asc";
+      //     const params = new URLSearchParams(window.location.search);
+      //     params.set("sort", "created_at");
+      //     params.set("order", newOrder);
+      //     params.set("page", "1");
+      //     navigate(`?${params.toString()}`);
+      //   },
+      //   style: { cursor: "pointer" },
+      // }),
     },
     {
       title: "Pedido",
@@ -344,29 +270,29 @@ export function useAllOrdersFilterController() {
       },
       dataIndex: "status_pos_venda",
       width: 155,
-      sorter: true,
-      sortOrder:
-        filters.sort === "status_pos_venda"
-          ? filters.order === "asc"
-            ? "ascend"
-            : filters.order === "desc"
-              ? "descend"
-              : undefined
-          : undefined,
-      onHeaderCell: () => ({
-        onClick: () => {
-          const newOrder =
-            filters.sort === "status_pos_venda" && filters.order === "asc"
-              ? "desc"
-              : "asc";
-          const params = new URLSearchParams(window.location.search);
-          params.set("sort", "status_pos_venda");
-          params.set("order", newOrder);
-          params.set("page", "1");
-          navigate(`?${params.toString()}`);
-        },
-        style: { cursor: "pointer" },
-      }),
+      // sorter: true,
+      // sortOrder:
+      //   filters.sort === "status_pos_venda"
+      //     ? filters.order === "asc"
+      //       ? "ascend"
+      //       : filters.order === "desc"
+      //         ? "descend"
+      //         : undefined
+      //     : undefined,
+      // onHeaderCell: () => ({
+      //   onClick: () => {
+      //     const newOrder =
+      //       filters.sort === "status_pos_venda" && filters.order === "asc"
+      //         ? "desc"
+      //         : "asc";
+      //     const params = new URLSearchParams(window.location.search);
+      //     params.set("sort", "status_pos_venda");
+      //     params.set("order", newOrder);
+      //     params.set("page", "1");
+      //     navigate(`?${params.toString()}`);
+      //   },
+      //   style: { cursor: "pointer" },
+      // }),
       render: (status_pos_venda) => (
         <Tooltip
           placement="topLeft"

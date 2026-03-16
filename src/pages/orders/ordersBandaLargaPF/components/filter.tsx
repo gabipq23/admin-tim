@@ -1,6 +1,6 @@
 import { Controller, Control, UseFormHandleSubmit } from "react-hook-form";
 import {
-  Input,
+
   Button,
   Tooltip,
   ConfigProvider,
@@ -11,7 +11,7 @@ import {
 import { FilterOutlined, DownloadOutlined } from "@ant-design/icons";
 import ptBR from "antd/es/locale/pt_BR";
 import { DatePicker } from "antd";
-import { PatternFormat, PatternFormatProps } from "react-number-format";
+// import { PatternFormat, PatternFormatProps } from "react-number-format";
 import dayjs from "dayjs";
 import { handleExportXLSX } from "../controllers/exportXLSX";
 import { BandaLargaFilters } from "@/interfaces/bandaLargaPF";
@@ -33,37 +33,36 @@ interface FiltroPedidosFormProps {
   tableColumns: any;
 }
 
-const CPFInput = (props: PatternFormatProps) => (
-  <PatternFormat
-    {...props}
-    format="###.###.###-##"
-    customInput={Input}
-    placeholder="CPF"
-    size="middle"
-  />
-);
+// const CPFInput = (props: PatternFormatProps) => (
+//   <PatternFormat
+//     {...props}
+//     format="###.###.###-##"
+//     customInput={Input}
+//     placeholder="CPF"
+//     size="middle"
+//   />
+// );
 export function FiltroOrdersBandaLargaPFForm({
   control,
   handleSubmit,
   onSubmit,
   onClear,
-  statusOptions,
   selectedRowKeys,
   orderBandaLargaPF,
-  planBLPFStock,
+  // planBLPFStock,
   allColumnOptions,
   visibleColumns,
   handleColumnsChange,
 }: FiltroPedidosFormProps) {
   const { RangePicker } = DatePicker;
 
-  const uniquePlans = Array.isArray(planBLPFStock)
-    ? Array.from(
-      new Map(
-        planBLPFStock.map((plan: any) => [plan.plan_name, plan]),
-      ).values(),
-    )
-    : [];
+  // const uniquePlans = Array.isArray(planBLPFStock)
+  //   ? Array.from(
+  //     new Map(
+  //       planBLPFStock.map((plan: any) => [plan.plan_name, plan]),
+  //     ).values(),
+  //   )
+  //   : [];
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -95,7 +94,7 @@ export function FiltroOrdersBandaLargaPFForm({
               },
             }}
           >
-            <Controller
+            {/* <Controller
               control={control}
               name="ordernumber"
               render={({ field }) => (
@@ -110,7 +109,7 @@ export function FiltroOrdersBandaLargaPFForm({
                   maxLength={13}
                 />
               )}
-            />
+            /> */}
             <Controller
               control={control}
               name="status"
@@ -130,7 +129,7 @@ export function FiltroOrdersBandaLargaPFForm({
                 />
               )}
             />
-            <Controller
+            {/* <Controller
               control={control}
               name="initial_status"
               render={({ field }) => (
@@ -193,8 +192,8 @@ export function FiltroOrdersBandaLargaPFForm({
                   }}
                 />
               )}
-            />
-            <Controller
+            /> */}
+            {/* <Controller
               control={control}
               name="plan"
               render={({ field }) => (
@@ -210,8 +209,8 @@ export function FiltroOrdersBandaLargaPFForm({
                   allowClear
                 />
               )}
-            />
-            <Controller
+            /> */}
+            {/* <Controller
               control={control}
               name="status_pos_venda"
               render={({ field }) => (
@@ -229,15 +228,15 @@ export function FiltroOrdersBandaLargaPFForm({
                   allowClear
                 />
               )}
-            />
+            /> */}
             {/* Período de datas: data_de (início) e data_ate (fim) */}
             <Controller
               control={control}
-              name="data_de"
+              name="data_from"
               render={({ field: fieldDe }) => (
                 <Controller
                   control={control}
-                  name="data_ate"
+                  name="data_to"
                   render={({ field: fieldAte }) => (
                     <RangePicker
                       style={{

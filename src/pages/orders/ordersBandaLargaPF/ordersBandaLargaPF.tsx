@@ -23,7 +23,6 @@ export default function OrdersBandaLargaPF() {
     updateBandaLargaOrder,
     removeBandaLargaOrder,
     isRemoveBandaLargaOrderFetching,
-    updateDataIdVivoAndConsultorResponsavel,
     changeBandaLargaOrderStatus,
   } = useAllOrdersController();
   const navigate = useNavigate();
@@ -76,7 +75,7 @@ export default function OrdersBandaLargaPF() {
       setSelectedRowKeys(newSelectedRowKeys);
     },
   };
-
+  console.log(orderBandaLargaPF)
   return (
     <>
       <QueryClientProvider client={queryClient}>
@@ -142,8 +141,8 @@ export default function OrdersBandaLargaPF() {
                   style: { cursor: "pointer" },
                 })}
                 pagination={{
-                  current: currentPage,
-                  pageSize: pageSize,
+                  current: currentPage ? Number(currentPage) : 1,
+                  pageSize: pageSize ? Number(pageSize) : 50,
                   total: totalItems,
                   showSizeChanger: true,
                   pageSizeOptions: ["50", "100", "200", "500"],
@@ -170,9 +169,7 @@ export default function OrdersBandaLargaPF() {
             selectedId={selectedBLOrder}
             removeOrderData={removeBandaLargaOrder}
             isRemoveOrderFetching={isRemoveBandaLargaOrderFetching}
-            updateDataIdVivoAndConsultorResponsavel={
-              updateDataIdVivoAndConsultorResponsavel
-            }
+
             changeBandaLargaOrderStatus={changeBandaLargaOrderStatus}
           />
         </div>

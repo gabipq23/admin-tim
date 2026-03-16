@@ -16,7 +16,6 @@ export function OrderBandaLargaPFDetailsModal({
   updateOrderData,
   removeOrderData,
   isRemoveOrderFetching,
-  updateDataIdVivoAndConsultorResponsavel,
   changeBandaLargaOrderStatus,
   planBLPFStock,
   statusOptions,
@@ -27,7 +26,6 @@ export function OrderBandaLargaPFDetailsModal({
   updateOrderData?: (params: { id: number; data: any }) => void;
   removeOrderData: any;
   isRemoveOrderFetching: boolean;
-  updateDataIdVivoAndConsultorResponsavel: any;
   changeBandaLargaOrderStatus: any;
   planBLPFStock: any;
   statusOptions: string[] | undefined;
@@ -240,9 +238,6 @@ export function OrderBandaLargaPFDetailsModal({
             localData={localData}
             setLocalData={setLocalData}
             selectedId={selectedId}
-            updateDataIdVivoAndConsultorResponsavel={
-              updateDataIdVivoAndConsultorResponsavel
-            }
             statusOptions={statusOptions}
             changeBandaLargaOrderStatus={changeBandaLargaOrderStatus}
             consultor={consultor}
