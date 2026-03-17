@@ -219,6 +219,7 @@ export interface OrderBandaLargaPF {
     tem_disponibilidade: boolean;
     distancia_km_ponto_mais_proximo: number;
   };
+  debit: boolean;
 }
 
 export interface WhatsAppInfo {

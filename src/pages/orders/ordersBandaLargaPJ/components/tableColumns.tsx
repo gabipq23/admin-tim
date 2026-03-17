@@ -1277,6 +1277,38 @@ export const useAllTableColumns = ({
             render: (installation) => installation || "-",
         },
         {
+            title: "Débito",
+            dataIndex: "debit",
+            width: 80,
+            render: (debit) => {
+                if (debit === null || debit === undefined) {
+                    return "-";
+                }
+
+                return debit ? (
+                    <div className="flex items-center justify-center ">
+                        <Tooltip
+                            placement="top"
+                            styles={{ body: { fontSize: "12px" } }}
+                            title="Possui débito"
+                        >
+                            <div className="h-2 w-2 bg-green-500 rounded-full"></div>
+                        </Tooltip>
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-center ">
+                        <Tooltip
+                            placement="top"
+                            styles={{ body: { fontSize: "12px" } }}
+                            title="Não possui débito"
+                        >
+                            <div className="h-2 w-2 bg-red-500 rounded-full"></div>
+                        </Tooltip>
+                    </div>
+                );
+            },
+        },
+        {
             title: "Crédito",
             dataIndex: "credit",
             width: 80,
