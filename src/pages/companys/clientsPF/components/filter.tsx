@@ -4,12 +4,15 @@ import {
   Tooltip,
   ConfigProvider,
   Checkbox,
+
   Dropdown,
 } from "antd";
+import type { CheckboxOptionType } from "antd/es/checkbox/Group";
 import { DownloadOutlined, FilterOutlined } from "@ant-design/icons";
 import { Control, Controller, UseFormHandleSubmit } from "react-hook-form";
 import { InputNumber } from "antd";
 import { PatternFormat, PatternFormatProps } from "react-number-format";
+import type { Key } from "react";
 
 import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 import { customLocale } from "@/utils/customLocale";
@@ -21,13 +24,12 @@ interface FiltroPedidosFormProps {
   handleSubmit: UseFormHandleSubmit<ICompanyFilter>;
   onSubmit: (data: ICompanyFilter) => void;
   onClear: () => void;
-  selectedRowKeys: any;
+  selectedRowKeys: Key[];
   isFiltered: boolean;
-
-  allColumnOptions: any[];
+  allColumnOptions: (string | number | CheckboxOptionType)[];
   visibleColumns: string[];
   handleColumnsChange: (checked: string[]) => void;
-  tableColumns: any;
+  tableColumns: unknown[];
 }
 
 const CPFInput = (props: PatternFormatProps) => (
@@ -46,7 +48,6 @@ export function FilterClients({
   onSubmit,
   onClear,
   selectedRowKeys,
-
   visibleColumns,
   tableColumns,
   handleColumnsChange,
@@ -78,7 +79,7 @@ export function FilterClients({
           >
             <Controller
               control={control}
-              name="nr_cnpj"
+              name="cpf"
               render={({ field }) => (
                 <CPFInput
                   {...field}
@@ -92,23 +93,7 @@ export function FilterClients({
 
             <Controller
               control={control}
-              name="nm_cliente"
-              render={({ field }) => (
-                <Input
-                  style={{
-                    width: "170px",
-                  }}
-                  placeholder="Nome"
-                  {...field}
-                  value={field.value || ""}
-                  onChange={field.onChange}
-                />
-              )}
-            />
-
-            <Controller
-              control={control}
-              name="credito_min"
+              name="credit_min"
               render={({ field }) => (
                 <InputNumber
                   style={{ width: "130px" }}
@@ -117,12 +102,12 @@ export function FilterClients({
                   value={field.value}
                   onChange={field.onChange}
                   formatter={(value) =>
-                    value === undefined || value === null || value === ""
+                    value === undefined || value === null
                       ? ""
                       : `R$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
                   }
                   parser={(value) =>
-                    value ? value.replace(/[R$\s.]/g, "").replace(",", ".") : ""
+                    value ? Number(value.replace(/[R$\s.]/g, "").replace(",", ".")) : 0
                   }
                 />
               )}
@@ -130,7 +115,7 @@ export function FilterClients({
 
             <Controller
               control={control}
-              name="credito_max"
+              name="credit_max"
               render={({ field }) => (
                 <InputNumber
                   style={{ width: "130px" }}
@@ -139,16 +124,17 @@ export function FilterClients({
                   value={field.value}
                   onChange={field.onChange}
                   formatter={(value) =>
-                    value === undefined || value === null || value === ""
+                    value === undefined || value === null
                       ? ""
                       : `R$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
                   }
                   parser={(value) =>
-                    value ? value.replace(/[R$\s.]/g, "").replace(",", ".") : ""
+                    value ? Number(value.replace(/[R$\s.]/g, "").replace(",", ".")) : 0
                   }
                 />
               )}
             />
+
           </ConfigProvider>
           <div className="flex gap-2 items-center">
             <Tooltip

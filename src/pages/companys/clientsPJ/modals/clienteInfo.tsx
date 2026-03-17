@@ -15,8 +15,6 @@ export function ClientInfoModal({
   selectedClient: ICompany | null;
   closeModal: () => void;
 }) {
-  const cleanPhone = (tel: string) =>
-    tel.startsWith("55") ? tel.slice(2) : tel;
 
   return (
     <Modal
@@ -24,10 +22,10 @@ export function ClientInfoModal({
       title={
         <div className="flex  justify-between">
           <span style={{ color: "#252525" }}>
-            {selectedClient?.credito_cliente?.razao_social === "#NAME?"
-              ? formatCNPJ(selectedClient?.nr_cnpj)
+            {selectedClient?.company_legal_name === "#NAME?"
+              ? formatCNPJ(selectedClient?.cnpj || "")
               : capitalizeWords(
-                selectedClient?.credito_cliente?.razao_social || ""
+                selectedClient?.company_legal_name || ""
               )}
           </span>
         </div>
@@ -49,10 +47,10 @@ export function ClientInfoModal({
               <div className="text-[14px] w-full text-neutral-700">
                 <p>
                   <strong>Razão Social:</strong>{" "}
-                  {selectedClient?.credito_cliente?.razao_social === "#NAME?"
+                  {selectedClient?.company_legal_name === "#NAME?"
                     ? "-"
                     : capitalizeWords(
-                      selectedClient?.credito_cliente?.razao_social || ""
+                      selectedClient?.company_legal_name || ""
                     ) || "-"}
                 </p>
               </div>
@@ -60,88 +58,79 @@ export function ClientInfoModal({
               <div className="grid grid-cols-2 gap-2  text-[14px] w-full text-neutral-700">
                 <p>
                   <strong>CNPJ: </strong>
-                  {formatCNPJ(selectedClient?.nr_cnpj || "") || "-"}
+                  {formatCNPJ(selectedClient?.cnpj || "") || "-"}
                 </p>
-                <p>
-                  <strong>Porte:</strong>{" "}
-                  {selectedClient?.porte === "MICRO EMPRESA"
-                    ? "Micro Empresa"
-                    : selectedClient?.porte === "EMPRESA DE PEQUENO PORTE"
-                      ? "Pequeno Porte"
-                      : selectedClient?.porte === "DEMAIS"
-                        ? "Demais"
-                        : "-"}
-                </p>
+
               </div>
 
               <div className="grid grid-cols-2 gap-2   text-[14px] w-full text-neutral-700">
                 <p>
                   <strong>MEI :</strong>{" "}
-                  {selectedClient?.opcao_pelo_mei ? "Sim" : "Não"}
+                  {selectedClient?.is_mei ? "Sim" : "Não"}
                 </p>
                 <p>
                   <strong>Status RFB :</strong>{" "}
-                  {selectedClient?.situacao_cadastral === "ATIVA"
+                  {selectedClient?.rfb_status === "ATIVA"
                     ? "Ativa"
-                    : selectedClient?.situacao_cadastral === "INAPTA"
+                    : selectedClient?.rfb_status === "INAPTA"
                       ? "Inapta"
-                      : selectedClient?.situacao_cadastral === "SUSPENSA"
+                      : selectedClient?.rfb_status === "SUSPENSA"
                         ? "Suspensa"
-                        : selectedClient?.situacao_cadastral === "BAIXADA"
+                        : selectedClient?.rfb_status === "BAIXADA"
                           ? "Baixada"
                           : "-"}
                 </p>
               </div>
 
-              <div className="grid grid-cols-2  gap-2 text-[14px] w-full text-neutral-700">
-                <p>
-                  <strong>Email: </strong> {selectedClient?.email_gestor || "-"}
+              {/* <div className="grid grid-cols-2  gap-2 text-[14px] w-full text-neutral-700"> */}
+              {/* <p>
+                  <strong>Email: </strong> {selectedClient?.email || "-"}
                 </p>
                 <p>
                   <strong>Telefone:</strong>{" "}
-                  {formatPhoneNumber(selectedClient?.telefone_gestor || "") ||
+                  {formatPhoneNumber(selectedClient?.phone || "") ||
                     "-"}
                 </p>
-              </div>
-              <div className="grid grid-cols-2  gap-2 text-[14px] w-full text-neutral-700">
+              </div> */}
+              {/* <div className="grid grid-cols-2  gap-2 text-[14px] w-full text-neutral-700">
                 <p>
                   <strong>CNAE: </strong> {selectedClient?.cnae_fiscal || "-"}
                 </p>
-              </div>
+              </div> */}
               <div className="flex flex-col gap-2 text-[14px] w-full text-neutral-700">
                 <p>
                   <strong>Endereço:</strong>{" "}
                   {capitalizeWords(
-                    selectedClient?.credito_cliente?.endereco || ""
+                    selectedClient?.address || ""
                   ) || "-"}
                 </p>
               </div>
               <div className="grid grid-cols-2  gap-2 text-[14px] w-full text-neutral-700">
                 <p>
                   <strong>Número fachada: </strong>{" "}
-                  {selectedClient?.numero_fachada || "-"}
+                  {selectedClient?.address_number || "-"}
                 </p>
                 <p>
                   <strong>Complemento: </strong>{" "}
-                  {capitalizeWords(selectedClient?.complemento || "") || "-"}
+                  {capitalizeWords(selectedClient?.address_complement || "") || "-"}
                 </p>
               </div>
               <div className="grid grid-cols-2  gap-2 text-[14px] w-full text-neutral-700">
                 <p>
                   <strong>Cidade: </strong>{" "}
-                  {capitalizeWords(selectedClient?.cidade || "") || "-"}
+                  {capitalizeWords(selectedClient?.city || "") || "-"}
                 </p>
                 <p>
-                  <strong>UF: </strong> {selectedClient?.uf || "-"}
+                  <strong>UF: </strong> {selectedClient?.state || "-"}
                 </p>
               </div>
               <div className="grid grid-cols-2  gap-2 text-[14px] w-full text-neutral-700">
                 <p>
                   <strong>Bairro: </strong>{" "}
-                  {capitalizeWords(selectedClient?.bairro || "") || "-"}
+                  {capitalizeWords(selectedClient?.district || "") || "-"}
                 </p>
                 <p>
-                  <strong>CEP: </strong> {selectedClient?.nr_cep || "-"}
+                  <strong>CEP: </strong> {selectedClient?.zip_code || "-"}
                 </p>
               </div>
             </div>
@@ -155,15 +144,15 @@ export function ClientInfoModal({
               <div className="grid grid-cols-2 gap-2  text-[14px] w-full text-neutral-700">
                 <p>
                   <strong>Nome: </strong>
-                  {capitalizeWords(selectedClient?.nome_gestor || "") || "-"}
+                  {capitalizeWords(selectedClient?.full_name || "") || "-"}
                 </p>
                 <p>
                   <strong>Email: </strong>
-                  {selectedClient?.email_gestor || "-"}
+                  {selectedClient?.email || "-"}
                 </p>
                 <p>
                   <strong>Telefone: </strong>
-                  {formatPhoneNumber(selectedClient?.telefone_gestor || "") ||
+                  {formatPhoneNumber(selectedClient?.phone || "") ||
                     "-"}
                 </p>
               </div>
@@ -182,74 +171,18 @@ export function ClientInfoModal({
                 <p>
                   <strong>Crédito aparelhos: </strong>
                   R${" "}
-                  {(selectedClient?.credito_cliente?.credito || 0)
-                    .toFixed(2)
-                    .replace(".", ",") || "-"}
-                </p>
-                <p>
-                  <strong>Crédito equipamento: </strong> R${" "}
-                  {(
-                    Number(
-                      selectedClient?.credito_cliente?.credito_equipamentos
-                    ) || 0
-                  )
+                  {(selectedClient?.credit || 0)
                     .toFixed(2)
                     .replace(".", ",") || "-"}
                 </p>
 
-                {selectedClient?.credito_cliente?.telefones?.map(
-                  (telefoneObj, index) => (
-                    <div className="flex flex-col gap-1" key={index}>
-                      <p key={index}>
-                        <strong>Telefone : </strong>
-                        {formatPhoneNumber(cleanPhone(telefoneObj.telefone)) ||
-                          "-"}{" "}
-                        &bull; <strong>M Vivo: </strong> {telefoneObj.M || "-"}
-                      </p>
-                    </div>
-                  )
-                )}
-                <p>
-                  <strong>Total de linhas: </strong>{" "}
-                  {selectedClient?.credito_cliente?.telefones?.length || 0}
-                </p>
-                <p>
-                  <strong>
-                    Quantidade de linhas viáveis para novo aparelho:{" "}
-                  </strong>{" "}
-                  {selectedClient?.credito_cliente?.telefones?.filter(
-                    (telefone) => telefone.M > 3
-                  ).length || 0}
-                </p>
+
+
+
               </div>
             </div>
           </div>
-          {Array.isArray(selectedClient?.marcas_modelos) &&
-            selectedClient.marcas_modelos.length > 0 && (
-              <div className="flex flex-col text-[14px] py-3 bg-neutral-100 mb-3 rounded-[4px] p-3  gap-2 w-full">
-                <div className=" flex items-center">
-                  <h2 className="p-4 text-[14px] font-semibold">
-                    Dados de Aparelhos
-                  </h2>
-                </div>
-                <div className="flex flex-col  text-neutral-800 gap-2 rounded-lg min-h-[60px] p-4">
-                  <div className=" grid grid-cols-1 gap-2 text-[14px] w-full text-neutral-700">
-                    {selectedClient.marcas_modelos.map((item, index) => (
-                      <div className="flex gap-1" key={index}>
-                        <p>
-                          <strong>Marca:</strong> {item.marca || "-"}
-                        </p>{" "}
-                        &bull;
-                        <p>
-                          <strong>Modelo: </strong>
-                          {item.modelo || "-"}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
+
         </div>
       </div>
 

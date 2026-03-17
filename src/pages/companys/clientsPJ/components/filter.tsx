@@ -11,7 +11,6 @@ import { DownloadOutlined, FilterOutlined } from "@ant-design/icons";
 import { Control, Controller, UseFormHandleSubmit } from "react-hook-form";
 import { InputNumber } from "antd";
 import { PatternFormat, PatternFormatProps } from "react-number-format";
-import { useClientsController } from "../controllers/controller";
 import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 import { customLocale } from "@/utils/customLocale";
 import { handleExportXLSX } from "../controllers/exportXLSX";
@@ -55,8 +54,6 @@ export function FilterClients({
 }: FiltroPedidosFormProps) {
   const { Option } = Select;
 
-  const { brands } = useClientsController();
-
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -83,7 +80,7 @@ export function FilterClients({
           >
             <Controller
               control={control}
-              name="nr_cnpj"
+              name="cnpj"
               render={({ field }) => (
                 <CNPJInput
                   {...field}
@@ -97,7 +94,7 @@ export function FilterClients({
 
             <Controller
               control={control}
-              name="nm_cliente"
+              name="company_legal_name"
               render={({ field }) => (
                 <Input
                   style={{
@@ -113,7 +110,7 @@ export function FilterClients({
 
             <Controller
               control={control}
-              name="situacao_cadastral"
+              name="rfb_status"
               render={({ field }) => (
                 <Select
                   style={{ width: "130px" }}
@@ -132,7 +129,7 @@ export function FilterClients({
 
             <Controller
               control={control}
-              name="opcao_pelo_mei"
+              name="is_mei"
               render={({ field }) => (
                 <Select
                   style={{ width: "130px" }}
@@ -146,30 +143,10 @@ export function FilterClients({
                 </Select>
               )}
             />
-            <Controller
-              control={control}
-              name="porte"
-              render={({ field }) => (
-                <Select
-                  style={{ width: "210px" }}
-                  placeholder="Porte"
-                  {...field}
-                  value={field.value || undefined}
-                  onChange={field.onChange}
-                  allowClear
-                >
-                  <Option value="EMPRESA DE PEQUENO PORTE">
-                    Empresa de Pequeno Porte
-                  </Option>
-                  <Option value="DEMAIS">Demais</Option>
-                  <Option value="MICRO EMPRESA">Micro Empresa</Option>
-                </Select>
-              )}
-            />
 
             <Controller
               control={control}
-              name="credito_min"
+              name="credit_min"
               render={({ field }) => (
                 <InputNumber
                   style={{ width: "130px" }}
@@ -178,12 +155,12 @@ export function FilterClients({
                   value={field.value}
                   onChange={field.onChange}
                   formatter={(value) =>
-                    value === undefined || value === null || value === ""
+                    value === undefined || value === null
                       ? ""
                       : `R$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
                   }
                   parser={(value) =>
-                    value ? value.replace(/[R$\s.]/g, "").replace(",", ".") : ""
+                    value ? Number(value.replace(/[R$\s.]/g, "").replace(",", ".")) : 0
                   }
                 />
               )}
@@ -191,7 +168,7 @@ export function FilterClients({
 
             <Controller
               control={control}
-              name="credito_max"
+              name="credit_max"
               render={({ field }) => (
                 <InputNumber
                   style={{ width: "130px" }}
@@ -200,146 +177,18 @@ export function FilterClients({
                   value={field.value}
                   onChange={field.onChange}
                   formatter={(value) =>
-                    value === undefined || value === null || value === ""
+                    value === undefined || value === null
                       ? ""
                       : `R$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
                   }
                   parser={(value) =>
-                    value ? value.replace(/[R$\s.]/g, "").replace(",", ".") : ""
+                    value ? Number(value.replace(/[R$\s.]/g, "").replace(",", ".")) : 0
                   }
                 />
               )}
             />
 
-            <Controller
-              control={control}
-              name="M_min"
-              render={({ field }) => (
-                <InputNumber
-                  style={{ width: "130px" }}
-                  min={0}
-                  placeholder="M Mín."
-                  value={field.value}
-                  onChange={field.onChange}
-                />
-              )}
-            />
 
-            <Controller
-              control={control}
-              name="M_max"
-              render={({ field }) => (
-                <InputNumber
-                  style={{ width: "130px" }}
-                  min={0}
-                  placeholder="M Máx."
-                  value={field.value}
-                  onChange={field.onChange}
-                />
-              )}
-            />
-
-            <Controller
-              control={control}
-              name="quantidade_telefones_min"
-              render={({ field }) => (
-                <InputNumber
-                  style={{ width: "130px" }}
-                  min={0}
-                  placeholder="Quant. Mín."
-                  value={field.value}
-                  onChange={field.onChange}
-                />
-              )}
-            />
-
-            <Controller
-              control={control}
-              name="quantidade_telefones_max"
-              render={({ field }) => (
-                <InputNumber
-                  style={{ width: "130px" }}
-                  min={0}
-                  placeholder="Quant. Máx."
-                  value={field.value}
-                  onChange={field.onChange}
-                />
-              )}
-            />
-
-            <Controller
-              control={control}
-              name="credito_equipamentos_min"
-              render={({ field }) => (
-                <InputNumber
-                  style={{ width: "160px" }}
-                  min={0}
-                  placeholder="Crédito Equip. Mín."
-                  value={field.value}
-                  onChange={field.onChange}
-                  formatter={(value) =>
-                    value === undefined || value === null || value === ""
-                      ? ""
-                      : `R$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-                  }
-                  parser={(value) =>
-                    value ? value.replace(/[R$\s.]/g, "").replace(",", ".") : ""
-                  }
-                />
-              )}
-            />
-
-            <Controller
-              control={control}
-              name="credito_equipamentos_max"
-              render={({ field }) => (
-                <InputNumber
-                  style={{ width: "160px" }}
-                  min={0}
-                  placeholder="Crédito Equip. Máx."
-                  value={field.value}
-                  onChange={field.onChange}
-                  formatter={(value) =>
-                    value === undefined || value === null || value === ""
-                      ? ""
-                      : `R$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-                  }
-                  parser={(value) =>
-                    value ? value.replace(/[R$\s.]/g, "").replace(",", ".") : ""
-                  }
-                />
-              )}
-            />
-
-            <Controller
-              control={control}
-              name="marca"
-              render={({ field }) => (
-                <Select
-                  style={{ width: "200px" }}
-                  placeholder="Marca"
-                  value={field.value || undefined}
-                  onChange={field.onChange}
-                  options={brands.map((m: string) => ({ value: m, label: m }))}
-                  allowClear
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="modelo"
-              render={({ field }) => (
-                <Input
-                  style={{
-                    width: "170px",
-                  }}
-                  placeholder="Modelo"
-                  {...field}
-                  value={field.value || ""}
-                  onChange={field.onChange}
-                />
-              )}
-            />
           </ConfigProvider>
           <div className="flex gap-2 items-center">
             <Tooltip

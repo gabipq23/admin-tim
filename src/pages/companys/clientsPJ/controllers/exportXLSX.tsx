@@ -19,34 +19,13 @@ export const handleExportXLSX = ({
     const obj: Record<string, any> = {};
 
     exportColumns.forEach((col: any) => {
-      if (col.key === "total_linhas") {
-        obj[col.title as string] = Array.isArray(row.credito_cliente?.telefones)
-          ? row.credito_cliente.telefones.length
-          : "-";
-      } else if (col.key === "num_linhas_elegiveis") {
-        obj[col.title as string] = Array.isArray(row.credito_cliente?.telefones)
-          ? row.credito_cliente.telefones.filter(
-              (t: any) => t.elegiveis === true
-            ).length
-          : "-";
-      } else if (col.key === "credito") {
-        obj[col.title as string] = formatBRL(row.credito_cliente?.credito);
-      } else if (col.key === "linhas_mvivo") {
-        if (
-          !Array.isArray(row.credito_cliente?.telefones) ||
-          row.credito_cliente.telefones.length === 0
-        ) {
-          obj[col.title as string] = "-";
-        } else {
-          const telefones = row.credito_cliente.telefones;
-          const visiblePhones = telefones
-            .map((t: any) => `${t.telefone}${t.M ? ` - M: ${t.M}` : ""}`)
-            .join(", ");
-          obj[col.title as string] = visiblePhones;
-        }
-      } else if (col.key === "opcao_pelo_mei") {
+      if (col.key === "credit") {
+        obj[col.title as string] = formatBRL(row.credit);
+
+
+      } else if (col.key === "is_mei") {
         obj[col.title as string] =
-          row.opcao_pelo_mei === true || row.opcao_pelo_mei === "1"
+          row.is_mei === true || row.is_mei === "1"
             ? "Sim"
             : "Não";
       } else {

@@ -40,13 +40,10 @@ export default function Clients() {
   const defaultVisible = tableColumns
     .filter(
       (col) =>
-        col.key !== "email_gestor" &&
-        col.key !== "telefone_gestor" &&
-        col.key !== "complemento" &&
-        col.key !== "numero_fachada" &&
-        col.key !== "num_linhas_elegiveis" &&
-        col.key !== "linhas_mvivo" &&
-        col.key !== "total_linhas"
+        col.key !== "email" &&
+        col.key !== "phone" &&
+        col.key !== "address_complement" &&
+        col.key !== "address_number"
     )
     .map((col) => col.key as string);
 
@@ -70,6 +67,7 @@ export default function Clients() {
   const handleColumnsChange = (checkedValues: string[]) => {
     setVisibleColumns(checkedValues);
   };
+
 
   return (
     <>

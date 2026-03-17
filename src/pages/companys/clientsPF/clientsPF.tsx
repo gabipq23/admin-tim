@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import { Alert, ConfigProvider, Table } from "antd";
+import { ConfigProvider, Table } from "antd";
 
 
 import { useClientsFilterController } from "./controllers/filtersController";
@@ -11,9 +11,11 @@ import { useState } from "react";
 import { TableProps } from "antd/lib";
 import { customLocale } from "@/utils/customLocale";
 import { ICompany } from "@/interfaces/consult";
+import { useNavigate } from "react-router-dom";
 
 export default function ClientsPF() {
   const queryClient = new QueryClient();
+  const navigate = useNavigate();
   const {
     isFiltered,
     control,
@@ -22,11 +24,15 @@ export default function ClientsPF() {
     clearFilters,
     selectedClient,
     setSelectedClient,
+    currentPage,
+    pageSize,
   } = useClientsFilterController();
   const {
+    companies,
     tableColumns,
     styles,
-
+    clientsQuery,
+    isClientsFetching,
     isModalOpen,
     showModal,
     closeModal,
@@ -35,13 +41,10 @@ export default function ClientsPF() {
   const defaultVisible = tableColumns
     .filter(
       (col) =>
-        col.key !== "email_gestor" &&
-        col.key !== "telefone_gestor" &&
-        col.key !== "complemento" &&
-        col.key !== "numero_fachada" &&
-        col.key !== "num_linhas_elegiveis" &&
-        col.key !== "linhas_mvivo" &&
-        col.key !== "total_linhas"
+        col.key !== "email" &&
+        col.key !== "phone" &&
+        col.key !== "address_complement" &&
+        col.key !== "address_number"
     )
     .map((col) => col.key as string);
 
@@ -82,19 +85,14 @@ export default function ClientsPF() {
                 onClear={clearFilters}
                 isFiltered={isFiltered}
                 selectedRowKeys={selectedRowKeys}
+
                 tableColumns={tableColumns}
                 visibleColumns={visibleColumns}
                 handleColumnsChange={handleColumnsChange}
                 allColumnOptions={allColumnOptions}
               />
             </div>
-            <Alert
-              message="Tela em desenvolvimento"
-              description="Esta tela está em processo de desenvolvimento. Em breve estará disponível."
-              type="warning"
-              showIcon
-              className="min-h-22 max-h-32"
-            />
+
           </div>
           <ConfigProvider
             locale={customLocale}
@@ -123,10 +121,11 @@ export default function ClientsPF() {
                 rowKey="id"
                 rowSelection={rowSelection}
                 className={styles.customTable}
-                // columns={tableColumns.filter((col) =>
-                //   visibleColumns.includes(col.key as string)
-                // )}
-                columns={tableColumns}
+                loading={isClientsFetching}
+                columns={tableColumns.filter((col) =>
+                  visibleColumns.includes(col.key as string)
+                )}
+                dataSource={companies}
                 onRow={(record) => ({
                   onClick: () => {
                     setSelectedClient(record);
@@ -134,21 +133,21 @@ export default function ClientsPF() {
                   },
                   style: { cursor: "pointer" },
                 })}
-              // pagination={{
-              //   current: currentPage,
-              //   pageSize: pageSize,
-              //   total: clientsQuery?.total,
-              //   showSizeChanger: true,
-              //   pageSizeOptions: ["50", "100", "200", "500"],
-              //   showLessItems: true,
-              //   onChange: (page, pageSize) => {
-              //     const params = new URLSearchParams(window.location.search);
-              //     params.set("page", page.toString());
-              //     params.set("limit", pageSize.toString());
-              //     navigate(`?${params.toString()}`);
-              //   },
-              //   showTotal: (total) => `Total de ${total} clientes`,
-              // }}
+                pagination={{
+                  current: currentPage,
+                  pageSize: pageSize,
+                  total: clientsQuery?.total,
+                  showSizeChanger: true,
+                  pageSizeOptions: ["50", "100", "200", "500"],
+                  showLessItems: true,
+                  onChange: (page, pageSize) => {
+                    const params = new URLSearchParams(window.location.search);
+                    params.set("page", page.toString());
+                    params.set("limit", pageSize.toString());
+                    navigate(`?${params.toString()}`);
+                  },
+                  showTotal: (total) => `Total de ${total} clientes`,
+                }}
               />
             </div>
           </ConfigProvider>
