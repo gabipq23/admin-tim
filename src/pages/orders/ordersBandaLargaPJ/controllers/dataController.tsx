@@ -25,7 +25,14 @@ export function useAllOrdersController() {
         filters.data_to,
         filters.data_from,
         filters.status,
-
+        filters.availability,
+        filters.cpf,
+        filters.cnpj,
+        filters.phone,
+        filters.after_sales_status,
+        filters.order,
+        filters.sort,
+        filters.order_number
       ],
       queryFn: async (): Promise<OrderBandaLargaPJResponse> => {
         const response = await bandaLargaService.allBandaLargaFiltered({
@@ -34,6 +41,14 @@ export function useAllOrdersController() {
           data_to: filters.data_to,
           data_from: filters.data_from,
           status: filters.status,
+          availability: filters.availability,
+          cpf: filters.cpf,
+          cnpj: filters.cnpj,
+          phone: filters.phone,
+          after_sales_status: filters.after_sales_status,
+          order: filters.order,
+          sort: filters.sort,
+          order_number: filters.order_number
         });
 
         return response;

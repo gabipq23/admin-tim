@@ -6,17 +6,29 @@ import { useStyle } from "@/style/tableStyle";
 import { useAllTableColumns } from "../components/tableColumns";
 import { BandaLargaFilters, OrderBandaLargaPJ } from "@/interfaces/bandaLargaPJ";
 
-function getFiltersFromURL(): BandaLargaFilters {
+export function getFiltersFromURL(): BandaLargaFilters {
   const params = new URLSearchParams(window.location.search);
+
 
   const page = parseInt(params.get("page") || "1", 10);
   const per_page = parseInt(params.get("per_page") || "20", 10);
   const data_to = params.get("data_ate") || undefined;
   const data_from = params.get("data_de") || undefined;
   const status = params.get("status") || undefined;
+  const availability = params.get("availability");
+  let availabilityBool: boolean | undefined = undefined;
+  if (availability === "true") availabilityBool = true;
+  if (availability === "false") availabilityBool = false;
+  const phone = params.get("phone") || undefined;
+  const cpf = params.get("cpf") || undefined;
+  const cnpj = params.get("cnpj") || undefined;
+  const order_number = params.get("order_number") || undefined;
+  const order = params.get("order") as "asc" | "desc" | undefined;
+  const sort = params.get("sort") || undefined;
+  const after_sales_status = params.get("after_sales_status") || null;
 
   return {
-    page, per_page, data_to, data_from, status
+    page, per_page, data_to, data_from, status, availability: availabilityBool, phone, cpf, cnpj, after_sales_status, order, sort, order_number,
   };
 }
 
@@ -38,6 +50,14 @@ export function useAllOrdersFilterController() {
       data_to: filters.data_to,
       data_from: filters.data_from,
       status: filters.status,
+      availability: filters.availability,
+      phone: filters.phone,
+      cpf: filters.cpf,
+      cnpj: filters.cnpj,
+      order_number: filters.order_number,
+      order: filters.order,
+      sort: filters.sort,
+      after_sales_status: filters.after_sales_status,
     },
   });
 
@@ -51,6 +71,25 @@ export function useAllOrdersFilterController() {
     if (data.data_to) params.set("data_ate", data.data_to);
     if (data.data_from) params.set("data_de", data.data_from);
     if (data.status) params.set("status", data.status);
+    if (data.phone) {
+      const phoneSemMascara = data.phone.replace(/\D/g, "");
+      params.set("phone", phoneSemMascara);
+    }
+    if (data.after_sales_status)
+      params.set("after_sales_status", data.after_sales_status);
+    if (data.cpf) {
+      const cpfSemMascara = data.cpf.replace(/\D/g, "");
+      params.set("cpf", cpfSemMascara);
+    }
+    if (data.cnpj) {
+      const cnpjSemMascara = data.cnpj.replace(/\D/g, "");
+      params.set("cnpj", cnpjSemMascara);
+    }
+    if (data.availability !== undefined)
+      params.set("availability", String(data.availability));
+    if (data.order_number) params.set("order_number", String(data.order_number));
+    if (data.order) params.set("order", data.order);
+    if (data.sort) params.set("sort", data.sort);
 
     navigate(`?${params.toString()}`);
     setIsFiltered(true);

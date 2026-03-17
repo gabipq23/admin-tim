@@ -121,9 +121,9 @@ export function FiltroOrdersBandaLargaPFForm({
                   value={field.value?.length ? field.value : []}
                   onChange={field.onChange}
                   options={[
-                    { value: "aberto", label: "Aberto" },
-                    { value: "fechado", label: "Fechado" },
-                    { value: "cancelado", label: "Cancelado" },
+                    { value: "ABERTO", label: "Aberto" },
+                    { value: "FECHADO", label: "Fechado" },
+                    { value: "CANCELADO", label: "Cancelado" },
                   ]}
                   allowClear
                 />
@@ -176,26 +176,10 @@ export function FiltroOrdersBandaLargaPFForm({
                 />
               )}
             />
-            {/* <Controller
+
+            <Controller
               control={control}
-              name="plan"
-              render={({ field }) => (
-                <Select
-                  style={{ minWidth: "200px" }}
-                  placeholder="Plano"
-                  value={field.value?.length ? field.value : []}
-                  onChange={field.onChange}
-                  options={uniquePlans.map((plan: any) => ({
-                    value: plan.plan_name,
-                    label: plan.plan_name,
-                  }))}
-                  allowClear
-                />
-              )}
-            /> */}
-            {/* <Controller
-              control={control}
-              name="status_pos_venda"
+              name="after_sales_status"
               render={({ field }) => (
                 <Select
                   style={{
@@ -204,10 +188,10 @@ export function FiltroOrdersBandaLargaPFForm({
                   placeholder="Status do Pedido"
                   value={field.value || undefined}
                   onChange={field.onChange}
-                  options={statusOptions?.map((status: string) => ({
-                    value: status,
-                    label: status,
-                  }))}
+                  // options={statusOptions?.map((status: string) => ({
+                  //   value: status,
+                  //   label: status,
+                  // }))}
                   allowClear
                 />
               )}

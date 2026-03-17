@@ -7,11 +7,12 @@ import {
   Select,
   Dropdown,
   Checkbox,
+  Input,
 } from "antd";
 import { FilterOutlined, DownloadOutlined } from "@ant-design/icons";
 import ptBR from "antd/es/locale/pt_BR";
 import { DatePicker } from "antd";
-// import { PatternFormat, PatternFormatProps } from "react-number-format";
+import { PatternFormat, PatternFormatProps } from "react-number-format";
 import dayjs from "dayjs";
 import { handleExportXLSX } from "../controllers/exportXLSX";
 import { BandaLargaFilters } from "@/interfaces/bandaLargaPJ";
@@ -33,15 +34,15 @@ interface FiltroPedidosFormProps {
   tableColumns: any;
 }
 
-// const CPJInput = (props: PatternFormatProps) => (
-//   <PatternFormat
-//     {...props}
-//     format="###.###.###-##"
-//     customInput={Input}
-//     placeholder="CPJ"
-//     size="middle"
-//   />
-// );
+const CNPJInput = (props: PatternFormatProps) => (
+  <PatternFormat
+    {...props}
+    format="##.###.###/####-##"
+    customInput={Input}
+    placeholder="CNPJ"
+    size="middle"
+  />
+);
 export function FiltroOrdersBandaLargaPJForm({
   control,
   handleSubmit,
@@ -94,9 +95,9 @@ export function FiltroOrdersBandaLargaPJForm({
               },
             }}
           >
-            {/* <Controller
+            <Controller
               control={control}
-              name="ordernumber"
+              name="order_number"
               render={({ field }) => (
                 <Input
                   {...field}
@@ -109,7 +110,7 @@ export function FiltroOrdersBandaLargaPJForm({
                   maxLength={13}
                 />
               )}
-            /> */}
+            />
             <Controller
               control={control}
               name="status"
@@ -121,32 +122,15 @@ export function FiltroOrdersBandaLargaPJForm({
                   value={field.value?.length ? field.value : []}
                   onChange={field.onChange}
                   options={[
-                    { value: "aberto", label: "Aberto" },
-                    { value: "fechado", label: "Fechado" },
-                    { value: "cancelado", label: "Cancelado" },
+                    { value: "ABERTO", label: "Aberto" },
+                    { value: "FECHADO", label: "Fechado" },
+                    { value: "CANCELADO", label: "Cancelado" },
                   ]}
                   allowClear
                 />
               )}
             />
-            {/* <Controller
-              control={control}
-              name="initial_status"
-              render={({ field }) => (
-                <Select
-                  mode="multiple"
-                  style={{ minWidth: "130px" }}
-                  placeholder="Status inicial"
-                  value={field.value?.length ? field.value : []}
-                  onChange={field.onChange}
-                  options={[
-                    { value: "consulta", label: "Consulta" },
-                    { value: "pedido", label: "Pedido" },
-                  ]}
-                  allowClear
-                />
-              )}
-            />
+
             <Controller
               control={control}
               name="availability"
@@ -166,11 +150,11 @@ export function FiltroOrdersBandaLargaPJForm({
             />
             <Controller
               control={control}
-              name="cPJ"
+              name="cnpj"
               render={({ field }) => (
-                <CPJInput
+                <CNPJInput
                   {...field}
-                  format="###.###.###-##"
+                  format="##.###.###/####-##"
                   value={field.value || ""}
                   onValueChange={(values) => field.onChange(values.value)}
                   style={{ width: "150px" }}
@@ -192,27 +176,11 @@ export function FiltroOrdersBandaLargaPJForm({
                   }}
                 />
               )}
-            /> */}
-            {/* <Controller
+            />
+
+            <Controller
               control={control}
-              name="plan"
-              render={({ field }) => (
-                <Select
-                  style={{ minWidth: "200px" }}
-                  placeholder="Plano"
-                  value={field.value?.length ? field.value : []}
-                  onChange={field.onChange}
-                  options={uniquePlans.map((plan: any) => ({
-                    value: plan.plan_name,
-                    label: plan.plan_name,
-                  }))}
-                  allowClear
-                />
-              )}
-            /> */}
-            {/* <Controller
-              control={control}
-              name="status_pos_venda"
+              name="after_sales_status"
               render={({ field }) => (
                 <Select
                   style={{
@@ -221,14 +189,14 @@ export function FiltroOrdersBandaLargaPJForm({
                   placeholder="Status do Pedido"
                   value={field.value || undefined}
                   onChange={field.onChange}
-                  options={statusOptions?.map((status: string) => ({
-                    value: status,
-                    label: status,
-                  }))}
+                  // options={statusOptions?.map((status: string) => ({
+                  //   value: status,
+                  //   label: status,
+                  // }))}
                   allowClear
                 />
               )}
-            /> */}
+            />
             {/* Período de datas: data_de (início) e data_ate (fim) */}
             <Controller
               control={control}

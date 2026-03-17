@@ -21,6 +21,9 @@ import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import { OrderBandaLargaPJ } from "@/interfaces/bandaLargaPJ";
 import { formatCNPJ } from "@/utils/formatCNPJ";
 import { capitalizeWords } from "@/utils/capitaliWords";
+import { useNavigate } from "react-router-dom";
+import { getFiltersFromURL } from "../controllers/filterController";
+
 export const useAllTableColumns = ({
     setSelectedAvatar,
     setIsModalAvatarOpen,
@@ -28,7 +31,8 @@ export const useAllTableColumns = ({
     setSelectedAvatar: Dispatch<SetStateAction<string | null>>;
     setIsModalAvatarOpen: Dispatch<SetStateAction<boolean>>;
 }): TableColumnsType<OrderBandaLargaPJ> => {
-
+    const navigate = useNavigate();
+    const filters = getFiltersFromURL();
     return [
         {
             title: "",
@@ -113,29 +117,29 @@ export const useAllTableColumns = ({
             title: "Abertura",
             dataIndex: "created_at",
             width: 110,
-            // sorter: true,
-            // sortOrder:
-            //   filters.sort === "created_at"
-            //     ? filters.order === "asc"
-            //       ? "ascend"
-            //       : filters.order === "desc"
-            //         ? "descend"
-            //         : undefined
-            //     : undefined,
-            // onHeaderCell: () => ({
-            //   onClick: () => {
-            //     const newOrder =
-            //       filters.sort === "created_at" && filters.order === "asc"
-            //         ? "desc"
-            //         : "asc";
-            //     const params = new URLSearchParams(window.location.search);
-            //     params.set("sort", "created_at");
-            //     params.set("order", newOrder);
-            //     params.set("page", "1");
-            //     navigate(`?${params.toString()}`);
-            //   },
-            //   style: { cursor: "pointer" },
-            // }),
+            sorter: true,
+            sortOrder:
+                filters.sort === "created_at"
+                    ? filters.order === "asc"
+                        ? "ascend"
+                        : filters.order === "desc"
+                            ? "descend"
+                            : undefined
+                    : undefined,
+            onHeaderCell: () => ({
+                onClick: () => {
+                    const newOrder =
+                        filters.sort === "created_at" && filters.order === "asc"
+                            ? "desc"
+                            : "asc";
+                    const params = new URLSearchParams(window.location.search);
+                    params.set("sort", "created_at");
+                    params.set("order", newOrder);
+                    params.set("page", "1");
+                    navigate(`?${params.toString()}`);
+                },
+                style: { cursor: "pointer" },
+            }),
         },
         {
             title: "Pedido",
@@ -157,29 +161,29 @@ export const useAllTableColumns = ({
             },
             dataIndex: "after_sales_status",
             width: 155,
-            // sorter: true,
-            // sortOrder:
-            //   filters.sort === "status_pos_venda"
-            //     ? filters.order === "asc"
-            //       ? "ascend"
-            //       : filters.order === "desc"
-            //         ? "descend"
-            //         : undefined
-            //     : undefined,
-            // onHeaderCell: () => ({
-            //   onClick: () => {
-            //     const newOrder =
-            //       filters.sort === "status_pos_venda" && filters.order === "asc"
-            //         ? "desc"
-            //         : "asc";
-            //     const params = new URLSearchParams(window.location.search);
-            //     params.set("sort", "status_pos_venda");
-            //     params.set("order", newOrder);
-            //     params.set("page", "1");
-            //     navigate(`?${params.toString()}`);
-            //   },
-            //   style: { cursor: "pointer" },
-            // }),
+            sorter: true,
+            sortOrder:
+                filters.sort === "status_pos_venda"
+                    ? filters.order === "asc"
+                        ? "ascend"
+                        : filters.order === "desc"
+                            ? "descend"
+                            : undefined
+                    : undefined,
+            onHeaderCell: () => ({
+                onClick: () => {
+                    const newOrder =
+                        filters.sort === "status_pos_venda" && filters.order === "asc"
+                            ? "desc"
+                            : "asc";
+                    const params = new URLSearchParams(window.location.search);
+                    params.set("sort", "status_pos_venda");
+                    params.set("order", newOrder);
+                    params.set("page", "1");
+                    navigate(`?${params.toString()}`);
+                },
+                style: { cursor: "pointer" },
+            }),
             render: (after_sales_status) => (
                 <Tooltip
                     placement="topLeft"
