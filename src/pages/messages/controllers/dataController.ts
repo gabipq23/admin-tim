@@ -32,6 +32,7 @@ export function useContactsController() {
         filters.subject,
         filters.sort,
         filters.order,
+        filters.status,
       ],
       queryFn: async (): Promise<IContactResponse> => {
         const response = await contactService.allContacts({
@@ -46,6 +47,7 @@ export function useContactsController() {
           subject: filters.subject,
           sort: filters.sort,
           order: filters.order,
+          status: filters.status,
         });
         return response;
       },

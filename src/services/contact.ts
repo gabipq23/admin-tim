@@ -15,6 +15,7 @@ export class ContactService {
     subject,
     sort,
     order,
+    status,
   }: {
     page?: number | string;
     data_to?: string;
@@ -27,6 +28,7 @@ export class ContactService {
     subject?: string;
     sort?: string;
     order?: string;
+    status?: string;
   }): Promise<IContactResponse> {
     const res = await apiPurchase.get(`/messages`, {
       params: {
@@ -41,6 +43,7 @@ export class ContactService {
         subject,
         sort,
         order,
+        status,
       },
     });
     return res.data;

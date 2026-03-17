@@ -1,5 +1,6 @@
 import { IContact } from "@/interfaces/contacts";
 import { formatCNPJ } from "@/utils/formatCNPJ";
+import { formatCPF } from "@/utils/formatCPF";
 import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import { TableColumnsType, Tooltip } from "antd";
 
@@ -50,6 +51,12 @@ export const tableColumns: TableColumnsType<IContact> = [
         dataIndex: "phone",
         width: 100,
         render: (value) => formatPhoneNumber(value),
+    },
+    {
+        title: "CPF",
+        dataIndex: "cpf",
+        width: 120,
+        render: (value) => formatCPF(value),
     },
     {
         title: "CNPJ",

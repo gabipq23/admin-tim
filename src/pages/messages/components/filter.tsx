@@ -26,6 +26,16 @@ const CNPJInput = (props: PatternFormatProps) => (
     allowEmptyFormatting
   />
 );
+const CPFInput = (props: PatternFormatProps) => (
+  <PatternFormat
+    {...props}
+    format="###.###.###-##"
+    customInput={Input}
+    placeholder="CPF"
+    size="middle"
+    allowEmptyFormatting
+  />
+);
 export function FiltroContactForm({
   control,
   handleSubmit,
@@ -101,6 +111,19 @@ export function FiltroContactForm({
               <CNPJInput
                 {...field}
                 format="##.###.###/####-##"
+                value={field.value || ""}
+                onValueChange={(values) => field.onChange(values.value)}
+                style={{ width: "150px" }}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="cpf"
+            render={({ field }) => (
+              <CPFInput
+                {...field}
+                format="###.###.###-##"
                 value={field.value || ""}
                 onValueChange={(values) => field.onChange(values.value)}
                 style={{ width: "150px" }}
