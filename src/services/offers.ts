@@ -21,9 +21,9 @@ export class OffersService {
     const res = await apiPurchase.get(`/tim/offers`, {
       params: {
         pagina: page,
-        dataDe: date_from,
-        dataAte: date_to,
-        nome: name,
+        date_from: date_from,
+        date_to: date_to,
+        name: name,
         por_pagina: per_page,
       },
     });

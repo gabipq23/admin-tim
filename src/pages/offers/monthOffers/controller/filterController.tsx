@@ -4,7 +4,6 @@ import {
   EditOutlined,
 } from "@ant-design/icons";
 import { Button, ConfigProvider, TableColumnsType, Tooltip } from "antd";
-import { formatDateTimeBR } from "@/utils/formatDateTimeBR";
 import { MonthOffer } from "@/interfaces/monthOffer";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
@@ -110,7 +109,7 @@ export function useMonthOffersFilterController({
       dataIndex: "date_upload",
       width: 80,
       render: (date_upload: string) => {
-        return formatDateTimeBR(date_upload);
+        return (date_upload);
       },
     },
 
