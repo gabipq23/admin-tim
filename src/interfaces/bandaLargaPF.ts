@@ -246,4 +246,12 @@ export interface BandaLargaFilters {
   data_to?: string;
   data_from?: string;
   status?: string;
+  availability?: string | number;
+  cpf?: string;
+  cnpj?: string;
+  phone?: string;
+  after_sales_status?: string;
+  order?: string;
+  sort?: string;
+  order_number?: string | number;
 }

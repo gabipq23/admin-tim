@@ -1,17 +1,17 @@
 import { Controller, Control, UseFormHandleSubmit } from "react-hook-form";
 import {
-
   Button,
   Tooltip,
   ConfigProvider,
   Select,
   Dropdown,
   Checkbox,
+  Input,
 } from "antd";
 import { FilterOutlined, DownloadOutlined } from "@ant-design/icons";
 import ptBR from "antd/es/locale/pt_BR";
 import { DatePicker } from "antd";
-// import { PatternFormat, PatternFormatProps } from "react-number-format";
+import { PatternFormat, PatternFormatProps } from "react-number-format";
 import dayjs from "dayjs";
 import { handleExportXLSX } from "../controllers/exportXLSX";
 import { BandaLargaFilters } from "@/interfaces/bandaLargaPF";
@@ -33,15 +33,15 @@ interface FiltroPedidosFormProps {
   tableColumns: any;
 }
 
-// const CPFInput = (props: PatternFormatProps) => (
-//   <PatternFormat
-//     {...props}
-//     format="###.###.###-##"
-//     customInput={Input}
-//     placeholder="CPF"
-//     size="middle"
-//   />
-// );
+const CPFInput = (props: PatternFormatProps) => (
+  <PatternFormat
+    {...props}
+    format="###.###.###-##"
+    customInput={Input}
+    placeholder="CPF"
+    size="middle"
+  />
+);
 export function FiltroOrdersBandaLargaPFForm({
   control,
   handleSubmit,
@@ -94,9 +94,9 @@ export function FiltroOrdersBandaLargaPFForm({
               },
             }}
           >
-            {/* <Controller
+            <Controller
               control={control}
-              name="ordernumber"
+              name="order_number"
               render={({ field }) => (
                 <Input
                   {...field}
@@ -109,7 +109,7 @@ export function FiltroOrdersBandaLargaPFForm({
                   maxLength={13}
                 />
               )}
-            /> */}
+            />
             <Controller
               control={control}
               name="status"
@@ -129,24 +129,7 @@ export function FiltroOrdersBandaLargaPFForm({
                 />
               )}
             />
-            {/* <Controller
-              control={control}
-              name="initial_status"
-              render={({ field }) => (
-                <Select
-                  mode="multiple"
-                  style={{ minWidth: "130px" }}
-                  placeholder="Status inicial"
-                  value={field.value?.length ? field.value : []}
-                  onChange={field.onChange}
-                  options={[
-                    { value: "consulta", label: "Consulta" },
-                    { value: "pedido", label: "Pedido" },
-                  ]}
-                  allowClear
-                />
-              )}
-            />
+
             <Controller
               control={control}
               name="availability"
@@ -192,7 +175,7 @@ export function FiltroOrdersBandaLargaPFForm({
                   }}
                 />
               )}
-            /> */}
+            />
             {/* <Controller
               control={control}
               name="plan"
@@ -228,7 +211,7 @@ export function FiltroOrdersBandaLargaPFForm({
                   allowClear
                 />
               )}
-            /> */}
+            />
             {/* Período de datas: data_de (início) e data_ate (fim) */}
             <Controller
               control={control}
