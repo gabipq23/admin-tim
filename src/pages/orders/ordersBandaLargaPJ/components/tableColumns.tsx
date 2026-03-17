@@ -1175,7 +1175,7 @@ export const useAllTableColumns = ({
                 showTitle: false,
             },
             render: (timezone, record) => {
-                const timezoneName = record?.finger_print?.timezone_name;
+                const timezoneName = record?.fingerprint?.timezone_name;
                 const value = [timezone, timezoneName].filter(Boolean).join(" - ");
 
                 return (
