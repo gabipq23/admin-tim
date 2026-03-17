@@ -18,7 +18,31 @@ const attachAuthToken = (config: any) => {
   return config;
 };
 
+const forceLogoutAndRedirect = () => {
+  const localStorageService = new LocalStorageService();
+  localStorageService.removeItem(LocalStorageKeys.accessToken);
+  localStorageService.removeItem(LocalStorageKeys.user);
+
+  if (window.location.pathname !== "/admin") {
+    window.location.replace("/admin");
+  }
+};
+
 apiPurchase.interceptors.request.use(attachAuthToken);
+apiPurchase.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error?.response?.status;
+    const requestUrl = String(error?.config?.url ?? "");
+    const isLoginRequest = requestUrl.includes("/tim/auth/login");
+
+    if (status === 401 && !isLoginRequest) {
+      forceLogoutAndRedirect();
+    }
+
+    return Promise.reject(error);
+  },
+);
 
 // Tools
 export const apiBase2b = axios.create({
