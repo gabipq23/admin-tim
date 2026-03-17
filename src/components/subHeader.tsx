@@ -185,7 +185,6 @@ export default function SubHeader() {
 
 
   const ordersMenuItems: MenuProps["items"] = [
-
     {
       key: "pedidos-banda-larga-pf",
       label: (
@@ -200,15 +199,28 @@ export default function SubHeader() {
       ),
     },
     {
-      key: "pedidos-banda-larga-pj",
+      key: "pedidos-telefonia-movel-pj",
       label: (
         <span className="text-[#0026d9]"
           onClick={() => {
-            setSelectedLink("pedidos-banda-larga-pj");
-            navigate(`/admin/pedidos-banda-larga-pj`);
+            setSelectedLink("pedidos-telefonia-movel-pj");
+            navigate(`/admin/pedidos-telefonia-movel-pj`);
           }}
         >
-          Banda Larga PJ
+          Telefonia Móvel PJ
+        </span>
+      ),
+    },
+    {
+      key: "pedidos-telefonia-movel-pf",
+      label: (
+        <span className="text-[#0026d9]"
+          onClick={() => {
+            setSelectedLink("pedidos-telefonia-movel-pf");
+            navigate(`/admin/pedidos-telefonia-movel-pf`);
+          }}
+        >
+          Telefonia Móvel PF
         </span>
       ),
     },
