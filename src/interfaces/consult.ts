@@ -58,6 +58,7 @@ export interface ICompany {
   ip_as: string | null;
   ip_access_type: string | null;
   is_socio: boolean | null;
+  socios_empresas?: SociosEmpresas[];
   is_mei: boolean | null;
   company_partners: string | null;
   rfb_name: string | null;
@@ -67,7 +68,7 @@ export interface ICompany {
   client_ip: string | null;
   fingerprint: string | null;
   fingerprint_id: string | null;
-  whatsapp: string | null;
+  whatsapp?: WhatsAppInfo | null;
   geolocation: {
     success: boolean;
     latitude: string | null;
@@ -143,4 +144,23 @@ export interface stateRecomendation {
   plano: string;
   valor_recomendacao: string;
   valor_oferta_movel: string;
+}
+
+export interface WhatsAppInfo {
+  links: string[];
+  avatar: string | null;
+  numero: string | null;
+  recado: string;
+  sucesso: boolean;
+  endereco: string | null;
+  categoria: string;
+  is_comercial: boolean;
+  verificado_em: string;
+  existe_no_whatsapp: boolean;
+}
+
+interface SociosEmpresas {
+  cnpj: string;
+  nome: string;
+  porte: string;
 }
