@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { StatusType } from "src/interfaces/purchase";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import {
@@ -13,7 +12,7 @@ import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import { Trash } from "lucide-react";
 import { formatDateTimeBR } from "@/utils/formatDateTimeBR";
 import { useStyle } from "@/style/tableStyle";
-
+export type StatusType = "aberto" | "fechado" | "cancelado";
 function getFiltersFromURL(): {
   status: StatusType | null;
   telefone: string | null;
