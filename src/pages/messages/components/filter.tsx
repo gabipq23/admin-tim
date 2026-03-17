@@ -66,7 +66,7 @@ export function FiltroContactForm({
         >
           <Controller
             control={control}
-            name="nome"
+            name="name"
             render={({ field }) => (
               <Input
                 style={{
@@ -110,7 +110,7 @@ export function FiltroContactForm({
 
           <Controller
             control={control}
-            name="status_mensagem"
+            name="status"
             render={({ field }) => (
               <Select
                 style={{
@@ -120,9 +120,9 @@ export function FiltroContactForm({
                 value={field.value || undefined}
                 onChange={field.onChange}
                 options={[
-                  { value: "Nova Mensagem", label: "Nova Mensagem" },
-                  { value: "Visualizada", label: "Visualizada" },
-                  { value: "Respondida", label: "Respondida" },
+                  { value: "RECEBIDA", label: "Nova Mensagem" },
+                  { value: "LIDA", label: "Visualizada" },
+                  { value: "RESPONDIDA", label: "Respondida" },
                 ]}
                 allowClear
               />
@@ -130,7 +130,7 @@ export function FiltroContactForm({
           />
           <Controller
             control={control}
-            name="assunto"
+            name="subject"
             render={({ field }) => (
               <Select
                 style={{
@@ -151,14 +151,14 @@ export function FiltroContactForm({
               />
             )}
           />
-          {/* Período de datas: data_de (início) e data_ate (fim) */}
+          {/* Período de datas: data_from (início) e data_to (fim) */}
           <Controller
             control={control}
-            name="data_de"
+            name="data_from"
             render={({ field: fieldDe }) => (
               <Controller
                 control={control}
-                name="data_ate"
+                name="data_to"
                 render={({ field: fieldAte }) => (
                   <RangePicker
                     style={{

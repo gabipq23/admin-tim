@@ -11,6 +11,7 @@ export interface IContact {
   status_message: string;
   cnpj?: string;
   total?: string;
+  cpf?: string;
 }
 
 export interface IContactResponse {
@@ -25,13 +26,16 @@ export interface IContactResponse {
   assunto_enum?: string[];
 }
 export interface IFilters {
-  cnpj?: string | null;
-  nome?: string | null;
-  email?: string | null;
-  status_mensagem?: string | null;
-  data_de?: string | null;
-  data_ate?: string | null;
-  assunto?: string | null;
-  sort?: string | null;
-  order?: "asc" | "desc" | null;
+  page?: number;
+  per_page?: number;
+  data_to?: string;
+  data_from?: string;
+  status?: string;
+  name?: string;
+  email?: string;
+  cnpj?: string;
+  cpf?: string;
+  subject?: string;
+  sort?: string;
+  order?: string;
 }

@@ -1,21 +1,46 @@
 import { apiPurchase } from "@/configs/api";
 import { IContactResponse } from "src/interfaces/contacts";
 
+// Infos vem do link de fale conosco da LP
 export class ContactService {
   async allContacts({
     data_to,
     data_from,
     page,
+    per_page,
+    name,
+    email,
+    cnpj,
+    cpf,
+    subject,
+    sort,
+    order,
   }: {
     page?: number | string;
     data_to?: string;
     data_from?: string;
+    per_page?: number | string;
+    name?: string;
+    email?: string;
+    cnpj?: string;
+    cpf?: string;
+    subject?: string;
+    sort?: string;
+    order?: string;
   }): Promise<IContactResponse> {
     const res = await apiPurchase.get(`/messages`, {
       params: {
         page,
         data_to,
         data_from,
+        per_page,
+        name,
+        email,
+        cnpj,
+        cpf,
+        subject,
+        sort,
+        order,
       },
     });
     return res.data;
@@ -23,13 +48,13 @@ export class ContactService {
 
   async changeContactStatus({
     id,
-    status_mensagem,
+    status,
   }: {
     id: number;
-    status_mensagem: "LIDA" | "RESPONDIDA";
+    status: "LIDA" | "RESPONDIDA";
   }) {
     return apiPurchase.patch(`/messages/${id}/status`, {
-      status_mensagem: status_mensagem,
+      status: status,
     });
   }
 

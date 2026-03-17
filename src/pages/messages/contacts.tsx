@@ -6,9 +6,9 @@ import { IContact } from "src/interfaces/contacts";
 import { ContactInfoModal } from "./modals/contactInfo";
 import type { TableProps } from "antd";
 import { FiltroContactForm } from "./components/filter";
-import MobileCard from "./components/mobileCard";
 import { useNavigate } from "react-router-dom";
 import { customLocale } from "@/utils/customLocale";
+
 function Contacts() {
   const queryClient = new QueryClient();
   const navigate = useNavigate();
@@ -23,7 +23,6 @@ function Contacts() {
     changeContactStatus,
     setRemoveContactIds,
     removeContacts,
-
   } = useContactsController();
 
   const {
@@ -38,7 +37,6 @@ function Contacts() {
     pageSize,
     totalItems,
     tableColumns,
-    // getStatus,
     styles,
   } = useContactFilterController({ totalContacts });
 
@@ -90,8 +88,7 @@ function Contacts() {
               },
             }}
           >
-            {/* Tabela para web */}
-            <div className="hidden md:block overflow-y-auto ">
+            <div className="overflow-y-auto ">
               <Table<IContact>
                 rowKey="id"
                 rowSelection={rowSelection}
@@ -124,16 +121,7 @@ function Contacts() {
               />
             </div>
           </ConfigProvider>
-          {/* Cards para mobile */}
-          <MobileCard
-            contacts={contacts}
-            setSelectedContact={setSelectedContact}
-            showModal={showModal}
-            currentPage={currentPage}
-            pageSize={pageSize}
-            totalItems={totalItems}
-          // getStatus={getStatus}
-          />
+
 
           <ContactInfoModal
             isModalOpen={isModalOpen}

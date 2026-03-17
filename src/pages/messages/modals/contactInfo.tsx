@@ -1,11 +1,11 @@
 import { IContact } from "@/interfaces/contacts";
-
 import { formatCNPJ } from "@/utils/formatCNPJ";
 import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import { CopyOutlined } from "@ant-design/icons";
 import { Button, ConfigProvider, Modal, Select, Tooltip } from "antd";
 import { useEffect, useState } from "react";
 import { blueOutlineButtonClass } from "@/utils/buttonStyles";
+import { formatCPF } from "@/utils/formatCPF";
 
 export function ContactInfoModal({
   isModalOpen,
@@ -18,22 +18,6 @@ export function ContactInfoModal({
   selectedId: IContact | null;
   changeContactStatus?: any;
 }) {
-  const getTimeOrDate = (dataEpoch: string, type: "hora" | "data") => {
-    const match = dataEpoch.match(/^(\d{2})-(\d{2})-(\d{4}) (.+)$/);
-    let formattedDate = dataEpoch;
-    if (match) {
-      formattedDate = `${match[3]}-${match[2]}-${match[1]} ${match[4]}`;
-    }
-
-    const converted = (formattedDate);
-    if (type === "hora") {
-      return converted.split(",")[1].trim().slice(0, 5);
-    }
-    if (type === "data") {
-      const [month, day, year] = converted.split(",")[0].split("/");
-      return `${day}/${month}/${year}`;
-    }
-  };
 
   const [tooltipTitle, setTooltipTitle] = useState("Copiar");
 
@@ -94,14 +78,14 @@ export function ContactInfoModal({
               <Select
                 size="small"
                 value={localStatus}
-                style={{ width: "150px", fontWeight: "400" }}
+                style={{ width: "200px", fontWeight: "400" }}
                 onChange={(value) => {
                   setLocalStatus(value);
 
                   if (selectedId?.id) {
                     changeContactStatus({
                       id: selectedId.id,
-                      status_mensagem: value,
+                      status: value,
                     });
                   }
                 }}
@@ -128,14 +112,13 @@ export function ContactInfoModal({
             <p className="flex gap-2 text-[15px]">
               {selectedId?.name} {copyComponent(selectedId?.name ?? "")} &bull;{" "}
               {formatPhoneNumber(selectedId?.phone ?? "")} &bull;{" "}
-              {formatCNPJ(selectedId?.cnpj ?? "")} &bull; {selectedId?.email}{" "}
+              {formatCNPJ(selectedId?.cnpj ?? "")} &bull; {formatCPF(selectedId?.cpf ?? "")}{" "}&bull; {selectedId?.email}{" "}
               {copyComponent(selectedId?.email ?? "")}{" "}
             </p>
             <div className="flex gap-2">
               {selectedId?.created_at && (
                 <p>
-                  {getTimeOrDate(selectedId?.created_at, "data")},{" "}
-                  {getTimeOrDate(selectedId?.created_at, "hora")}
+                  {selectedId.created_at}
                 </p>
               )}
             </div>
@@ -143,14 +126,7 @@ export function ContactInfoModal({
         </div>
         <div className="bg-[#eeeeee] mt-8 p-1 text-[15px] text-[#666666]">
           Mensagem
-          {selectedId?.company ? (
-            <>
-              {" da empresa"}{" "}
-              {<span className="text-[#555]">{selectedId?.company}</span>}:
-            </>
-          ) : (
-            ":"
-          )}
+
         </div>
         <div className="flex items-center border-1 p-1 border-[#eeeeee] text-[16px] text-[#666666] justify-between">
           <span>{selectedId?.message}</span>
