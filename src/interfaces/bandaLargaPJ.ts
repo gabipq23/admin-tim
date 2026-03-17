@@ -144,7 +144,7 @@ export interface OrderBandaLargaPJ {
   consulta?: boolean;
   dueday?: number;
   equipe?: string;
-  fingerprint?: {
+  finger_print?: {
     os: { name: string; version: string };
     browser: { name: string; version: string };
     device: string;
