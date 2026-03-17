@@ -64,14 +64,14 @@ export function Login() {
                 <Input {...field} placeholder="Digite seu email" />
               )}
             />
-            <p className="text-[14px] text-neutral-500">password: </p>
+            <p className="text-[14px] text-neutral-500">Senha: </p>
 
             <Controller
               name="password"
               control={control}
               defaultValue=""
               render={({ field }) => (
-                <Input.Password {...field} placeholder="Digite sua password" />
+                <Input.Password {...field} placeholder="Digite sua senha" />
               )}
             />
             <div className="flex justify-center mt-4">
