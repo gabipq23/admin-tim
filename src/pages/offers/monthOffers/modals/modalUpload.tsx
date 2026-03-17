@@ -12,7 +12,7 @@ export function ModalUpload({
 }: {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
-  createMonthOffers: (params: { file: File; descricao: string }) => void;
+  createMonthOffers: (params: { file: File; description: string }) => void;
   isUploadPending: boolean;
 }) {
   const [description, setDescription] = useState("");
@@ -34,7 +34,7 @@ export function ModalUpload({
 
     createMonthOffers({
       file: selectedFile,
-      descricao: description,
+      description: description,
     });
 
     handleClose();

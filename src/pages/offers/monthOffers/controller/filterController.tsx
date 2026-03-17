@@ -20,15 +20,17 @@ interface MonthOffersFilterControllerProps {
 
 function getFiltersFromURL(): any {
   const params = new URLSearchParams(window.location.search);
-  const nome = params.get("nome") || "";
-  const dataDe = params.get("dataDe") || "";
-  const dataAte = params.get("dataAte") || "";
-  const pagina = params.get("pagina") || "1";
+  const name = params.get("name") || "";
+  const dateFrom = params.get("date_from") || "";
+  const dateTo = params.get("date_to") || "";
+  const page = params.get("page") || "1";
+  const per_page = params.get("per_page") || "10";
   return {
-    nome,
-    dataDe,
-    dataAte,
-    pagina: Number(pagina),
+    name,
+    date_from: dateFrom,
+    date_to: dateTo,
+    page: Number(page),
+    per_page: Number(per_page),
   };
 }
 
@@ -41,13 +43,14 @@ export function useMonthOffersFilterController({
   const filters = getFiltersFromURL();
   const navigate = useNavigate();
 
-  const currentPage = filters.pagina;
+  const currentPage = filters.page;
 
   const { handleSubmit, reset, control } = useForm<any>({
     defaultValues: {
-      nome: filters.nome || "",
-      dataDe: filters.dataDe || "",
-      dataAte: filters.dataAte || "",
+      name: filters.name || "",
+      date_from: filters.date_from || "",
+      date_to: filters.date_to || "",
+      per_page: filters.per_page || "10",
     },
   });
 
@@ -55,16 +58,17 @@ export function useMonthOffersFilterController({
 
   const onSubmit = (data: any) => {
     const params = new URLSearchParams();
-    if (data.nome) {
-      params.set("nome", data.nome);
+    if (data.name) {
+      params.set("name", data.name);
     }
-    if (data.dataDe) {
-      params.set("dataDe", data.dataDe);
+    if (data.date_from) {
+      params.set("date_from", data.date_from);
     }
-    if (data.dataAte) {
-      params.set("dataAte", data.dataAte);
+    if (data.date_to) {
+      params.set("date_to", data.date_to);
     }
-    params.set("pagina", "1");
+    params.set("page", "1");
+    params.set("per_page", data.per_page || "10");
 
     navigate(`?${params.toString()}`);
     setIsFiltered(true);
@@ -85,45 +89,45 @@ export function useMonthOffersFilterController({
 
     {
       title: "Nome",
-      dataIndex: "nome",
+      dataIndex: "name",
       width: 150,
       ellipsis: {
         showTitle: false,
       },
-      render: (nome) => (
+      render: (name) => (
         <Tooltip
           placement="topLeft"
-          title={nome}
+          title={name}
           styles={{ body: { fontSize: "12px" } }}
         >
-          {nome || "-"}
+          {name || "-"}
         </Tooltip>
       ),
     },
 
     {
       title: "Data e Hora de Upload",
-      dataIndex: "data_upload",
+      dataIndex: "date_upload",
       width: 80,
-      render: (data_upload: string) => {
-        return formatDateTimeBR(data_upload);
+      render: (date_upload: string) => {
+        return formatDateTimeBR(date_upload);
       },
     },
 
     {
       title: "Descrição ",
-      dataIndex: "descricao",
+      dataIndex: "description",
       width: 160,
       ellipsis: {
         showTitle: false,
       },
-      render: (descricao) => (
+      render: (description) => (
         <Tooltip
           placement="topLeft"
-          title={descricao}
+          title={description}
           styles={{ body: { fontSize: "12px" } }}
         >
-          {descricao || "-"}
+          {description || "-"}
         </Tooltip>
       ),
     },
@@ -190,37 +194,6 @@ export function useMonthOffersFilterController({
         </ConfigProvider>
       ),
     },
-    // {
-    //   title: "",
-    //   dataIndex: "online",
-    //   width: 50,
-    //   render: () => (
-    //     <ConfigProvider
-    //       theme={{
-    //         components: {
-    //           Button: {
-    //             colorBorder: "#0026d9",
-    //             colorText: "#0026d9",
-
-    //             colorPrimary: "#0026d9",
-
-    //             colorPrimaryHover: "#883fa2",
-    //           },
-    //         },
-    //       }}
-    //     >
-    //       <Tooltip
-    //         title="Download"
-    //         placement="top"
-    //         styles={{ body: { fontSize: "12px" } }}
-    //       >
-    //         <Button className="w-6 h-6">
-    //           <DownloadOutlined />
-    //         </Button>
-    //       </Tooltip>
-    //     </ConfigProvider>
-    //   ),
-    // },
   ];
   return {
     tableColumns,

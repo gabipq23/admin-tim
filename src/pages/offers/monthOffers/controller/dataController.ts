@@ -2,7 +2,10 @@ import { OffersService } from "@/services/offers";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { MonthOffer, UpdateMonthOfferData } from "@/interfaces/monthOffer";
+import {
+  MonthOffersResponse,
+  UpdateMonthOfferData,
+} from "@/interfaces/monthOffer";
 
 export function useMonthOffersController() {
   const offersService = new OffersService();
@@ -15,21 +18,23 @@ export function useMonthOffersController() {
   const showModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const { data: offers, isLoading } = useQuery<MonthOffer[]>({
+  const { data: offers, isLoading } = useQuery<MonthOffersResponse>({
     refetchOnWindowFocus: false,
     queryKey: [
       "offers",
-      filters.pagina || 1,
-      filters.dataDe || undefined,
-      filters.dataAte || undefined,
-      filters.nome || "",
+      filters.page || 1,
+      filters.per_page || 10,
+      filters.date_from || undefined,
+      filters.date_to || undefined,
+      filters.name || "",
     ],
-    queryFn: async (): Promise<MonthOffer[]> => {
+    queryFn: async (): Promise<MonthOffersResponse> => {
       const response = await offersService.allOffersFiltered({
-        pagina: filters.pagina ? Number(filters.pagina) : undefined,
-        dataDe: filters.dataDe || undefined,
-        dataAte: filters.dataAte || undefined,
-        nome: filters.nome || undefined,
+        page: filters.page ? Number(filters.page) : undefined,
+        per_page: filters.per_page ? Number(filters.per_page) : undefined,
+        date_from: filters.date_from || undefined,
+        date_to: filters.date_to || undefined,
+        name: filters.name || undefined,
       });
 
       return response;
@@ -39,22 +44,22 @@ export function useMonthOffersController() {
     {
       mutationFn: async ({
         file,
-        descricao,
+        description,
       }: {
         file: File;
-        descricao: string;
-      }) => offersService.inputOffers(file, descricao),
+        description: string;
+      }) => offersService.inputOffers(file, description),
       onMutate: async () =>
         await queryClient.cancelQueries({ queryKey: ["offers"] }),
       onSuccess: () => {
         toast.success("Arquivo enviado com sucesso!");
         queryClient.invalidateQueries({ queryKey: ["offers"] });
       },
-      onError: (error: any) => {
+      onError: (error: unknown) => {
         toast.error("Erro ao enviar arquivo. Tente novamente");
-        console.error(error.message);
+        console.error(error);
       },
-    }
+    },
   );
 
   const { mutate: downloadFile, isPending: isDownloadPending } = useMutation({
@@ -63,9 +68,9 @@ export function useMonthOffersController() {
     onSuccess: () => {
       toast.success("Download iniciado!");
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast.error("Erro ao baixar arquivo. Tente novamente");
-      console.error(error.message);
+      console.error(error);
     },
   });
 

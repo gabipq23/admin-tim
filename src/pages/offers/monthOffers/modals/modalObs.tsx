@@ -21,7 +21,7 @@ export function ModalObs({
 
   useEffect(() => {
     if (selectedItem) {
-      setDescription(selectedItem.descricao || "");
+      setDescription(selectedItem.description || "");
     }
   }, [selectedItem]);
 
@@ -30,7 +30,7 @@ export function ModalObs({
 
     updateMonthOffer({
       id: selectedItem.id,
-      data: { descricao: description },
+      data: { description },
     });
 
     setShowModal(false);
