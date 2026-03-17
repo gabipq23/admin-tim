@@ -1,35 +1,42 @@
 import { apiPurchase } from "@/configs/api";
+import {
+  MonthOffersResponse,
+  UpdateMonthOfferData,
+} from "@/interfaces/monthOffer";
 
 export class OffersService {
   async allOffersFiltered({
-    pagina,
-    dataDe,
-    dataAte,
-    nome,
+    page,
+    date_from,
+    date_to,
+    name,
+    per_page,
   }: {
-    pagina?: number;
-    dataDe?: string;
-    dataAte?: string;
-    nome?: string;
-  }): Promise<any> {
-    const res = await apiPurchase.get(`/ofertas-mes`, {
+    page?: number;
+    date_from?: string;
+    date_to?: string;
+    name?: string;
+    per_page?: number;
+  }): Promise<MonthOffersResponse> {
+    const res = await apiPurchase.get(`/tim/offers`, {
       params: {
-        pagina: pagina,
-        dataDe: dataDe,
-        dataAte: dataAte,
-        nome: nome,
+        pagina: page,
+        dataDe: date_from,
+        dataAte: date_to,
+        nome: name,
+        por_pagina: per_page,
       },
     });
 
     return res.data;
   }
 
-  async inputOffers(file: File, descricao: string): Promise<any> {
+  async inputOffers(file: File, description: string): Promise<unknown> {
     const formData = new FormData();
-    formData.append("arquivo", file);
-    formData.append("descricao", descricao);
+    formData.append("file", file);
+    formData.append("description", description);
 
-    const response = await apiPurchase.post(`/ofertas-mes`, formData, {
+    const response = await apiPurchase.post(`/tim/offers`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -37,8 +44,9 @@ export class OffersService {
     return response.data;
   }
 
+  // aguardando infos
   async downloadOfferFile(id: number, fileName: string): Promise<void> {
-    const response = await apiPurchase.get(`/ofertas-mes/${id}/download`);
+    const response = await apiPurchase.get(`/tim/offers/${id}/download`);
     const downloadUrl = response.data.url || response.data;
 
     const link = document.createElement("a");
@@ -50,12 +58,12 @@ export class OffersService {
     link.remove();
   }
 
-  async updateOffers(id: number, data: any): Promise<any> {
-    const response = await apiPurchase.put(`/ofertas-mes/${id}`, data);
+  async updateOffers(id: number, data: UpdateMonthOfferData): Promise<unknown> {
+    const response = await apiPurchase.put(`/tim/offers/${id}`, data);
     return response.data;
   }
 
   async removeOffers(id: number) {
-    await apiPurchase.delete(`/ofertas-mes/${id}`);
+    await apiPurchase.delete(`/tim/offers/${id}`);
   }
 }

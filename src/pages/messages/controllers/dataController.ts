@@ -10,39 +10,42 @@ export function useContactsController() {
   const filters = Object.fromEntries(params.entries());
   const queryClient = useQueryClient();
 
+  // Modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+  const [removeContactIds, setRemoveContactIds] = useState([] as number[]);
+
   const { data: contactsQuery, isFetching: isContactFetching } =
     useQuery<IContactResponse>({
       refetchOnWindowFocus: false,
       queryKey: [
-        "purchases",
-        filters.nome || "",
-        filters.email || "",
-        filters.cnpj || "",
-        filters.data_de || undefined,
-        filters.data_ate || undefined,
-        filters.status_mensagem || "",
-        filters.assunto || "",
-        filters.page || 1,
-        filters.limit || 100,
-        filters.sort || "data_criacao",
-        filters.order || "desc",
+        "messages",
+        filters.page,
+        filters.data_to,
+        filters.data_from,
+        filters.per_page,
+        filters.name,
+        filters.email,
+        filters.cnpj,
+        filters.cpf,
+        filters.subject,
+        filters.sort,
+        filters.order,
       ],
       queryFn: async (): Promise<IContactResponse> => {
         const response = await contactService.allContacts({
-          nome: filters.nome || "",
-          email: filters.email || "",
-          cnpj: filters.cnpj || "",
-          data_de: filters.data_de || undefined,
-          data_ate: filters.data_ate || undefined,
-          status_mensagem: filters.status_mensagem || "",
-          assunto: filters.assunto || "",
-          page: filters.page || 1,
-          limit: filters.limit || 100,
-          sort: filters.sort || "data_criacao",
-          order:
-            filters.order === "asc" || filters.order === "desc"
-              ? filters.order
-              : "desc",
+          page: filters.page,
+          data_to: filters.data_to,
+          data_from: filters.data_from,
+          per_page: filters.per_page,
+          name: filters.name,
+          email: filters.email,
+          cnpj: filters.cnpj,
+          cpf: filters.cpf,
+          subject: filters.subject,
+          sort: filters.sort,
+          order: filters.order,
         });
         return response;
       },
@@ -51,22 +54,22 @@ export function useContactsController() {
   const { mutate: changeContactStatus } = useMutation({
     mutationFn: async ({
       id,
-      status_mensagem,
+      status,
     }: {
       id: number;
-      status_mensagem: "Visualizada" | "Respondida";
+      status: "LIDA" | "RESPONDIDA";
     }) => {
       const response = await contactService.changeContactStatus({
         id,
-        status_mensagem,
+        status,
       });
       return response;
     },
     onMutate: async () =>
-      await queryClient.cancelQueries({ queryKey: ["contacts"] }),
+      await queryClient.cancelQueries({ queryKey: ["messages"] }),
     onSuccess: () => {
       toast.success("Status alterado com sucesso!");
-      queryClient.invalidateQueries({ queryKey: ["purchases"] });
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
     },
     onError: (error) => {
       toast.error("Houve um erro ao alterar o status. Tente novamente");
@@ -78,18 +81,16 @@ export function useContactsController() {
     mutationFn: async ({ id }: { id: number }) =>
       contactService.removeContact(id),
     onMutate: async () =>
-      await queryClient.cancelQueries({ queryKey: ["contacts"] }),
+      await queryClient.cancelQueries({ queryKey: ["messages"] }),
     onError: (error) => {
-      toast.error("Houve um erro ao remover o contato. Tente novamente");
+      toast.error("Houve um erro ao remover a mensagem. Tente novamente");
       console.error(error.message);
     },
     onSuccess: () => {
-      toast.success("Contato removido com sucesso!");
-      queryClient.invalidateQueries({ queryKey: ["purchases"] });
+      toast.success("Mensagem removida com sucesso!");
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
     },
   });
-
-  const [removeContactIds, setRemoveContactIds] = useState([] as number[]);
 
   const removeContacts = () => {
     for (const id of removeContactIds) {
@@ -97,16 +98,15 @@ export function useContactsController() {
     }
   };
 
-  // Modal
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const contacts =
+    contactsQuery?.messages?.filter((contact) => contact.company === "VR") ||
+    [];
 
   return {
     changeContactStatus,
     contactsQuery,
-    contacts: contactsQuery?.data,
-    totalContacts: contactsQuery?.total || 0,
+    contacts,
+    totalContacts: contactsQuery?.pagination?.total || 0,
     isModalOpen,
     showModal,
     closeModal,

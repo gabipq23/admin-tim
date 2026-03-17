@@ -12,7 +12,7 @@ import { Button, ConfigProvider, Form, Input, Tooltip } from "antd";
 import { useEffect } from "react";
 import { ExclamationOutlined } from "@ant-design/icons";
 import { EmpresasDisplay } from "@/components/empresasDisplay";
-import { convertData } from "@/utils/convertData";
+
 
 interface OrderBandaLargaPFDisplayProps {
   localData: OrderBandaLargaPF;
@@ -24,6 +24,19 @@ export function OrderBandaLargaPFDisplay({
   updateOrderData,
 }: OrderBandaLargaPFDisplayProps) {
   const [form] = Form.useForm();
+
+  const formatPaymentMethod = (method?: string | null) => {
+    if (!method) return "-";
+
+    const paymentMethodLabels: Record<string, string> = {
+      automatic_debit: "Debito Automatico",
+      credit_card: "Cartao de Credito",
+      boleto: "Boleto",
+      pix: "PIX",
+    };
+
+    return paymentMethodLabels[method] || method;
+  };
 
   const formatDevice = (device: string) => {
     if (!device) return "-";
@@ -105,7 +118,6 @@ export function OrderBandaLargaPFDisplay({
       </div>
     );
   };
-
   const PAPStatus = () => {
     if (
       localData.availability_pap === null ||
@@ -148,27 +160,28 @@ export function OrderBandaLargaPFDisplay({
       </div>
     );
   };
+
   useEffect(() => {
     if (localData) {
       form.setFieldsValue({
-        observacao_consultor: localData.observacao_consultor || "",
+        consultant_observation: localData.consultant_observation || "",
       });
     }
   }, [localData, form]);
 
   const getAlertScenarios = (
     availability?: boolean | number,
-    encontrado_via_range?: number,
-    cep_unico?: number,
+    found_via_range?: boolean | null,
+    single_zip_code?: boolean | null,
     status?: string,
   ) => {
     const scenarios: { color: string; content: React.ReactNode }[] = [];
     const noAvailability =
       availability === false || availability === null || availability === 0;
-    const isCoveredByRange = encontrado_via_range === 1;
-    const hasUnicCep = cep_unico === 1;
+    const isCoveredByRange = Boolean(found_via_range);
+    const hasUnicCep = Boolean(single_zip_code);
 
-    if (status === "fechado") {
+    if (status === "FECHADO") {
       if (noAvailability) {
         scenarios.push({
           color: "#ffeaea",
@@ -190,7 +203,7 @@ export function OrderBandaLargaPFDisplay({
     }
 
     if (
-      status === "fechado" &&
+      status === "FECHADO" &&
       !hasUnicCep &&
       !isCoveredByRange &&
       !noAvailability
@@ -207,12 +220,13 @@ export function OrderBandaLargaPFDisplay({
     const values = await form.validateFields();
 
     if (
-      values.observacao_consultor &&
-      values.observacao_consultor.trim() !== ""
+      values.consultant_observation
+      &&
+      values.consultant_observation.trim() !== ""
     ) {
       updateOrderData({
         id: localData?.id,
-        data: { pedido: { observacao_consultor: values.observacao_consultor } },
+        data: { pedido: { consultant_observation: values.consultant_observation } },
       });
     }
   };
@@ -239,11 +253,11 @@ export function OrderBandaLargaPFDisplay({
           <div>
             <div className="flex items-center py-4 text-[14px] text-neutral-700">
               <p className="text-[14px] font-semibold w-48 text-center">
-                {localData.plan?.name + " - " + localData.plan?.speed || "-"}
+                {localData.plan?.name || "-"}
               </p>
               <p className="text-[14px] font-semibold w-32 text-center">
-                {localData.plan?.price
-                  ? ` ${formatBRL(localData.plan.price)}`
+                {localData.plan?.value
+                  ? ` ${formatBRL(localData.plan.value)}`
                   : "-"}
               </p>
               <p className="text-[14px] w-40 text-center">
@@ -259,13 +273,14 @@ export function OrderBandaLargaPFDisplay({
                 {localData.installation_preferred_period_two || "-"}
               </p>
               <p className="text-[14px] font-semibold w-32 text-center">
-                {localData.dueday?.toString() || "-"}
+                {localData.due_day?.toString() || "-"}
               </p>
             </div>
             <hr className="border-t border-neutral-300 mx-2" />
           </div>
         </div>
       </div>
+
 
       {/* Seção de Disponibilidade */}
       <div className="flex flex-col bg-neutral-100 mb-3 rounded-[4px] p-3 w-full">
@@ -279,6 +294,39 @@ export function OrderBandaLargaPFDisplay({
           <div className="bg-white rounded-md p-4 flex flex-col items-center">
             <p className="text-[14px] font-medium text-neutral-700 mb-2">PAP</p>
             <PAPStatus />
+          </div>
+
+        </div>
+      </div>
+      {/* Informacoes de Pagamento */}
+      <div className="flex flex-col bg-neutral-100 mb-3 rounded-[4px] p-3 w-full">
+        <div className="flex items-center mb-3">
+          <h2 className="text-[14px] text-[#666666] font-medium">
+            Informacoes de Pagamento
+          </h2>
+        </div>
+
+        <div className="flex flex-col text-neutral-800 gap-4 rounded-lg">
+          <div className="bg-white rounded-md p-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+
+              <DisplayGenerator
+                title="Metodo de Pagamento:"
+                value={formatPaymentMethod(localData.payment_method)}
+              />
+              <DisplayGenerator
+                title="Nome do Banco:"
+                value={localData.bank_name || "-"}
+              />
+              <DisplayGenerator
+                title="Agencia:"
+                value={localData.bank_branch || "-"}
+              />
+              <DisplayGenerator
+                title="Numero da Conta:"
+                value={localData.bank_account_number || "-"}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -294,7 +342,7 @@ export function OrderBandaLargaPFDisplay({
         <div className="flex flex-col text-neutral-800 gap-4 rounded-lg">
           {/* Dados Pessoais */}
           <div className="bg-white rounded-md p-2">
-            {localData.temperatura_pf === 10 ? (
+            {localData.pf_temperature === 10 ? (
               <div className="flex bg-[#d63535] rounded-full w-10 h-10 items-center justify-center relative mr-3">
                 <img
                   src={
@@ -315,17 +363,17 @@ export function OrderBandaLargaPFDisplay({
               />
             )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <DisplayGenerator title="Nome:" value={localData.fullname} />
+              <DisplayGenerator title="Nome:" value={localData.full_name} />
               <DisplayGenerator
                 title="Nome (RFB):"
-                value={localData.nome_receita}
+                value={localData.rfb_name}
               />
               <DisplayGenerator
                 title="Gênero:"
                 value={
-                  localData.genero_receita === "M"
+                  localData.rfb_gender === "M"
                     ? "Masculino"
-                    : localData.genero_receita === "F"
+                    : localData.rfb_gender === "F"
                       ? "Feminino"
                       : "-"
                 }
@@ -334,19 +382,19 @@ export function OrderBandaLargaPFDisplay({
 
               <DisplayGenerator
                 title="Data de Nascimento:"
-                value={localData.birthdate}
+                value={localData.birth_date}
               />
               <DisplayGenerator
                 title="Data Nascimento (RFB):"
-                value={localData.data_de_nascimento_receita}
+                value={localData.rfb_birth_date}
               />
               <DisplayGenerator
                 title="Nome da Mãe:"
-                value={localData.motherfullname}
+                value={localData.mother_full_name}
               />
               <DisplayGenerator
                 title="Nome Mãe (RFB):"
-                value={localData.nome_da_mae_receita}
+                value={localData.rfb_mother_name}
               />
               <DisplayGenerator title="Email:" value={localData.email} />
             </div>
@@ -368,27 +416,27 @@ export function OrderBandaLargaPFDisplay({
                   <DisplayGenerator
                     title="Anatel:"
                     value={
-                      localData.numero_valido
+                      localData.phone_valid
                         ? "Sim"
-                        : localData.numero_valido === null ||
-                          localData.numero_valido === undefined
+                        : localData.phone_valid === null ||
+                          localData.phone_valid === undefined
                           ? "-"
                           : "Não"
                     }
                   />
                   <DisplayGenerator
                     title="Operadora:"
-                    value={localData.operadora}
+                    value={localData.operator}
                   />
                   <DisplayGenerator
                     title="Portado:"
-                    value={localData.portabilidade}
+                    value={localData.portability}
                   />
                   <DisplayGenerator
                     title="Data da Portabilidade:"
                     value={
-                      localData.data_portabilidade
-                        ? convertData(localData.data_portabilidade)
+                      localData.portability_date
+                        ? (localData.portability_date)
                         : "-"
                     }
                   />
@@ -412,31 +460,31 @@ export function OrderBandaLargaPFDisplay({
                 <div className="rounded p-1 space-y-1">
                   <DisplayGenerator
                     title="Número:"
-                    value={formatPhoneNumber(localData.phoneAdditional || "")}
+                    value={formatPhoneNumber(localData.additional_phone || "")}
                   />
                   <DisplayGenerator
                     title="Anatel:"
                     value={
-                      localData.numero_adicional_valido
+                      localData.additional_phone_valid
                         ? "Sim"
-                        : localData.numero_adicional_valido === null
+                        : localData.additional_phone_valid === null
                           ? "-"
                           : "Não"
                     }
                   />
                   <DisplayGenerator
                     title="Operadora:"
-                    value={localData.operadora_adicional}
+                    value={localData.additional_operator}
                   />{" "}
                   <DisplayGenerator
                     title="Portado:"
-                    value={localData.portabilidade_adicional}
+                    value={localData.additional_portability}
                   />
                   <DisplayGenerator
                     title="Data da Portabilidade:"
                     value={
-                      localData.data_portabilidade_adicional
-                        ? convertData(localData.data_portabilidade_adicional)
+                      localData.additional_portability_date
+                        ? (localData.additional_portability_date)
                         : "-"
                     }
                   />
@@ -460,9 +508,9 @@ export function OrderBandaLargaPFDisplay({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <DisplayGenerator
                 title="Sócio:"
-                value={localData.socio ? "Sim" : "Não"}
+                value={localData.is_socio ? "Sim" : "Não"}
               />{" "}
-              <EmpresasDisplay empresas={localData.socios_empresas} />
+              <EmpresasDisplay empresas={localData.company_partners} />
               <div className="md:col-span-2">
                 <DisplayGenerator
                   title="MEI:"
@@ -487,11 +535,11 @@ export function OrderBandaLargaPFDisplay({
               <DisplayGenerator title="Rua:" value={localData.address} />
               <DisplayGenerator
                 title="Número:"
-                value={localData.addressnumber}
+                value={localData.address_number}
               />
               <DisplayGenerator
                 title="Complemento:"
-                value={localData.addresscomplement}
+                value={localData.address_complement}
               />
               <DisplayGenerator title="Bairro:" value={localData.district} />
               <DisplayGenerator title="Cidade:" value={localData.city} />
@@ -506,37 +554,37 @@ export function OrderBandaLargaPFDisplay({
                 <DisplayGenerator
                   title="Tipo:"
                   value={
-                    localData.buildingorhouse === "building"
+                    localData.building_or_house === "building"
                       ? "Edifício"
                       : "Casa"
                   }
                 />
                 <DisplayGenerator
                   title="Andar:"
-                  value={localData.addressFloor}
+                  value={localData.address_floor}
                 />
               </div>
               <div className="space-y-2">
                 <DisplayGenerator
                   title="CEP:"
-                  value={formatCEP(localData.cep)}
+                  value={formatCEP(localData.zip_code)}
                 />
                 <DisplayGenerator
                   title="CEP único:"
-                  value={localData.cep_unico ? "Sim" : "Não"}
+                  value={localData.single_zip_code ? "Sim" : "Não"}
                 />
               </div>
               <div className="space-y-2">
-                <DisplayGenerator title="Lote:" value={localData.addresslot} />
+                <DisplayGenerator title="Lote:" value={localData.address_lot} />
                 <DisplayGenerator
                   title="Quadra:"
-                  value={localData.addressblock}
+                  value={localData.address_block}
                 />
               </div>
               <div className="md:col-span-3">
                 <DisplayGenerator
                   title="Ponto de Referência:"
-                  value={localData.addressreferencepoint}
+                  value={"-"}
                 />
               </div>
             </div>
@@ -547,15 +595,17 @@ export function OrderBandaLargaPFDisplay({
               <DisplayGenerator
                 title="Coordenadas:"
                 value={
-                  localData.geolocalizacao?.latitude &&
-                    localData.geolocalizacao?.longitude
-                    ? `${localData.geolocalizacao.latitude}, ${localData.geolocalizacao.longitude}`
+                  localData.geolocation
+                    ?.latitude &&
+                    localData.geolocation?.longitude
+                    ? `${localData.geolocation.latitude}, ${localData.geolocation.longitude}`
                     : "-"
                 }
               />
 
               <a
-                href={localData.geolocalizacao?.link_maps}
+                href={localData.geolocation?.maps_link
+                }
                 target="_blank"
                 style={{ color: "#0026d9", textDecoration: "underline" }}
                 rel="noopener noreferrer"
@@ -564,7 +614,8 @@ export function OrderBandaLargaPFDisplay({
               </a>
 
               <a
-                href={localData.geolocalizacao?.link_street_view}
+                href={localData.geolocation?.street_view_link
+                }
                 target="_blank"
                 style={{ color: "#0026d9", textDecoration: "underline" }}
                 rel="noopener noreferrer"
@@ -576,6 +627,9 @@ export function OrderBandaLargaPFDisplay({
           </div>
         </div>
       </div>
+
+
+
       {/* Dados do Tráfego */}
       <div className="flex flex-col bg-neutral-100 mb-3 rounded-[4px] p-3 w-full">
         <div className="flex items-center mb-3">
@@ -593,17 +647,17 @@ export function OrderBandaLargaPFDisplay({
               <DisplayGenerator
                 title="Tipo de acesso:"
                 value={
-                  localData.ip_tipo_acesso === "movel"
+                  localData.ip_access_type === "movel"
                     ? "Móvel"
-                    : localData.ip_tipo_acesso === "fixo"
+                    : localData.ip_access_type === "fixo"
                       ? "Fixo"
-                      : localData.ip_tipo_acesso === "hosting"
+                      : localData.ip_access_type === "hosting"
                         ? "Hosting"
-                        : localData.ip_tipo_acesso === "proxy"
+                        : localData.ip_access_type === "proxy"
                           ? "Proxy"
-                          : localData.ip_tipo_acesso === "local"
+                          : localData.ip_access_type === "local"
                             ? "Local"
-                            : localData.ip_tipo_acesso === "desconhecido"
+                            : localData.ip_access_type === "desconhecido"
                               ? "Desconhecido"
                               : "-"
                 }
@@ -621,39 +675,39 @@ export function OrderBandaLargaPFDisplay({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <DisplayGenerator
                 title="Plataforma:"
-                value={formatOSDisplay(localData.finger_print?.os)}
+                value={formatOSDisplay(localData.fingerprint?.os)}
               />
               <DisplayGenerator
                 title="Dispositivo:"
-                value={formatDevice(localData.finger_print?.device || "-")}
+                value={formatDevice(localData.fingerprint?.device || "-")}
               />
               <DisplayGenerator
                 title="Browser:"
-                value={formatBrowserDisplay(localData.finger_print?.browser)}
+                value={formatBrowserDisplay(localData.fingerprint?.browser)}
               />
               <DisplayGenerator
                 title="TimeZone:"
-                value={localData.finger_print?.timezone + " - " + localData.finger_print?.timezone_name || "-"}
+                value={localData.fingerprint?.timezone + " - " + localData.fingerprint?.timezone_name || "-"}
               />
               <DisplayGenerator
                 title="Resolução:"
                 value={formatResolution(
-                  localData.finger_print?.resolution || "-",
+                  localData.fingerprint?.resolution || "-",
                 )}
               />
               <DisplayGenerator
                 title="ID Fingerprint:"
-                value={localData.fingerprintId || "-"}
+                value={localData.fingerprint_id || "-"}
               />
             </div>
           </div>
         </div>
       </div>
-      {localData?.status === "fechado" &&
+      {localData?.status === "FECHADO" &&
         getAlertScenarios(
-          localData?.availability,
-          localData?.encontrado_via_range,
-          localData?.cep_unico,
+          localData?.availability ?? undefined,
+          localData?.found_via_range,
+          localData?.single_zip_code,
           localData?.status,
         ).map((scenario, idx) => (
           <div
@@ -709,7 +763,7 @@ export function OrderBandaLargaPFDisplay({
                 {" "}
                 <Form.Item
                   className="w-full "
-                  name="observacao_consultor"
+                  name="consultant_observation"
                   style={{ marginBottom: 8 }}
                 >
                   <Input.TextArea

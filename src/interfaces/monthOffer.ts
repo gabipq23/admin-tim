@@ -1,15 +1,25 @@
 export interface MonthOffer {
   id: number;
-  nome: string;
+  company: string;
+  name: string;
+  description: string;
+  link: string;
   data_upload: string;
-  descricao: string;
-  arquivo_url?: string;
-  created_at?: string;
-  updated_at?: string;
+}
+
+export interface MonthOffersResponse {
+  success: boolean;
+  offers: MonthOffer[];
+  pagination: {
+    page: number;
+    per_page: number;
+    total: number;
+    total_pages: number;
+  };
 }
 
 export interface UpdateMonthOfferData {
-  descricao?: string;
-  nome?: string;
-  arquivo_url?: string;
+  description?: string;
+  name?: string;
+  link?: string;
 }

@@ -20,70 +20,26 @@ export function useAllOrdersController() {
       refetchOnWindowFocus: false,
       queryKey: [
         "ordersBandaLargaPF",
-        filters.availability || true,
-        filters.plan || "",
-        filters.status_pos_venda || "",
-        filters.fullname || "",
-        filters.phone || "",
-        filters.cpf || "",
-        filters.cnpj || "",
-        filters.razaosocial || "",
-        filters.ordernumber || "",
-        filters.page || 1,
-        filters.limit || 200,
-        filters.data_de || undefined,
-        filters.data_ate || undefined,
-        filters.sort || "data_criacao",
-        filters.status || "",
-        filters.order || "desc",
-        filters.consulta || undefined,
-        filters.pedido || undefined,
-        filters.initial_status || "",
+        filters.page,
+        filters.per_page,
+        filters.data_to,
+        filters.data_from,
+        filters.status,
+
       ],
       queryFn: async (): Promise<OrderBandaLargaPFResponse> => {
         const response = await bandaLargaService.allBandaLargaFiltered({
-          availability:
-            filters.availability === "true"
-              ? true
-              : filters.availability === "false"
-                ? false
-                : undefined,
-          consulta:
-            filters.consulta === "true"
-              ? true
-              : filters.consulta === "false"
-                ? false
-                : undefined,
-          pedido:
-            filters.pedido === "true"
-              ? true
-              : filters.pedido === "false"
-                ? false
-                : undefined,
-          plan: filters.plan || "",
-          status_pos_venda: filters.status_pos_venda || "",
-          fullname: filters.fullname || "",
-          phone: filters.phone || "",
-          cpf: filters.cpf || "",
-          cnpj: filters.cnpj || "",
-          razaosocial: filters.razaosocial || "",
-          ordernumber: filters.ordernumber || "",
-          page: filters.page || 1,
-          limit: filters.limit || 200,
-          data_de: filters.data_de || undefined,
-          data_ate: filters.data_ate || undefined,
-          status: filters.status || "",
-          sort: filters.sort || "data_criacao",
-          order:
-            filters.order === "asc" || filters.order === "desc"
-              ? filters.order
-              : "desc",
-          initial_status: filters.initial_status || "",
+          page: filters.page,
+          per_page: filters.per_page,
+          data_to: filters.data_to,
+          data_from: filters.data_from,
+          status: filters.status,
         });
 
         return response;
       },
     });
+
   const { mutate: updateBandaLargaOrder, isPending: isUpdatePurchaseFetching } =
     useMutation({
       mutationFn: async ({ id, data }: { id: number; data: any }) =>
@@ -138,7 +94,11 @@ export function useAllOrdersController() {
     },
   });
 
-  const updateDataIdVivoAndConsultorResponsavel = (
+  const orderBandaLargaPF = ordersBandaLarga?.orders?.filter(
+    (order) => order.client_type === "PF"
+  );
+
+  const updateDataIdCRMAndConsultorResponsavel = (
     id: string | undefined,
     values: any,
   ) => {
@@ -148,12 +108,11 @@ export function useAllOrdersController() {
     }
 
     const dadosGerais = {
-      pedido: {
-        consultor_responsavel: values.consultor_responsavel,
-        id_vivo_corp: values.id_vivo_corp,
-        id_crm: values.id_crm,
-        credito: values.credito,
-      },
+      responsible_consultant: values.responsible_consultant,
+      corporate_id: values.corporate_id,
+      crm_id: values.crm_id,
+      credit: values.credit,
+
     };
 
     updateBandaLargaOrder({
@@ -161,14 +120,6 @@ export function useAllOrdersController() {
       data: dadosGerais,
     });
   };
-
-  const orderBandaLargaPF = ordersBandaLarga?.pedidos.filter(
-    (order: any) =>
-      order.typeclient === "PF" &&
-      order.phone !== null &&
-      order.phone !== "" &&
-      order.phone !== undefined,
-  );
 
   return {
     ordersBandaLarga,
@@ -181,7 +132,7 @@ export function useAllOrdersController() {
     isUpdatePurchaseFetching,
     removeBandaLargaOrder,
     isRemoveBandaLargaOrderFetching,
-    updateDataIdVivoAndConsultorResponsavel,
     changeBandaLargaOrderStatus,
+    updateDataIdCRMAndConsultorResponsavel
   };
 }

@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 interface ILoginForm {
   email: string;
-  senha: string;
+  password: string;
 }
 
 export function Login() {
@@ -18,7 +18,7 @@ export function Login() {
   const mutation = useMutation<void, Error, ILoginForm>({
     mutationFn: (data: ILoginForm) => login(data),
     onSuccess: () => {
-      navigate("/admin/pedidos-aparelhos-pj");
+      navigate("/admin/pedidos-banda-larga-pf");
     },
     onError: (error: any) => {
       const errorMessage =
@@ -64,14 +64,14 @@ export function Login() {
                 <Input {...field} placeholder="Digite seu email" />
               )}
             />
-            <p className="text-[14px] text-neutral-500">Senha: </p>
+            <p className="text-[14px] text-neutral-500">password: </p>
 
             <Controller
-              name="senha"
+              name="password"
               control={control}
               defaultValue=""
               render={({ field }) => (
-                <Input.Password {...field} placeholder="Digite sua senha" />
+                <Input.Password {...field} placeholder="Digite sua password" />
               )}
             />
             <div className="flex justify-center mt-4">

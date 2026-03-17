@@ -32,8 +32,18 @@ const getBase64FromImageUrl = (url: string): Promise<string> => {
 export const generatePDF = async (order: OrderBandaLargaPF | undefined) => {
   if (!order) return;
 
-  const logoVivo = await getBase64FromImageUrl("/assets/logovivopdf.png");
-  const logoGold = await getBase64FromImageUrl("/assets/goldpdf.png");
+  const paymentMethodLabel =
+    order.payment_method === "automatic_debit"
+      ? "Debito Automatico"
+      : order.payment_method === "credit_card"
+        ? "Cartao de Credito"
+        : order.payment_method === "boleto"
+          ? "Boleto"
+          : order.payment_method === "pix"
+            ? "PIX"
+            : order.payment_method || "-";
+
+  const logo = await getBase64FromImageUrl("/assets/tim.svg");
 
   const docDefinition = {
     pageMargins: [20, 40, 20, 40],
@@ -42,18 +52,13 @@ export const generatePDF = async (order: OrderBandaLargaPF | undefined) => {
       {
         columns: [
           {
-            image: logoVivo,
+            image: logo,
             width: 100,
             alignment: "left",
             margin: [0, 10, 0, 0],
           },
           { text: "", width: "*" },
-          {
-            image: logoGold,
-            width: 100,
-            alignment: "right",
-            margin: [0, 25, 0, 0],
-          },
+
         ],
         margin: [0, 5, 0, 10] as [number, number, number, number],
       },
@@ -62,7 +67,7 @@ export const generatePDF = async (order: OrderBandaLargaPF | undefined) => {
       {
         columns: [
           {
-            text: `Pedido Banda Larga PF Nº${order.ordernumber || order.id}`,
+            text: `Pedido Banda Larga PF Nº${order.order_number || order.id}`,
             style: "title",
           },
         ],
@@ -73,18 +78,18 @@ export const generatePDF = async (order: OrderBandaLargaPF | undefined) => {
       {
         table: {
           headerRows: 1,
-          widths: ["*", "*", 80],
+          widths: ["*", 100],
           body: [
             [
               { text: "Plano", style: "tableHeader" },
-              { text: "Velocidade", style: "tableHeader" },
+
               { text: "Valor Mensal", style: "tableHeader" },
             ],
             [
               { text: order.plan?.name || "-", style: "tableBody" },
-              { text: order.plan?.speed || "-", style: "tableBody" },
+
               {
-                text: formatBRL(order.plan?.price) || 0,
+                text: formatBRL(order.plan?.price ?? order.plan?.value ?? 0),
                 style: "tableBody",
               },
             ],
@@ -97,10 +102,21 @@ export const generatePDF = async (order: OrderBandaLargaPF | undefined) => {
       {
         type: "circle",
         ul: [
-          `Possui Disponibilidade?  ${
-            order.availability
-              ? "Sim"
-              : order.availability === null
+          `Possui Disponibilidade?  ${order.availability
+            ? "Sim"
+            : order.availability === null
+              ? "-"
+              : "Não"
+          }`,
+        ],
+        style: "content",
+      },
+      {
+        type: "circle",
+        ul: [
+          `Possui Disponibilidade PAP?  ${order.availability_pap
+            ? "Sim"
+            : order.availability_pap === null
               ? "-"
               : "Não"
           }`,
@@ -112,16 +128,14 @@ export const generatePDF = async (order: OrderBandaLargaPF | undefined) => {
       {
         type: "circle",
         ul: [
-          `Nome Completo: ${order.fullname || "-"}`,
+          `Nome Completo: ${order.full_name || "-"}`,
           `CPF: ${formatCPF(order.cpf) || "-"}`,
           `Email: ${order.email || "-"}`,
           `Telefone: ${formatPhoneNumber(order.phone) || "-"}`,
-          `Telefone Adicional: ${
-            formatPhoneNumber(order.phoneAdditional || "") || "-"
-          }`,
+          `Telefone Adicional: ${formatPhoneNumber(order.additional_phone || "") || "-"}`,
 
-          `Data de Nascimento: ${order.birthdate}`,
-          `Nome da Mãe: ${order.motherfullname || "-"}`,
+          `Data de Nascimento: ${order.birth_date || "-"}`,
+          `Nome da Mãe: ${order.mother_full_name || "-"}`,
         ],
         style: "content",
       },
@@ -131,16 +145,15 @@ export const generatePDF = async (order: OrderBandaLargaPF | undefined) => {
       {
         type: "circle",
         ul: [
-          `CEP: ${formatCEP(order.cep) || "-"}`,
+          `CEP: ${formatCEP(order.zip_code || "") || "-"}`,
           `Endereço: ${order.address || "-"}`,
-          `Número: ${order.addressnumber || "-"}`,
-          `Complemento: ${order.addresscomplement || "-"}`,
-          `Lote: ${order.addresslot || "-"}`,
-          `Quadra: ${order.addressblock || "-"}`,
-          `Andar: ${order.addressFloor || "-"}`,
-          `Tipo: ${order.buildingorhouse === 1 ? "Prédio" : "Casa"}`,
+          `Número: ${order.address_number || "-"}`,
+          `Complemento: ${order.address_complement || "-"}`,
+          `Lote: ${order.address_lot || "-"}`,
+          `Quadra: ${order.address_block || "-"}`,
+          `Andar: ${order.address_floor || "-"}`,
+          `Tipo: ${order.building_or_house === "building" ? "Prédio" : "Casa"}`,
           `Bairro: ${order.district || "-"}`,
-          `Ponto de Referência: ${order.addressreferencepoint || "-"}`,
           `Cidade: ${order.city || "-"}`,
           `Estado: ${order.state || "-"}`,
         ],
@@ -153,14 +166,25 @@ export const generatePDF = async (order: OrderBandaLargaPF | undefined) => {
         type: "circle",
         ul: [
           `Data Preferida 1: ${order.installation_preferred_date_one}`,
-          `Período Preferido 1: ${
-            order.installation_preferred_period_one || "-"
+          `Período Preferido 1: ${order.installation_preferred_period_one || "-"
           }`,
           `Data Preferida 2: ${order.installation_preferred_date_two}`,
-          `Período Preferido 2: ${
-            order.installation_preferred_period_two || "-"
+          `Período Preferido 2: ${order.installation_preferred_period_two || "-"
           }`,
-          `Dia de Vencimento: ${order.dueday || "-"}`,
+          `Dia de Vencimento: ${order.due_day ?? "-"}`,
+        ],
+        style: "content",
+      },
+
+      // Informacoes de Pagamento
+      { text: "Informações de Pagamento", style: "sectionHeader" },
+      {
+        type: "circle",
+        ul: [
+          `Metodo de Pagamento: ${paymentMethodLabel}`,
+          `Nome do Banco: ${order.bank_name || "-"}`,
+          `Agencia: ${order.bank_branch || "-"}`,
+          `Numero da Conta: ${order.bank_account_number || "-"}`,
         ],
         style: "content",
       },
@@ -171,19 +195,14 @@ export const generatePDF = async (order: OrderBandaLargaPF | undefined) => {
         columns: [
           { text: "Valor Mensal do Plano", style: "content" },
           {
-            text: formatBRL(order.plan?.price) || 0,
+            text: formatBRL(order.plan?.price ?? order.plan?.value ?? 0),
             style: "content",
             alignment: "right",
           },
         ],
       },
 
-      // Rodapé
-      {
-        text: "50.040.822/0001-74 - Gsc Solucoes Corporativas",
-        style: "footer",
-        margin: [0, 30, 0, 0] as [number, number, number, number],
-      },
+
     ],
     styles: {
       tableHeader: {
@@ -231,5 +250,5 @@ export const generatePDF = async (order: OrderBandaLargaPF | undefined) => {
 
   pdfMake
     .createPdf(docDefinition as any)
-    .download(`pedido-banda-larga-pf-${order.ordernumber || order.id}.pdf`);
+    .download(`pedido-banda-larga-pf-${order.order_number || order.id}.pdf`);
 };

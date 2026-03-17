@@ -1,12 +1,47 @@
 import { formatBRL } from "@/utils/formatBRL";
+import { OrderBandaLargaPJ } from "@/interfaces/bandaLargaPJ";
 import * as XLSX from "xlsx";
 
-export const handleExportXLSX = (data: any, selectedRowKeys: any) => {
+const getNestedValue = (obj: unknown, path: string): unknown => {
+  return path.split(".").reduce((acc: unknown, prop: string) => {
+    if (acc && typeof acc === "object" && prop in (acc as Record<string, unknown>)) {
+      return (acc as Record<string, unknown>)[prop];
+    }
+    return undefined;
+  }, obj);
+};
+
+const getFlatValue = (obj: unknown, key: string): unknown => {
+  return (obj as unknown as Record<string, unknown>)[key];
+};
+
+const toYesNo = (value: unknown): string => {
+  if (value === null || value === undefined) return "-";
+  return value === true || value === 1 ? "Sim" : "Nao";
+};
+
+const formatPaymentMethod = (method?: string | null): string => {
+  if (!method) return "-";
+
+  const labels: Record<string, string> = {
+    automatic_debit: "Debito Automatico",
+    credit_card: "Cartao de Credito",
+    boleto: "Boleto",
+    pix: "PIX",
+  };
+
+  return labels[method] || method;
+};
+
+export const handleExportXLSX = (
+  data: OrderBandaLargaPJ[] | undefined,
+  selectedRowKeys: Array<string | number> | undefined,
+) => {
   if (!data || !selectedRowKeys || selectedRowKeys.length === 0) {
     return;
   }
 
-  const pedidosSelecionados = data?.filter((item: any) =>
+  const pedidosSelecionados = data.filter((item) =>
     selectedRowKeys.includes(item.id),
   );
 
@@ -14,253 +49,208 @@ export const handleExportXLSX = (data: any, selectedRowKeys: any) => {
     return;
   }
 
-  const camposMonetarios = ["plan.price"];
+  const camposMonetarios = ["plan.price", "plan.value", "credit"];
   const camposDataHora = [
     "created_at",
+    "updated_at",
+    "birth_date",
+    "rfb_birth_date",
     "installation_preferred_date_one",
     "installation_preferred_date_two",
-    "data_portabilidade",
-    "data_portabilidade_adicional",
+    "installation_preferred_date_three",
+    "portability_date",
+    "additional_portability_date",
+    "geolocation.queried_at",
   ];
 
-  // Definir a ordem desejada das colunas
   const ordemColunas = [
-    "ordernumber",
+    "order_number",
     "created_at",
     "status",
-    "status_pos_venda",
-    "observacao_consultor",
-    "razaosocial",
+    "after_sales_status",
+    "consultant_observation",
+
     "cnpj",
-    "manager.name",
-    "manager.cpf",
-    "manager.email",
-    "manager.phone",
-    "manager.hasLegalAuthorization",
     "manager_name",
-    "fullname",
+    "cpf",
+    "rfb_name",
+    "rfb_gender",
     "phone",
-    "phoneAdditional",
-    "numero_valido",
-    "numero_adicional_valido",
-    "operadora",
-    "operadora_adicional",
+    "additional_phone",
+    "phone_valid",
+    "additional_phone_valid",
+    "operator",
+    "additional_operator",
     "portabilidade",
-    "data_portabilidade",
-    "portabilidade_adicional",
-    "data_portabilidade_adicional",
+    "portability_date",
+    "additional_portability",
+    "additional_portability_date",
+    "email",
+    "birth_date",
     "plan.name",
-    "plan.speed",
-    "plan.price",
+    "plan.value",
     "availability",
     "availability_pap",
-    "cep",
-    "cep_unico",
-    "encontrado_via_range",
+    "zip_code",
+    "single_zip_code",
+    "found_via_range",
     "range_min",
     "range_max",
     "address",
-    "addressnumber",
-    "addresscomplement",
-    "addresslot",
-    "addressblock",
-    "addressFloor",
-    "buildingorhouse",
+    "address_number",
+    "address_complement",
+    "address_lot",
+    "address_block",
+    "address_floor",
+    "building_or_house",
     "district",
-    "addressreferencepoint",
     "city",
     "state",
-    "dueday",
+    "due_day",
+    "payment_method",
+    "bank_name",
+    "bank_branch",
+    "bank_account_number",
     "installation_preferred_date_one",
     "installation_preferred_date_two",
+    "installation_preferred_date_three",
     "installation_preferred_period_one",
     "installation_preferred_period_two",
-    "typeclient",
-    "credito",
-    "empresas",
-    "mei",
-    "socio",
+    "installation_preferred_period_three",
+    "client_type",
+    "credit",
+    "company_partners",
     "is_mei",
     "is_socio",
-    "socios_empresas",
-    "voz_fixa",
-    "consultor_responsavel",
-    "id_vivo_corp",
-    "id_crm",
-    "equipe",
+    "company_legal_name",
+    "responsible_consultant",
+    "crm_id",
+    "team",
     "url",
     "client_ip",
     "ip_isp",
-    "ip_tipo_acesso",
-    "provider",
-    "provedor",
-    "device",
-    "so",
-    "browser",
-    "resolution",
-    "is_comercial",
-    "nome_whatsapp",
-    "nome_receita",
-    "recado",
-    "avatar",
+
+    "ip_access_type",
+    "service",
+    "installation",
+    "pf_temperature",
+    "fingerprint_id",
     "whatsapp.numero",
-    "whatsapp.endereco",
-    "whatsapp.categoria",
-    "whatsapp.existe_no_whatsapp",
+    "whatsapp.is_comercial",
     "whatsapp.recado",
-    "finger_print.os.name",
-    "finger_print.os.version",
-    "finger_print.browser.name",
-    "finger_print.browser.version",
-    "finger_print.device",
-    "finger_print.timezone",
-    "finger_print.timezone_offset",
-    "finger_print.resolution.width",
-    "finger_print.resolution.height",
-    "finger_print.resolution.dpr",
-    "fingerprintId",
-    "second_call.number_attempts",
-    "geolocalizacao.sucesso",
-    "geolocalizacao.latitude",
-    "geolocalizacao.longitude",
-    "geolocalizacao.precisao",
-    "geolocalizacao.distancia_km_ponto_mais_proximo",
-    "geolocalizacao.tem_disponibilidade",
-    "geolocalizacao.cep_mais_proximo",
-    "geolocalizacao.endereco_formatado",
+    "whatsapp.existe_no_whatsapp",
+    "geolocation.latitude",
+    "geolocation.longitude",
+    "geolocation.maps_link",
+    "geolocation.street_view_link",
   ];
 
   const colNames: Record<string, string> = {
-    ordernumber: "Número do Pedido",
+    order_number: "Numero do Pedido",
     created_at: "Data de Criação",
+    status: "Status",
+    after_sales_status: "Status Pos-Venda",
+    consultant_observation: "Observacao do Consultor",
+
     cnpj: "CNPJ",
-    razaosocial: "Razão Social",
-    fullname: "Nome Completo",
+    manager_name: "Nome do Gestor",
+    cpf: "CPF",
+    rfb_name: "Nome na Receita",
+    rfb_gender: "Genero na Receita",
     phone: "Telefone",
-    phoneAdditional: "Telefone Adicional",
-    numero_valido: "Telefone Válido",
-    numero_adicional_valido: "Telefone Adicional Válido",
-    operadora: "Operadora",
-    operadora_adicional: "Operadora Adicional",
+    additional_phone: "Telefone Adicional",
+    phone_valid: "Telefone Valido",
+    additional_phone_valid: "Telefone Adicional Valido",
+    operator: "Operadora",
+    additional_operator: "Operadora Adicional",
     portabilidade: "Portabilidade",
-    data_portabilidade: "Data Portabilidade",
-    portabilidade_adicional: "Portabilidade Adicional",
-    data_portabilidade_adicional: "Data Portabilidade Adicional",
-    cep: "CEP",
-    cep_unico: "CEP Único",
-    encontrado_via_range: "Encontrado via Range",
-    range_min: "Range Mínimo",
-    range_max: "Range Máximo",
+    portability_date: "Data Portabilidade",
+    additional_portability: "Portabilidade Adicional",
+    additional_portability_date: "Data Portabilidade Adicional",
+    email: "E-mail",
+    birth_date: "Data de Nascimento",
+    zip_code: "CEP",
     address: "Endereço",
-    addressnumber: "Número",
-    addresscomplement: "Complemento",
-    addresslot: "Lote",
-    addressblock: "Quadra",
-    addressFloor: "Andar",
-    buildingorhouse: "Prédio ou Casa",
+    address_number: "Numero",
+    address_complement: "Complemento",
+    address_lot: "Lote",
+    address_block: "Quadra",
+    address_floor: "Andar",
+    building_or_house: "Predio ou Casa",
     district: "Bairro",
-    addressreferencepoint: "Ponto de Referência",
     city: "Cidade",
     state: "Estado",
     "plan.name": "Nome do Plano",
-    "plan.price": "Preço do Plano",
-    "plan.speed": "Velocidade do Plano",
+
+
+    "plan.value": "Valor do Plano",
     installation_preferred_date_one: "Data Preferida 1",
     installation_preferred_date_two: "Data Preferida 2",
+    installation_preferred_date_three: "Data Preferida 3",
     installation_preferred_period_one: "Período Preferido 1",
     installation_preferred_period_two: "Período Preferido 2",
-    dueday: "Dia de Vencimento",
-    "manager.name": "Nome do Gestor",
-    "manager.cpf": "CPF do Gestor",
-    "manager.email": "E-mail do Gestor",
-    "manager.phone": "Telefone do Gestor",
-    "manager.hasLegalAuthorization": "Gestor com Autorização Legal",
-    manager_name: "Nome do Gestor Simples",
-    accept_offers: "Aceita Ofertas",
-    terms_accepted: "Termos Aceitos",
-    consulta: "Consulta Realizada",
-    pedido: "Pedido Realizado",
-    wantsFixedIp: "Deseja IP Fixo",
-    typeclient: "Tipo de Cliente",
-    credito: "Crédito",
-    empresas: "Empresas",
-    mei: "MEI",
-    socio: "Sócio",
+    installation_preferred_period_three: "Periodo Preferido 3",
+    due_day: "Dia de Vencimento",
+    payment_method: "Metodo de Pagamento",
+    bank_name: "Nome do Banco",
+    bank_branch: "Agencia",
+    bank_account_number: "Numero da Conta",
+    client_type: "Tipo de Cliente",
+    credit: "Credito",
+    company_partners: "Empresas",
     is_mei: "É MEI",
-    is_socio: "É Sócio",
-    socios_empresas: "Sócios/Empresas",
-    voz_fixa: "Voz Fixa",
+    is_socio: "E Socio",
+    company_legal_name: "Razao Social",
     url: "URL",
-    status: "Status",
-    id_vivo_corp: "ID Vivo",
-    id_crm: "ID CRM",
-    consultor_responsavel: "Consultor Responsável",
-    status_pos_venda: "Status Pós-Venda",
-    equipe: "Equipe",
+    crm_id: "ID CRM",
+    responsible_consultant: "Consultor Responsavel",
+    team: "Equipe",
     client_ip: "IP do Cliente",
     ip_isp: "IP ISP",
-    ip_tipo_acesso: "Tipo de Acesso IP",
-    provider: "Provider",
-    provedor: "Provedor",
-    device: "Dispositivo",
-    so: "Sistema Operacional",
-    browser: "Navegador",
-    resolution: "Resolução",
-    is_comercial: "WhatsApp Comercial",
-    nome_whatsapp: "Nome WhatsApp",
-    nome_receita: "Nome na Receita",
-    recado: "Recado WhatsApp",
-    avatar: "Avatar WhatsApp",
+
+    ip_access_type: "Tipo de Acesso IP",
+    service: "Atendimento",
+    installation: "Instalacao",
+    pf_temperature: "Temperatura PF",
+    fingerprint_id: "Fingerprint ID",
     availability: "Disponibilidade",
     availability_pap: "Disponibilidade PAP",
-    observacao_consultor: "Observação do Consultor",
+    single_zip_code: "CEP Unico",
+    found_via_range: "Encontrado via Range",
+    range_min: "Range Mínimo",
+    range_max: "Range Máximo",
     "whatsapp.numero": "WhatsApp Número",
-    "whatsapp.endereco": "WhatsApp Endereço",
-    "whatsapp.categoria": "WhatsApp Categoria",
-    "whatsapp.existe_no_whatsapp": "Existe no WhatsApp",
+    "whatsapp.is_comercial": "WhatsApp Comercial",
     "whatsapp.recado": "WhatsApp Recado",
-    "finger_print.os.name": "Fingerprint SO Nome",
-    "finger_print.os.version": "Fingerprint SO Versão",
-    "finger_print.browser.name": "Fingerprint Navegador Nome",
-    "finger_print.browser.version": "Fingerprint Navegador Versão",
-    "finger_print.device": "Fingerprint Dispositivo",
-    "finger_print.timezone": "Fingerprint Timezone",
-    "finger_print.timezone_offset": "Fingerprint Timezone Offset",
-    "finger_print.resolution.width": "Fingerprint Largura",
-    "finger_print.resolution.height": "Fingerprint Altura",
-    fingerprintId: "Fingerprint ID",
-    "second_call.number_attempts": "Segunda Chamada Tentativas",
-    "geolocalizacao.sucesso": "Geolocalização Sucesso",
-    "geolocalizacao.latitude": "Geolocalização Latitude",
-    "geolocalizacao.longitude": "Geolocalização Longitude",
-    "geolocalizacao.distancia_km_ponto_mais_proximo":
-      "Distância (km) Ponto Mais Próximo",
-    "geolocalizacao.tem_disponibilidade": "Geolocalização Tem Disponibilidade",
-    "geolocalizacao.cep_mais_proximo": "Geolocalização CEP Mais Próximo",
-    "geolocalizacao.endereco_formatado": "Geolocalização Endereço Formatado",
+
+    "whatsapp.existe_no_whatsapp": "Existe no WhatsApp",
+    "geolocation.latitude": "Geolocalizacao Latitude",
+    "geolocation.longitude": "Geolocalizacao Longitude",
+    "geolocation.maps_link": "Link Google Maps",
+    "geolocation.street_view_link": "Link Street View",
+    accept_offers: "Aceita Ofertas",
+    terms_accepted: "Termos Aceitos",
+    is_email_valid: "Email Valido",
+    wants_fixed_ip: "Deseja IP Fixo",
+    has_fixed_line_portability: "Portabilidade Fixa",
   };
 
-  const pedidosFormatados = pedidosSelecionados.map((pedido: any) => {
-    const linha: any = {};
+  const pedidosFormatados = pedidosSelecionados.map((pedido) => {
+    const linha: Record<string, unknown> = {};
 
-    // Processar campos na ordem definida
     ordemColunas.forEach((key) => {
+      const columnName = colNames[key] || key;
+
       if (key.includes(".")) {
-        const valor = key
-          .split(".")
-          .reduce<any>(
-            (acc, prop) =>
-              acc !== undefined && acc !== null ? acc[prop] : undefined,
-            pedido,
-          );
+        const valor = getNestedValue(pedido, key);
 
         if (valor !== undefined) {
           if (camposMonetarios.includes(key)) {
-            linha[colNames[key] || key] = formatBRL(valor);
+            linha[columnName] = formatBRL(Number(valor));
           } else if (camposDataHora.includes(key)) {
-            linha[colNames[key] || key] = valor;
+            linha[columnName] = valor;
           } else if (Array.isArray(valor)) {
-            linha[colNames[key] || key] = valor
+            linha[columnName] = valor
               .map((item) =>
                 typeof item === "object" && item !== null
                   ? Object.values(item).join(" - ")
@@ -268,82 +258,59 @@ export const handleExportXLSX = (data: any, selectedRowKeys: any) => {
               )
               .join(" | ");
           } else if (typeof valor === "object" && valor !== null) {
-            linha[colNames[key] || key] = JSON.stringify(valor);
+            linha[columnName] = JSON.stringify(valor);
           } else {
-            linha[colNames[key] || key] = valor || "";
+            linha[columnName] = valor || "";
           }
         } else {
-          linha[colNames[key] || key] = "";
+          linha[columnName] = "";
         }
       } else {
-        if (pedido[key] !== undefined) {
-          const valor = pedido[key];
+        const valor = getFlatValue(pedido, key);
 
+        if (valor !== undefined) {
           if (camposMonetarios.includes(key)) {
-            linha[colNames[key] || key] = formatBRL(valor);
+            linha[columnName] = formatBRL(Number(valor));
           } else if (camposDataHora.includes(key)) {
-            linha[colNames[key] || key] = valor;
+            linha[columnName] = valor;
           } else {
-            linha[colNames[key] || key] = valor;
+            linha[columnName] = valor;
           }
         } else {
-          linha[colNames[key] || key] = "";
+          linha[columnName] = "";
         }
       }
     });
 
-    // Aplicar formatações específicas
-    linha[colNames["accept_offers"]] =
-      pedido.accept_offers === 1 ? "Sim" : "Não";
-    linha[colNames["terms_accepted"]] =
-      pedido.terms_accepted === 1 ? "Sim" : "Não";
-    linha[colNames["buildingorhouse"]] =
-      pedido.buildingorhouse === "building" ? "Prédio" : "Casa";
-    linha[colNames["availability"]] =
-      pedido.availability === 1 || pedido.availability === true ? "Sim" : "Não";
-    linha[colNames["availability_pap"]] = pedido.availability_pap
-      ? "Sim"
-      : "Não";
-    linha[colNames["consulta"]] = pedido.consulta ? "Sim" : "Não";
-    linha[colNames["pedido"]] = pedido.pedido ? "Sim" : "Não";
-    linha[colNames["wantsFixedIp"]] = pedido.wantsFixedIp ? "Sim" : "Não";
-    linha[colNames["numero_valido"]] = pedido.numero_valido ? "Sim" : "Não";
-    linha[colNames["numero_adicional_valido"]] = pedido.numero_adicional_valido
-      ? "Sim"
-      : "Não";
-    linha[colNames["mei"]] = pedido.mei ? "Sim" : "Não";
-    linha[colNames["socio"]] = pedido.socio ? "Sim" : "Não";
-    linha[colNames["is_mei"]] =
-      pedido.is_mei === 1 || pedido.is_mei === true ? "Sim" : "Não";
-    linha[colNames["is_socio"]] =
-      pedido.is_socio === 1 || pedido.is_socio === true ? "Sim" : "Não";
-    linha[colNames["is_comercial"]] = pedido.is_comercial ? "Sim" : "Não";
-    linha[colNames["whatsapp.existe_no_whatsapp"]] = pedido.whatsapp
-      ?.existe_no_whatsapp
-      ? "Sim"
-      : "Não";
-    linha[colNames["whatsapp.is_comercial"]] = pedido.whatsapp?.is_comercial
-      ? "Sim"
-      : "Não";
-    linha[colNames["whatsapp.sucesso"]] = pedido.whatsapp?.sucesso
-      ? "Sim"
-      : "Não";
-    linha[colNames["geolocalizacao.sucesso"]] = pedido.geolocalizacao?.sucesso
-      ? "Sim"
-      : "Não";
-    linha[colNames["geolocalizacao.tem_disponibilidade"]] = pedido
-      .geolocalizacao?.tem_disponibilidade
-      ? "Sim"
-      : "Não";
-    linha[colNames["manager.hasLegalAuthorization"]] = pedido.manager
-      ?.hasLegalAuthorization
-      ? "Sim"
-      : "Não";
-    linha[colNames["socios_empresas"]] = Array.isArray(pedido.socios_empresas)
-      ? pedido.socios_empresas
-          .map((item: any) => `${item.nome || ""} (${item.cnpj || ""})`)
-          .join(" | ")
-      : "";
+    linha[colNames["accept_offers"]] = toYesNo(pedido.accept_offers);
+    linha[colNames["terms_accepted"]] = toYesNo(pedido.terms_accepted);
+    linha[colNames["is_email_valid"]] = toYesNo(pedido.is_email_valid);
+    linha[colNames["payment_method"]] = formatPaymentMethod(
+      pedido.payment_method,
+    );
+    linha[colNames["building_or_house"]] =
+      pedido.building_or_house === "building" ? "Predio" : "Casa";
+    linha[colNames["availability"]] = toYesNo(pedido.availability);
+    linha[colNames["availability_pap"]] = toYesNo(pedido.availability_pap);
+    linha[colNames["single_zip_code"]] = toYesNo(pedido.single_zip_code);
+    linha[colNames["found_via_range"]] = toYesNo(pedido.found_via_range);
+    linha[colNames["wants_fixed_ip"]] = toYesNo(pedido.wants_fixed_ip);
+    linha[colNames["has_fixed_line_portability"]] = toYesNo(
+      pedido.has_fixed_line_portability,
+    );
+    linha[colNames["phone_valid"]] = toYesNo(pedido.phone_valid);
+    linha[colNames["additional_phone_valid"]] = toYesNo(
+      pedido.additional_phone_valid,
+    );
+    linha[colNames["is_mei"]] = toYesNo(pedido.is_mei);
+    linha[colNames["is_socio"]] = toYesNo(pedido.is_socio);
+    linha[colNames["whatsapp.existe_no_whatsapp"]] = toYesNo(
+      pedido.whatsapp?.existe_no_whatsapp,
+    );
+    linha[colNames["whatsapp.is_comercial"]] = toYesNo(
+      pedido.whatsapp?.is_comercial,
+    );
+
 
     return linha;
   });

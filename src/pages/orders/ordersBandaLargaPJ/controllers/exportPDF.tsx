@@ -1,5 +1,6 @@
 import { OrderBandaLargaPJ } from "@/interfaces/bandaLargaPJ";
 import { formatBRL } from "@/utils/formatBRL";
+import { formatCEP } from "@/utils/formatCEP";
 import { formatCNPJ } from "@/utils/formatCNPJ";
 import { formatCPF } from "@/utils/formatCPF";
 import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
@@ -32,8 +33,18 @@ const getBase64FromImageUrl = (url: string): Promise<string> => {
 export const generatePDF = async (order: OrderBandaLargaPJ | undefined) => {
   if (!order) return;
 
-  const logoVivo = await getBase64FromImageUrl("/assets/logovivopdf.png");
-  const logoGold = await getBase64FromImageUrl("/assets/goldpdf.png");
+  const paymentMethodLabel =
+    order.payment_method === "automatic_debit"
+      ? "Debito Automatico"
+      : order.payment_method === "credit_card"
+        ? "Cartao de Credito"
+        : order.payment_method === "boleto"
+          ? "Boleto"
+          : order.payment_method === "pix"
+            ? "PIX"
+            : order.payment_method || "-";
+
+  const logo = await getBase64FromImageUrl("/assets/tim.svg");
 
   const docDefinition = {
     pageMargins: [20, 40, 20, 40],
@@ -42,18 +53,13 @@ export const generatePDF = async (order: OrderBandaLargaPJ | undefined) => {
       {
         columns: [
           {
-            image: logoVivo,
+            image: logo,
             width: 100,
             alignment: "left",
             margin: [0, 10, 0, 0],
           },
           { text: "", width: "*" },
-          {
-            image: logoGold,
-            width: 100,
-            alignment: "right",
-            margin: [0, 25, 0, 0],
-          },
+
         ],
         margin: [0, 5, 0, 10] as [number, number, number, number],
       },
@@ -62,7 +68,7 @@ export const generatePDF = async (order: OrderBandaLargaPJ | undefined) => {
       {
         columns: [
           {
-            text: `Pedido Banda Larga PJ Nº${order.ordernumber || order.id}`,
+            text: `Pedido Banda Larga PJ Nº${order.order_number || order.id}`,
             style: "title",
           },
         ],
@@ -73,18 +79,18 @@ export const generatePDF = async (order: OrderBandaLargaPJ | undefined) => {
       {
         table: {
           headerRows: 1,
-          widths: ["*", "*", 80],
+          widths: ["*", 100],
           body: [
             [
               { text: "Plano", style: "tableHeader" },
-              { text: "Velocidade", style: "tableHeader" },
+
               { text: "Valor Mensal", style: "tableHeader" },
             ],
             [
               { text: order.plan?.name || "-", style: "tableBody" },
-              { text: order.plan?.speed || "-", style: "tableBody" },
+
               {
-                text: formatBRL(order.plan?.price) || 0,
+                text: formatBRL(order.plan?.price ?? order.plan?.value ?? 0),
                 style: "tableBody",
               },
             ],
@@ -97,41 +103,34 @@ export const generatePDF = async (order: OrderBandaLargaPJ | undefined) => {
       {
         type: "circle",
         ul: [
-          `Possui Disponibilidade?  ${
-            order.availability
-              ? "Sim"
-              : order.availability === null
-              ? "-"
-              : "Não"
-          }`,
-          `Deseja Portabilidade?  ${
-            order.hasFixedLinePortability
-              ? "Sim"
-              : order.hasFixedLinePortability === null
-              ? "-"
-              : "Não"
-          }`,
-          `Telefone para Portabilidade: ${
-            formatPhoneNumber(order.fixedLineNumberToPort || "") || "-"
-          }`,
-          `Deseja IP Fixo?  ${
-            order.wantsFixedIp
-              ? "Sim"
-              : order.wantsFixedIp === null
+          `Possui Disponibilidade?  ${order.availability
+            ? "Sim"
+            : order.availability === null
               ? "-"
               : "Não"
           }`,
         ],
         style: "content",
       },
-
+      {
+        type: "circle",
+        ul: [
+          `Possui Disponibilidade PAP?  ${order.availability_pap
+            ? "Sim"
+            : order.availability_pap === null
+              ? "-"
+              : "Não"
+          }`,
+        ],
+        style: "content",
+      },
       // Informações da Empresa
       { text: "Informações da Empresa", style: "sectionHeader" },
       {
         type: "circle",
         ul: [
-          `Razão Social: ${order.razaosocial || "-"}`,
-          `CNPJ: ${formatCNPJ(order.cnpj) || "-"}`,
+          `Razão Social: ${order.company_legal_name || "-"}`,
+          `CNPJ: ${formatCNPJ(order.cnpj || "") || "-"}`,
         ],
         style: "content",
       },
@@ -140,12 +139,11 @@ export const generatePDF = async (order: OrderBandaLargaPJ | undefined) => {
       {
         type: "circle",
         ul: [
-          `Nome: ${order.manager?.name || "-"}`,
-          `CPF: ${formatCPF(order.manager?.cpf) || "-"}`,
-          `E-mail: ${order.manager?.email || "-"}`,
-          `Telefone: ${formatPhoneNumber(order.manager?.phone) || "-"}`,
-          `Telefone adicional: ${
-            formatPhoneNumber(order.phoneAdditional || "") || "-"
+          `Nome: ${order.manager_name || "-"}`,
+          `CPF: ${formatCPF(order.cpf) || "-"}`,
+          `E-mail: ${order.email || "-"}`,
+          `Telefone: ${formatPhoneNumber(order.phone) || "-"}`,
+          `Telefone adicional: ${formatPhoneNumber(order.additional_phone || "") || "-"
           }`,
         ],
         style: "content",
@@ -156,16 +154,15 @@ export const generatePDF = async (order: OrderBandaLargaPJ | undefined) => {
       {
         type: "circle",
         ul: [
-          `CEP: ${order.cep || "-"}`,
+          `CEP: ${formatCEP(order.zip_code || "") || "-"}`,
           `Endereço: ${order.address || "-"}`,
-          `Número: ${order.addressnumber || "-"}`,
-          `Complemento: ${order.addresscomplement || "-"}`,
-          `Lote: ${order.addresslot || "-"}`,
-          `Quadra: ${order.addressblock || "-"}`,
-          `Andar: ${order.addressFloor || "-"}`,
-          `Tipo: ${order.buildingorhouse === "building" ? "Prédio" : "Casa"}`,
+          `Número: ${order.address_number || "-"}`,
+          `Complemento: ${order.address_complement || "-"}`,
+          `Lote: ${order.address_lot || "-"}`,
+          `Quadra: ${order.address_block || "-"}`,
+          `Andar: ${order.address_floor || "-"}`,
+          `Tipo: ${order.building_or_house === "building" ? "Prédio" : "Casa"}`,
           `Bairro: ${order.district || "-"}`,
-          `Ponto de Referência: ${order.addressreferencepoint || "-"}`,
           `Cidade: ${order.city || "-"}`,
           `Estado: ${order.state || "-"}`,
         ],
@@ -178,14 +175,25 @@ export const generatePDF = async (order: OrderBandaLargaPJ | undefined) => {
         type: "circle",
         ul: [
           `Data Preferida 1: ${order.installation_preferred_date_one}`,
-          `Período Preferido 1: ${
-            order.installation_preferred_period_one || "-"
+          `Período Preferido 1: ${order.installation_preferred_period_one || "-"
           }`,
           `Data Preferida 2: ${order.installation_preferred_date_two}`,
-          `Período Preferido 2: ${
-            order.installation_preferred_period_two || "-"
+          `Período Preferido 2: ${order.installation_preferred_period_two || "-"
           }`,
-          `Dia de Vencimento: ${order.dueday || "-"}`,
+          `Dia de Vencimento: ${order.due_day ?? "-"}`,
+        ],
+        style: "content",
+      },
+
+      // Informacoes de Pagamento
+      { text: "Informações de Pagamento", style: "sectionHeader" },
+      {
+        type: "circle",
+        ul: [
+          `Metodo de Pagamento: ${paymentMethodLabel}`,
+          `Nome do Banco: ${order.bank_name || "-"}`,
+          `Agencia: ${order.bank_branch || "-"}`,
+          `Numero da Conta: ${order.bank_account_number || "-"}`,
         ],
         style: "content",
       },
@@ -196,19 +204,14 @@ export const generatePDF = async (order: OrderBandaLargaPJ | undefined) => {
         columns: [
           { text: "Valor Mensal do Plano", style: "content" },
           {
-            text: formatBRL(order.plan?.price || 0),
+            text: formatBRL(order.plan?.price ?? order.plan?.value ?? 0),
             style: "content",
             alignment: "right",
           },
         ],
       },
 
-      // Rodapé
-      {
-        text: "50.040.822/0001-74 - Gsc Solucoes Corporativas",
-        style: "footer",
-        margin: [0, 30, 0, 0] as [number, number, number, number],
-      },
+
     ],
     styles: {
       tableHeader: {
@@ -256,5 +259,5 @@ export const generatePDF = async (order: OrderBandaLargaPJ | undefined) => {
 
   pdfMake
     .createPdf(docDefinition as any)
-    .download(`pedido-banda-larga-pj-${order.ordernumber || order.id}.pdf`);
+    .download(`pedido-banda-larga-pj-${order.order_number || order.id}.pdf`);
 };

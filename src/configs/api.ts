@@ -1,12 +1,24 @@
+import { LocalStorageKeys, LocalStorageService } from "@/services/storage";
 import axios from "axios";
 
-// MUDAR PARA NOVA API DA TIM //
 export const apiPurchase = axios.create({
-  baseURL: "https://evolution.bigdates.com.br:3620",
+  baseURL: "https://evolution.bigdates.com.br:3720",
   headers: {
     "Content-Type": "application/json",
   },
 });
+const attachAuthToken = (config: any) => {
+  const localStorageService = new LocalStorageService();
+  const token = localStorageService.getItem(LocalStorageKeys.accessToken);
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+};
+
+apiPurchase.interceptors.request.use(attachAuthToken);
 
 // Tools
 export const apiBase2b = axios.create({

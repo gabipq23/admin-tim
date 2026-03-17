@@ -1,45 +1,46 @@
 import { apiPurchase } from "@/configs/api";
 import { IContactResponse } from "src/interfaces/contacts";
 
+// Infos vem do link de fale conosco da LP
 export class ContactService {
   async allContacts({
-    nome,
+    data_to,
+    data_from,
+    page,
+    per_page,
+    name,
     email,
     cnpj,
-    data_ate,
-    data_de,
+    cpf,
+    subject,
     sort,
     order,
-    status_mensagem,
-    assunto,
-    page,
-    limit,
   }: {
-    nome?: string | number;
+    page?: number | string;
+    data_to?: string;
+    data_from?: string;
+    per_page?: number | string;
+    name?: string;
     email?: string;
-    cnpj?: string | number;
-    data_ate?: string;
-    data_de?: string;
-    status_mensagem?: string | null;
+    cnpj?: string;
+    cpf?: string;
+    subject?: string;
     sort?: string;
-    order?: "asc" | "desc" | null;
-    assunto?: string | null;
-    page?: string | number;
-    limit?: string | number;
+    order?: string;
   }): Promise<IContactResponse> {
-    const res = await apiPurchase.get(`/contatos`, {
+    const res = await apiPurchase.get(`/messages`, {
       params: {
-        nome: nome,
-        email: email,
-        cnpj: cnpj,
-        data_ate: data_ate,
-        data_de: data_de,
-        sort: sort || "data_criacao",
-        order: order || "desc",
-        status_mensagem: status_mensagem || undefined,
-        assunto: assunto || undefined,
-        page: page || 1,
-        limit: limit || 200,
+        page,
+        data_to,
+        data_from,
+        per_page,
+        name,
+        email,
+        cnpj,
+        cpf,
+        subject,
+        sort,
+        order,
       },
     });
     return res.data;
@@ -47,17 +48,17 @@ export class ContactService {
 
   async changeContactStatus({
     id,
-    status_mensagem,
+    status,
   }: {
     id: number;
-    status_mensagem: "Visualizada" | "Respondida";
+    status: "LIDA" | "RESPONDIDA";
   }) {
-    return apiPurchase.patch(`/contatos/${id}/status-mensagem`, {
-      status_mensagem: status_mensagem,
+    return apiPurchase.patch(`/messages/${id}/status`, {
+      status: status,
     });
   }
 
   async removeContact(id: number) {
-    await apiPurchase.delete(`/contatos/${id}`);
+    await apiPurchase.delete(`/messages/${id}`);
   }
 }

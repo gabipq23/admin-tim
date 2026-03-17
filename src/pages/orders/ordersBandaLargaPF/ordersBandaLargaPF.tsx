@@ -23,8 +23,8 @@ export default function OrdersBandaLargaPF() {
     updateBandaLargaOrder,
     removeBandaLargaOrder,
     isRemoveBandaLargaOrderFetching,
-    updateDataIdVivoAndConsultorResponsavel,
     changeBandaLargaOrderStatus,
+    updateDataIdCRMAndConsultorResponsavel
   } = useAllOrdersController();
   const navigate = useNavigate();
   const planBLPF: any[] = [];
@@ -51,16 +51,16 @@ export default function OrdersBandaLargaPF() {
 
   const rowClassName = (record: OrderBandaLargaPF) => {
     const hasAvaiability = record?.availability;
-    const isCoveredByRange = record?.encontrado_via_range;
-    const hasUnicCep = record?.cep_unico;
-    if (record?.status === "fechado") {
+    const isCoveredByRange = record?.found_via_range;
+    const hasUnicCep = record?.single_zip_code;
+    if (record?.status === "FECHADO") {
       if (
         hasAvaiability === false ||
         hasAvaiability === null ||
         hasAvaiability === 0
       ) {
         return "ant-table-row-red";
-      } else if (isCoveredByRange === 1 || hasUnicCep === 1) {
+      } else if (isCoveredByRange || hasUnicCep) {
         return "ant-table-row-yellow";
       }
 
@@ -76,7 +76,7 @@ export default function OrdersBandaLargaPF() {
       setSelectedRowKeys(newSelectedRowKeys);
     },
   };
-
+  console.log(orderBandaLargaPF)
   return (
     <>
       <QueryClientProvider client={queryClient}>
@@ -142,8 +142,8 @@ export default function OrdersBandaLargaPF() {
                   style: { cursor: "pointer" },
                 })}
                 pagination={{
-                  current: currentPage,
-                  pageSize: pageSize,
+                  current: currentPage ? Number(currentPage) : 1,
+                  pageSize: pageSize ? Number(pageSize) : 50,
                   total: totalItems,
                   showSizeChanger: true,
                   pageSizeOptions: ["50", "100", "200", "500"],
@@ -170,9 +170,7 @@ export default function OrdersBandaLargaPF() {
             selectedId={selectedBLOrder}
             removeOrderData={removeBandaLargaOrder}
             isRemoveOrderFetching={isRemoveBandaLargaOrderFetching}
-            updateDataIdVivoAndConsultorResponsavel={
-              updateDataIdVivoAndConsultorResponsavel
-            }
+            updateDataIdCRMAndConsultorResponsavel={updateDataIdCRMAndConsultorResponsavel}
             changeBandaLargaOrderStatus={changeBandaLargaOrderStatus}
           />
         </div>
