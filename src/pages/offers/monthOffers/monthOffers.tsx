@@ -59,7 +59,7 @@ export default function MonthOffers() {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <div className="flex flex-col px-6 md:px-10 lg:px-14 pt-4 h-[calc(100vh-160px)]">
+        <div className="flex flex-col px-6 md:px-10 lg:px-14 pt-4 ">
           <div className="flex w-full justify-between mt-3 pb-4">
             <h1 className="text-[22px]">Book de Ofertas</h1>
           </div>
