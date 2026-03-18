@@ -101,7 +101,7 @@ export function useContactsController() {
   };
 
   const contacts =
-    contactsQuery?.messages?.filter((contact) => contact.company === "VR") ||
+    contactsQuery?.messages?.filter((contact) => contact.company === "TIM") ||
     [];
 
   return {

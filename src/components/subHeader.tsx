@@ -199,6 +199,19 @@ export default function SubHeader() {
       ),
     },
     {
+      key: "pedidos-banda-larga-pj",
+      label: (
+        <span className="text-[#0026d9]"
+          onClick={() => {
+            setSelectedLink("pedidos-banda-larga-pj");
+            navigate(`/admin/pedidos-banda-larga-pj`);
+          }}
+        >
+          Banda Larga PJ
+        </span>
+      ),
+    },
+    {
       key: "pedidos-telefonia-movel-pj",
       label: (
         <span className="text-[#0026d9]"
