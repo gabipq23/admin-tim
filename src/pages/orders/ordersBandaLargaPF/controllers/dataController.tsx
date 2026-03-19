@@ -20,6 +20,7 @@ export function useAllOrdersController() {
       refetchOnWindowFocus: false,
       queryKey: [
         "ordersBandaLargaPF",
+        "PF",
         filters.page,
         filters.per_page,
         filters.data_to,
@@ -49,13 +50,17 @@ export function useAllOrdersController() {
           after_sales_status: filters.after_sales_status,
           order: filters.order,
           sort: filters.sort,
-          order_number: filters.order_number
+          order_number: filters.order_number,
+          type_client: "PF",
 
         });
 
         return response;
       },
     });
+  const orderBandaLargaPF = ordersBandaLarga?.orders?.filter(
+    (order) => order.client_type === "PF"
+  );
 
   const { mutate: updateBandaLargaOrder, isPending: isUpdatePurchaseFetching } =
     useMutation({
@@ -111,9 +116,7 @@ export function useAllOrdersController() {
     },
   });
 
-  const orderBandaLargaPF = ordersBandaLarga?.orders?.filter(
-    (order) => order.client_type === "PF"
-  );
+
 
   const updateDataIdCRMAndConsultorResponsavel = (
     id: string | undefined,

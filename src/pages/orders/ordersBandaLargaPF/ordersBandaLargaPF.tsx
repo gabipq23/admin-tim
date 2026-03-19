@@ -14,7 +14,6 @@ export default function OrdersBandaLargaPF() {
   const queryClient = new QueryClient();
   const {
     ordersBandaLarga,
-
     showModal,
     closeModal,
     isModalOpen,
@@ -47,7 +46,8 @@ export default function OrdersBandaLargaPF() {
     selectedAvatar,
   } = useAllOrdersFilterController();
 
-  const totalItems = 0;
+  const totalItems =
+    ordersBandaLarga?.total ?? orderBandaLargaPF?.length ?? 0;
 
   const rowClassName = (record: OrderBandaLargaPF) => {
     const hasAvaiability = record?.availability;
@@ -76,7 +76,6 @@ export default function OrdersBandaLargaPF() {
       setSelectedRowKeys(newSelectedRowKeys);
     },
   };
-  console.log(orderBandaLargaPF)
   return (
     <>
       <QueryClientProvider client={queryClient}>
@@ -143,15 +142,15 @@ export default function OrdersBandaLargaPF() {
                 })}
                 pagination={{
                   current: currentPage ? Number(currentPage) : 1,
-                  pageSize: pageSize ? Number(pageSize) : 50,
+                  pageSize: pageSize ? Number(pageSize) : 20,
                   total: totalItems,
                   showSizeChanger: true,
-                  pageSizeOptions: ["50", "100", "200", "500"],
+                  pageSizeOptions: ["20", "50", "100", "200", "500"],
                   showLessItems: true,
                   onChange: (page, pageSize) => {
                     const params = new URLSearchParams(window.location.search);
                     params.set("page", page.toString());
-                    params.set("limit", pageSize.toString());
+                    params.set("per_page", pageSize.toString());
                     navigate(`?${params.toString()}`);
                   },
                   showTotal: (total) => `Total de ${total} pedidos`,

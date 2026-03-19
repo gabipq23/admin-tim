@@ -47,7 +47,8 @@ export default function OrdersBandaLargaPJ() {
     selectedAvatar,
   } = useAllOrdersFilterController();
 
-  const totalItems = 0;
+  const totalItems =
+    ordersBandaLarga?.total ?? orderBandaLargaPJ?.length ?? 0;
 
   const rowClassName = (record: OrderBandaLargaPJ) => {
     const hasAvaiability = record?.availability;
@@ -76,7 +77,6 @@ export default function OrdersBandaLargaPJ() {
       setSelectedRowKeys(newSelectedRowKeys);
     },
   };
-  console.log(orderBandaLargaPJ)
   return (
     <>
       <QueryClientProvider client={queryClient}>
@@ -146,12 +146,12 @@ export default function OrdersBandaLargaPJ() {
                   pageSize: pageSize ? Number(pageSize) : 50,
                   total: totalItems,
                   showSizeChanger: true,
-                  pageSizeOptions: ["50", "100", "200", "500"],
+                  pageSizeOptions: ["20", "50", "100", "200", "500"],
                   showLessItems: true,
                   onChange: (page, pageSize) => {
                     const params = new URLSearchParams(window.location.search);
                     params.set("page", page.toString());
-                    params.set("limit", pageSize.toString());
+                    params.set("per_page", pageSize.toString());
                     navigate(`?${params.toString()}`);
                   },
                   showTotal: (total) => `Total de ${total} pedidos`,

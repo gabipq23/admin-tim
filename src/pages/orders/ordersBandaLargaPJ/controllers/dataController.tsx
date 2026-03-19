@@ -20,6 +20,7 @@ export function useAllOrdersController() {
       refetchOnWindowFocus: false,
       queryKey: [
         "ordersBandaLargaPJ",
+        "PJ",
         filters.page,
         filters.per_page,
         filters.data_to,
@@ -48,7 +49,8 @@ export function useAllOrdersController() {
           after_sales_status: filters.after_sales_status,
           order: filters.order,
           sort: filters.sort,
-          order_number: filters.order_number
+          order_number: filters.order_number,
+          type_client: "PJ",
         });
 
         return response;

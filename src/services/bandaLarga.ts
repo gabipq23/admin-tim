@@ -16,6 +16,7 @@ export class BandaLargaService {
     order,
     sort,
     order_number,
+    type_client,
   }: {
     page?: string | number;
     per_page?: string | number;
@@ -30,6 +31,7 @@ export class BandaLargaService {
     order?: string;
     sort?: string;
     order_number?: string;
+    type_client?: string;
   }): Promise<OrderBandaLargaPFResponse> {
     const res = await apiPurchase.get(`/tim/orders`, {
       params: {
@@ -46,6 +48,7 @@ export class BandaLargaService {
         order,
         sort,
         order_number,
+        type_client,
       },
     });
 
