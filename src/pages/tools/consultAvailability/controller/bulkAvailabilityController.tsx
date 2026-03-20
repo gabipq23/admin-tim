@@ -1,10 +1,12 @@
 import { ConsultAvailabilityService } from "@/services/consultAvailability";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { useBulkAvailabilityStore } from "../context/bulkAvailabilityContext";
 
 export function useConsultAvailabilityBulkController() {
   const consultAvailabilityService = new ConsultAvailabilityService();
   const navigate = useNavigate();
+  const setBulkResponse = useBulkAvailabilityStore((state) => state.setBulkResponse);
 
   const mutation = useMutation({
     mutationFn: async (params: {
@@ -20,6 +22,7 @@ export function useConsultAvailabilityBulkController() {
       return response;
     },
     onSuccess: (data) => {
+      setBulkResponse(data);
       navigate("/admin/resultado-disponibilidade-massa", {
         state: data,
       });

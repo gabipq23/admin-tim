@@ -1,33 +1,16 @@
-import { useMutation } from "@tanstack/react-query";
 import * as XLSX from "xlsx";
 import { IBulkAvailabilityResult } from "@/interfaces/availability";
 import { useBulkAvailabilityStore } from "../context/bulkAvailabilityContext";
-import { ConsultAvailabilityService } from "@/services/consultAvailability";
 
 export function useExportBulkAvailabilityController() {
-  const originalDados = useBulkAvailabilityStore(
-    (state) => state.originalDados,
+  const bulkResults = useBulkAvailabilityStore(
+    (state) => state.bulkResponse?.resultados ?? [],
   );
-  const consultAvailabilityService = new ConsultAvailabilityService();
-
-  const exportMutation = useMutation({
-    mutationFn: async () => {
-      const response = await consultAvailabilityService.consultAvailabilityBulk(
-        originalDados,
-        originalDados.length,
-        1,
-      );
-      return response.resultados;
-    },
-    onSuccess: (data) => {
-      exportToXLSX(data);
-    },
-  });
 
   return {
-    exportData: () => exportMutation.mutate(),
-    isExporting: exportMutation.isPending,
-    exportError: exportMutation.error,
+    exportData: () => exportToXLSX(bulkResults),
+    isExporting: false,
+    exportError: null,
   };
 }
 
@@ -76,34 +59,23 @@ function generateFileName(): string {
 }
 
 export function useExportBulkAvailabilityCSVController() {
-  const originalDados = useBulkAvailabilityStore(
-    (state) => state.originalDados,
+  const bulkResults = useBulkAvailabilityStore(
+    (state) => state.bulkResponse?.resultados ?? [],
   );
-  const consultAvailabilityService = new ConsultAvailabilityService();
-
-  const exportMutation = useMutation({
-    mutationFn: async () => {
-      const response = await consultAvailabilityService.consultAvailabilityBulk(
-        originalDados,
-        originalDados.length,
-        1,
-      );
-      return response.resultados;
-    },
-    onSuccess: (data) => {
-      exportToCSV(data);
-    },
-  });
 
   return {
-    exportDataCSV: () => exportMutation.mutate(),
-    isExportingCSV: exportMutation.isPending,
-    exportErrorCSV: exportMutation.error,
+    exportDataCSV: () => exportToCSV(bulkResults),
+    isExportingCSV: false,
+    exportErrorCSV: null,
   };
 }
 
 function exportToCSV(dados: IBulkAvailabilityResult[]) {
   try {
+    if (!dados || dados.length === 0) {
+      return;
+    }
+
     const exportData = dados.map((item) => ({
       CEP: item.cep || "",
       Número: item.numero || "",
@@ -121,13 +93,15 @@ function exportToCSV(dados: IBulkAvailabilityResult[]) {
       "Range Max": item.encontrado_via_range ? item.range_max || "" : "",
     }));
 
-    const headers = Object.keys(exportData[0]);
+    const headers = Object.keys(exportData[0]) as Array<
+      keyof (typeof exportData)[number]
+    >;
     const csvContent = [
       headers.join(","),
       ...exportData.map((row) =>
         headers
           .map((header) => {
-            const value = (row as any)[header];
+            const value = row[header];
             return typeof value === "string" &&
               (value.includes(",") || value.includes('"'))
               ? `"${value.replace(/"/g, '""')}"`

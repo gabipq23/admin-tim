@@ -12,12 +12,9 @@ import {
   useExportBulkAvailabilityController,
   useExportBulkAvailabilityCSVController,
 } from "../../controller/exportBulk";
-import { useState } from "react";
-import { ConsultAvailabilityService } from "@/services/consultAvailability";
 import { useBulkAvailabilityStore } from "../../context/bulkAvailabilityContext";
 import { tableColumns } from "./tableColumns";
 import { useStyle } from "@/style/tableStyle";
-import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 
 export default function ResultBulkAvailability() {
   const location = useLocation();
@@ -27,44 +24,17 @@ export default function ResultBulkAvailability() {
   const { exportData, isExporting } = useExportBulkAvailabilityController();
   const { exportDataCSV, isExportingCSV } =
     useExportBulkAvailabilityCSVController();
-
-  const [currentData, setCurrentData] = useState(initialData);
-  const [isLoadingPage, setIsLoadingPage] = useState(false);
-  const consultAvailabilityService = new ConsultAvailabilityService();
-  const originalDados = useBulkAvailabilityStore(
-    (state) => state.originalDados,
+  const cachedBulkResponse = useBulkAvailabilityStore(
+    (state) => state.bulkResponse,
   );
+  const currentData = cachedBulkResponse ?? initialData;
 
-  if (!initialData || !initialData.resultados) {
+  if (!currentData || !currentData.resultados) {
     navigate("/admin/consulta-disponibilidade");
     return null;
   }
 
-  const totalItems =
-    currentData.paginacao?.total || currentData.relatorio?.total || 0;
-
-  const handlePageChange = async (page: number, pageSize?: number) => {
-    if (originalDados.length === 0) {
-      console.error(
-        "❌ originalDados está vazio! Não é possível fazer paginação.",
-      );
-      return;
-    }
-
-    setIsLoadingPage(true);
-    try {
-      const response = await consultAvailabilityService.consultAvailabilityBulk(
-        originalDados,
-        pageSize || currentData.paginacao?.limite || 500,
-        page,
-      );
-      setCurrentData(response);
-    } catch (error) {
-      console.error("Erro ao carregar página:", error);
-    } finally {
-      setIsLoadingPage(false);
-    }
-  };
+  const totalItems = currentData.resultados?.length || 0;
 
   const exportToExcel = () => {
     exportData();
@@ -85,7 +55,7 @@ export default function ResultBulkAvailability() {
               theme={{
                 components: {
                   Button: {
-                    colorBorder: "#0026d9",
+                    colorBorder: "#660099",
                     colorText: "#fff",
                     colorPrimaryHover: "#fff",
                     colorPrimaryBorderHover: "#cb1ef5",
@@ -104,8 +74,8 @@ export default function ResultBulkAvailability() {
                   currentData.resultados.length === 0
                 }
                 style={{
-                  backgroundColor: "#0026d9",
-                  borderColor: "#0026d9",
+                  backgroundColor: "#660099",
+                  borderColor: "#660099",
                 }}
               >
                 {isExporting ? "Exportando..." : "Exportar em .xlsx"}
@@ -121,8 +91,8 @@ export default function ResultBulkAvailability() {
                   currentData.resultados.length === 0
                 }
                 style={{
-                  backgroundColor: "#0026d9",
-                  borderColor: "#0026d9",
+                  backgroundColor: "#660099",
+                  borderColor: "#660099",
                 }}
               >
                 {isExportingCSV ? "Exportando..." : "Exportar em .csv"}
@@ -134,8 +104,8 @@ export default function ResultBulkAvailability() {
               theme={{
                 components: {
                   Button: {
-                    colorBorder: "#0026d9",
-                    colorText: "#0026d9",
+                    colorBorder: "#660099",
+                    colorText: "#660099",
                     colorPrimaryHover: "#cb1ef5",
                     colorPrimaryBorderHover: "#cb1ef5",
                   },
@@ -143,7 +113,8 @@ export default function ResultBulkAvailability() {
               }}
             >
               <Button
-                className={blueOutlineButtonClass}
+                type="default"
+                variant="solid"
                 onClick={() => {
                   navigate("/admin/consulta-disponibilidade");
                 }}
@@ -159,15 +130,15 @@ export default function ResultBulkAvailability() {
           locale={customLocale}
           theme={{
             token: {
-              colorPrimary: "#0026d9",
-              colorPrimaryHover: "#0026d9",
-              colorLink: "#0026d9",
+              colorPrimary: "#660099",
+              colorPrimaryHover: "#833baa",
+              colorLink: "#660099",
               colorPrimaryBg: "transparent",
             },
             components: {
               Checkbox: {
-                colorPrimary: "#0026d9",
-                colorPrimaryHover: "#0026d9",
+                colorPrimary: "#660099",
+                colorPrimaryHover: "#660099",
                 borderRadius: 4,
                 controlInteractiveSize: 18,
                 lineWidth: 2,
@@ -181,15 +152,12 @@ export default function ResultBulkAvailability() {
               className={styles?.customTable}
               columns={tableColumns}
               dataSource={currentData.resultados || []}
-              loading={isLoadingPage}
               pagination={{
-                current: currentData.paginacao?.pagina || 1,
-                pageSize: currentData.paginacao?.limite || 500,
+                pageSize: 50,
                 total: totalItems,
                 showSizeChanger: true,
                 pageSizeOptions: ["50", "100", "200", "500"],
                 showLessItems: true,
-                onChange: handlePageChange,
                 showTotal: (total, range) =>
                   `${range[0]}-${range[1]} de ${total} registros`,
               }}
