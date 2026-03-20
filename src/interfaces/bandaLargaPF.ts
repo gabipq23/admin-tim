@@ -9,6 +9,24 @@ export interface OrderBandaLargaPFResponse {
   status_pos_venda_enum?: string[];
 }
 
+export interface OperatorAvailabilityItem {
+  range_max: number | null;
+  range_min: number | null;
+  availability: boolean;
+  encontrado_via_range: boolean;
+}
+
+export interface OperatorsAvailability {
+  tim?: OperatorAvailabilityItem;
+  oi?: OperatorAvailabilityItem;
+  claro?: OperatorAvailabilityItem;
+  net?: OperatorAvailabilityItem;
+  nio?: OperatorAvailabilityItem;
+  sky?: OperatorAvailabilityItem;
+  algar?: OperatorAvailabilityItem;
+  [operatorName: string]: OperatorAvailabilityItem | undefined;
+}
+
 export interface OrderBandaLargaPF {
   id: number;
   company?: string;
@@ -99,7 +117,7 @@ export interface OrderBandaLargaPF {
     street_view_link: string;
     formatted_address: string;
   } | null;
-  operators_availability?: object | null;
+  operators_availability?: OperatorsAvailability | null;
   pf_temperature?: number | null;
   credit?: number | string | null;
   cpf_second_call?: string | null;

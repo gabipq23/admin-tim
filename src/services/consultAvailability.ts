@@ -1,4 +1,4 @@
-import { apiPurchase } from "@/configs/api";
+import { apiAvailability } from "@/configs/api";
 import {
   IAvailability,
   ISearchAvailabilityResponse,
@@ -15,7 +15,7 @@ export class ConsultAvailabilityService {
       params.numero = numero;
     }
 
-    const res = await apiPurchase.get(`/disponibilidade/verificar`, {
+    const res = await apiAvailability.get(`/disponibilidade/verificar`, {
       params,
     });
     return res.data;
@@ -48,18 +48,20 @@ export class ConsultAvailabilityService {
       }
     }
 
-    const res = await apiPurchase.get(`/disponibilidade?${params.toString()}`);
+    const res = await apiAvailability.get(
+      `/disponibilidade?${params.toString()}`,
+    );
     return res.data;
   }
   async getAllCidades(uf: string): Promise<any> {
-    const res = await apiPurchase.get(`/disponibilidade/cidades`, {
+    const res = await apiAvailability.get(`/disponibilidade/cidades`, {
       params: { uf },
     });
     return res.data;
   }
 
   async getAllBairros(uf: string, cidade: string): Promise<any> {
-    const res = await apiPurchase.get(`/disponibilidade/bairros`, {
+    const res = await apiAvailability.get(`/disponibilidade/bairros`, {
       params: { uf, cidade },
     });
     return res.data;
@@ -74,7 +76,7 @@ export class ConsultAvailabilityService {
     if (page) params.append("page", page.toString());
     if (limite) params.append("limite", limite.toString());
 
-    const res = await apiPurchase.post(
+    const res = await apiAvailability.post(
       `/disponibilidade/consultar-massa?${params.toString()}`,
       {
         dados,

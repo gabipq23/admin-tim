@@ -57,9 +57,11 @@ export function OrderBandaLargaPFDisplay({
   };
 
   const AvailabilityStatus = () => {
+    const timAvailability = localData.operators_availability?.tim;
+
     if (
-      localData.availability === null ||
-      localData.availability === undefined
+      timAvailability?.availability === null ||
+      timAvailability?.availability === undefined
     ) {
       return (
         <div className="flex flex-col items-center mt-2">
@@ -68,8 +70,8 @@ export function OrderBandaLargaPFDisplay({
       );
     }
 
-    if (localData.availability) {
-      if (localData.encontrado_via_range === 1) {
+    if (timAvailability.availability) {
+      if (timAvailability.encontrado_via_range) {
         return (
           <div className="flex flex-col items-center mt-2">
             <div className="flex items-center justify-center mb-2">
@@ -82,8 +84,8 @@ export function OrderBandaLargaPFDisplay({
               </Tooltip>
             </div>
             <div className="text-center text-[11px] text-neutral-600 bg-yellow-50 px-2 py-1 rounded">
-              <strong>Range numérico:</strong> {localData.range_min} -{" "}
-              {localData.range_max}
+              <strong>Range numérico:</strong> {timAvailability.range_min} -{" "}
+              {timAvailability.range_max}
             </div>
           </div>
         );

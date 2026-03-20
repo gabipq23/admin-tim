@@ -45,6 +45,13 @@ apiPurchase.interceptors.response.use(
 );
 
 // Tools
+export const apiAvailability = axios.create({
+  baseURL: "https://evolution.bigdates.com.br:3620",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
 export const apiBase2b = axios.create({
   baseURL: "https://base2b.online:3000/api/v1",
   headers: {
