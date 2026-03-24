@@ -134,6 +134,10 @@ export function OrderBandaLargaPFDetailsModal({
 
         installation_preferred_period_two:
           localData.installation_preferred_period_two,
+        wants_esim: localData.wants_esim,
+        line_number_informed: localData.line_number_informed,
+        line_action: localData.line_action,
+        address_reference_point: localData.address_reference_point,
 
         due_day: localData.due_day,
         accept_offers: localData.accept_offers,
@@ -158,6 +162,10 @@ export function OrderBandaLargaPFDetailsModal({
         address_number: values.address_number,
         address_complement: values.address_complement,
         address_lot: values.address_lot,
+        address_reference_point: values.address_reference_point,
+        wants_esim: values.wants_esim,
+        line_number_informed: values.line_number_informed,
+        line_action: values.line_action,
         address_floor: values.address_floor,
         address_block: values.address_block,
         building_or_house: values.building_or_house,

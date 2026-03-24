@@ -843,7 +843,40 @@ export const useAllTableColumns = ({
             dataIndex: "due_day",
             width: 120,
         },
-
+        {
+            title: "Escolha",
+            dataIndex: "line_action",
+            width: 150,
+            render: (line_action) => {
+                const actionMap: Record<string, string> = {
+                    new_number: "Novo Número",
+                    port_in_to_vivo: "Portabilidade para Vivo",
+                    keep_vivo_number: "Manter Número Vivo",
+                };
+                return actionMap[line_action] || "-";
+            },
+        },
+        {
+            title: "Número Informado",
+            dataIndex: "line_number_informed",
+            width: 150,
+            render: (line_number_informed) => (
+                <span>
+                    {line_number_informed ? formatPhoneNumber(line_number_informed) : "-"}
+                </span>
+            ),
+        },
+        {
+            title: "eSIM",
+            dataIndex: "wants_esim",
+            width: 80,
+            render: (wants_esim) =>
+                wants_esim === true
+                    ? "Sim"
+                    : wants_esim === false
+                        ? "Não"
+                        : "-",
+        },
 
         {
             title: "CEP",

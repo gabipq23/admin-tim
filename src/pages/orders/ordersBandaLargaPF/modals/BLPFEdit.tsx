@@ -207,6 +207,7 @@ export function OrderBandaLargaPFEdit({
               </div>
             </div>
           </div>
+
         </div>
         {/* Seção de Disponibilidade */}
         <div className="flex flex-col bg-neutral-100 mb-3 rounded-[4px] p-3 pb-0 w-full">

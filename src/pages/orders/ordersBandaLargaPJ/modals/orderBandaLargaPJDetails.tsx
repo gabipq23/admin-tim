@@ -134,6 +134,10 @@ export function OrderBandaLargaPJDetailsModal({
 
         installation_preferred_period_two:
           localData.installation_preferred_period_two,
+        wants_esim: localData.wants_esim,
+        line_number_informed: localData.line_number_informed,
+        line_action: localData.line_action,
+        address_reference_point: localData.address_reference_point,
 
         due_day: localData.due_day,
         accept_offers: localData.accept_offers,
@@ -163,6 +167,7 @@ export function OrderBandaLargaPJDetailsModal({
         address_lot: values.address_lot,
         address_floor: values.address_floor,
         address_block: values.address_block,
+        address_reference_point: values.address_reference_point,
         building_or_house: values.building_or_house,
         zip_code: values.zip_code,
         single_zip_code: values.single_zip_code,
@@ -170,6 +175,9 @@ export function OrderBandaLargaPJDetailsModal({
         company_legal_name: values.company_legal_name,
         cnpj: values.cnpj,
         manager_name: values.manager_name,
+        wants_esim: values.wants_esim,
+        line_number_informed: values.line_number_informed,
+        line_action: values.line_action,
       };
 
       let selectedPlan = planBLPJStock.find(

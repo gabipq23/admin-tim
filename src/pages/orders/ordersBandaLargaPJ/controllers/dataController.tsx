@@ -113,10 +113,14 @@ export function useAllOrdersController() {
 
   const orderBandaLargaPJ = ordersBandaLarga?.orders?.filter(
     (order) =>
-      order.company === "TIM" &&
-      order.category === "Banda Larga" &&
-      order.client_type === "PJ" &&
-      order.landing_page === "banda-larga"
+      // order.company === "TIM" &&
+      // order.category === "Banda Larga" &&
+      order.client_type === "PJ"
+    // &&
+    // order.landing_page === "banda-larga"
+    // ainda teria que entra aqui o business_partner
+    // mas o ideal é ja mandar eles filtrados na query
+
   );
 
   const updateDataIdCRMAndConsultorResponsavel = (
