@@ -44,7 +44,7 @@ type CreateProductBLFormValues = {
 };
 
 type CreateProductBLProps = {
-    createProductBL: (planData: FormData) => Promise<CreatedProductResponse>;
+    createProductBL: (planData: Record<string, unknown>) => Promise<CreatedProductResponse>;
     uploadProductConditionsBL: (payload: {
         id: number;
         files: File[];
@@ -97,7 +97,7 @@ export default function CreateProductBL({
             // Construir payload JSON
             const payload = {
                 company: "TIM",
-                business_partner: "",
+                business_partner: "TIM",
                 category: "Banda Larga",
                 landing_page: "banda_larga",
                 client_type: values.client_type || "",
@@ -112,16 +112,10 @@ export default function CreateProductBL({
                 },
                 details: detailsWithoutImages,
                 extras: extras,
+                offer_conditions: [],
             };
 
-            const formData = new FormData();
-            Object.entries(payload).forEach(([key, value]) => {
-                if (value !== null && value !== undefined) {
-                    formData.append(key, typeof value === "object" ? JSON.stringify(value) : String(value));
-                }
-            });
-
-            const createdProduct = await createProductBL(formData);
+            const createdProduct = await createProductBL(payload);
             const createdProductId = createdProduct.id;
 
             const offerConditionFiles: File[] = (values.offer_conditions || [])

@@ -11,7 +11,7 @@ import CreateProductBL from "../modals/CreateProductBL";
 import type { ProductBLFiltersFormValues } from "../controllers/filters";
 import type { CreatedProductResponse } from "@/services/products";
 
-type ProductCreatePayload = FormData;
+type ProductCreatePayload = Record<string, unknown>;
 type UploadConditionsPayload = { id: number; files: File[] };
 
 interface FiltroProductBLFormProps {
