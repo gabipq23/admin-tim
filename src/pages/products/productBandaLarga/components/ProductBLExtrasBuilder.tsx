@@ -1,5 +1,6 @@
-import { Button, Form, Input, Select } from "antd";
+import { Button, Form, Input, Select, Tooltip } from "antd";
 import type { ProductExtraGroup } from "@/interfaces/products";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 export type ExtraOptionFormValue = {
     id?: string;
@@ -36,8 +37,20 @@ export function ProductExtras({
                                 <Form.Item
                                     {...restField}
                                     name={[name, "input_type"]}
-                                    label="Tipo"
-                                    rules={[{ required: true, message: "Tipo obrigatorio" }]}
+                                    label={<h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                                        Tipo
+                                        <Tooltip
+                                            className="cursor-pointer"
+                                            title="Escolher o formato que as opções serão apresentadas para o cliente"
+                                            placement="top"
+                                            styles={{ body: { fontSize: "12px" } }}
+                                        >
+                                            <span className="text-blue-500 text-[12px] cursor-pointer ml-1">
+                                                <ExclamationCircleOutlined />
+                                            </span>
+                                        </Tooltip>
+                                    </h3>}
+                                    rules={[{ required: true, message: "Tipo obrigatório" }]}
                                 >
                                     <Select placeholder="Selecione o tipo">
                                         <Select.Option value="checkbox">Checkbox</Select.Option>
@@ -51,7 +64,7 @@ export function ProductExtras({
                                     {...restField}
                                     name={[name, "label"]}
                                     label="Título"
-                                    rules={[{ required: true, message: "Título obrigatorio" }]}
+                                    rules={[{ required: true, message: "Título obrigatório" }]}
                                 >
                                     <Input placeholder={groupPlaceholder} />
                                 </Form.Item>
@@ -66,7 +79,7 @@ export function ProductExtras({
                                                     <Form.Item
                                                         {...optionRest}
                                                         name={[optionName, "label"]}
-                                                        rules={[{ required: true, message: "Título obrigatorio" }]}
+                                                        rules={[{ required: true, message: "Título obrigatório" }]}
                                                     >
                                                         <Input placeholder="Título" />
                                                     </Form.Item>
@@ -75,7 +88,7 @@ export function ProductExtras({
                                                         name={[optionName, "price"]}
                                                         rules={[{ required: false }]}
                                                     >
-                                                        <Input inputMode="decimal" placeholder="Preco" />
+                                                        <Input inputMode="decimal" placeholder="Preço" />
                                                     </Form.Item>
                                                     <div className="flex gap-1">
                                                         <Form.Item
@@ -84,7 +97,7 @@ export function ProductExtras({
                                                             className="flex-1"
                                                             rules={[{ required: false }]}
                                                         >
-                                                            <Input placeholder="Descricao" />
+                                                            <Input placeholder="Descrição" />
                                                         </Form.Item>
                                                         <Button danger onClick={() => removeOption(optionName)}>
                                                             X
@@ -94,7 +107,7 @@ export function ProductExtras({
                                             ),
                                         )}
                                         <Button type="dashed" onClick={() => addOption()} block>
-                                            + Opcao
+                                            + Opção
                                         </Button>
                                     </div>
                                 )}

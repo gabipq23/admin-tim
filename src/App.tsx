@@ -104,7 +104,7 @@ export default function App() {
             />
 
             <Route
-              path="/admin/product-banda-larga"
+              path="/admin/produto-banda-larga"
               element={<ProductBL />}
             />
 

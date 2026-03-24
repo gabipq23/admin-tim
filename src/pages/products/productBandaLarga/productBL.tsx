@@ -38,8 +38,9 @@ export default function ProductBL() {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <div className="flex flex-col px-6 md:px-10 lg:px-14 pt-4 h-[calc(100vh-160px)]">
-          <div className="flex justify-between  mt-6  mb-4">
+        <div className="px-6 md:px-10 lg:px-14 ">
+
+          <div className="flex justify-between mt-6 items-center mb-4">
             <div>
               <div className="flex  gap-8 justify-between mb-2">
                 <h1 className="text-[22px]">Banda Larga</h1>
@@ -55,6 +56,7 @@ export default function ProductBL() {
               />
             </div>
           </div>
+
           <ConfigProvider
             locale={customLocale}
             theme={{

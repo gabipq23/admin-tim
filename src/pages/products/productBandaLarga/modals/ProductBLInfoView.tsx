@@ -12,7 +12,7 @@ import {
     ProductExtraGroup,
     ProductOfferConditionFile,
 } from "@/interfaces/products";
-import { blueOutlineButtonClass } from "@/utils/buttonStyles";
+import { blueOutlineButtonClass, redOutlineButtonClass } from "@/utils/buttonStyles";
 import { formatBRL } from "@/utils/formatBRL";
 
 interface ProductBLInfoViewProps {
@@ -28,7 +28,7 @@ export default function ProductBLInfoView({
 }: ProductBLInfoViewProps) {
     return (
         <>
-            <>
+            <div>
                 <div className="max-h-[520px] overflow-y-auto scrollbar-thin">
                     {/* Header do Plano */}
                     <div className="bg-neutral-100 p-6 rounded-lg mb-6">
@@ -140,14 +140,14 @@ export default function ProductBLInfoView({
                                             <h4 className="font-semibold text-gray-800 flex-1">
                                                 {detail.title}
                                             </h4>
-                                            <div className="flex flex-col gap-1 ml-2">
+                                            <div className="flex flex-col gap-1 ml-2 w-14">
                                                 {detail.highlight_top && (
-                                                    <p className="text-[10px] text-center rounded bg-[#0026d9] text-white px-2 py-1">
+                                                    <p className="text-[10px] text-center rounded bg-[#0026d9] text-white px-4 py-2">
                                                         Compacto
                                                     </p>
                                                 )}
                                                 {detail.highlight_bottom && (
-                                                    <p className="text-[10px] text-center rounded bg-[#0026d9] text-white px-2 py-1">
+                                                    <p className="text-[10px] text-center rounded bg-[#0026d9] text-white px-4 py-2">
                                                         Destaque
                                                     </p>
                                                 )}
@@ -294,23 +294,24 @@ export default function ProductBLInfoView({
 
                     <Divider />
 
-                    {/* Ações */}
-                    <div className="flex justify-end gap-2 pt-4">
-                        <Button
-                            className={blueOutlineButtonClass}
-                            onClick={() => setShowDeleteModal(true)}
-                        >
-                            Excluir Plano
-                        </Button>
-                        <Button
-                            className={blueOutlineButtonClass}
-                            onClick={() => setShowEditProductLayout(true)}
-                        >
-                            Editar Plano
-                        </Button>
-                    </div>
+
                 </div>
-            </>
+                {/* Ações */}
+                <div className="flex justify-end gap-2 pt-4">
+                    <Button
+                        className={blueOutlineButtonClass}
+                        onClick={() => setShowEditProductLayout(true)}
+                    >
+                        Editar Plano
+                    </Button>
+                    <Button
+                        className={redOutlineButtonClass}
+                        onClick={() => setShowDeleteModal(true)}
+                    >
+                        Deletar Plano
+                    </Button>
+                </div>
+            </div>
         </>
     );
 }

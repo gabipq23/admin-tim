@@ -1,5 +1,6 @@
 
 import { IProduct } from "@/interfaces/products";
+import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 import { ConfigProvider, Switch, TableColumnsType, Tooltip } from "antd";
 
 export const useAllTableColumns = (updateProductBL: (payload: { id: number; values: Partial<IProduct> }) => void): TableColumnsType<IProduct> => {
@@ -45,6 +46,7 @@ export const useAllTableColumns = (updateProductBL: (payload: { id: number; valu
                         styles={{ body: { fontSize: "12px" } }}
                     >
                         <Switch
+                            className={blueOutlineButtonClass}
                             size="small"
                             checked={!!record.online}
                             onChange={(checked) => {
