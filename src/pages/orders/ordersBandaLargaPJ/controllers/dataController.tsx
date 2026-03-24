@@ -112,7 +112,11 @@ export function useAllOrdersController() {
   });
 
   const orderBandaLargaPJ = ordersBandaLarga?.orders?.filter(
-    (order) => order.client_type === "PJ"
+    (order) =>
+      order.company === "TIM" &&
+      order.category === "Banda Larga" &&
+      order.client_type === "PJ" &&
+      order.landing_page === "banda-larga"
   );
 
   const updateDataIdCRMAndConsultorResponsavel = (

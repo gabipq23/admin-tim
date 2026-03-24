@@ -27,6 +27,8 @@ export interface OperatorsAvailability {
   [operatorName: string]: OperatorAvailabilityItem | undefined;
 }
 
+type TelecomLineAction = "new_number" | "port_in_to_vivo" | "keep_vivo_number";
+
 export interface OrderBandaLargaPF {
   id: number;
   company?: string;
@@ -132,7 +134,7 @@ export interface OrderBandaLargaPF {
   consultant_notes?: string | null;
   consultant_observation?: string | null;
   manager_name?: string | null;
-  manager?: string | null;
+  manager?: Record<string, unknown> | null;
   is_consultation?: boolean | null;
   is_order?: boolean | null;
   consultation_id?: string | null;
@@ -238,6 +240,15 @@ export interface OrderBandaLargaPF {
     distancia_km_ponto_mais_proximo: number;
   };
   debit: boolean;
+  business_partner: string;
+  category: string;
+  landing_page: string;
+  address_reference_point: string;
+  price_summary: Record<string, unknown> | null;
+  line_action?: TelecomLineAction;
+  line_number_informed?: string | null;
+  line_number?: string | null;
+  wants_esim?: boolean;
 }
 
 export interface WhatsAppInfo {

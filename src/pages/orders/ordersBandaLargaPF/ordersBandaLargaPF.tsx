@@ -76,6 +76,8 @@ export default function OrdersBandaLargaPF() {
       setSelectedRowKeys(newSelectedRowKeys);
     },
   };
+
+  console.log(orderBandaLargaPF)
   return (
     <>
       <QueryClientProvider client={queryClient}>

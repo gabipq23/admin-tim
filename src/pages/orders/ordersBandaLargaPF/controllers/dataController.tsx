@@ -59,7 +59,14 @@ export function useAllOrdersController() {
       },
     });
   const orderBandaLargaPF = ordersBandaLarga?.orders?.filter(
-    (order) => order.client_type === "PF"
+    (order) =>
+      // order.company === "TIM" &&
+      // order.category === "Banda Larga" &&
+      order.client_type === "PF"
+    // &&
+    // order.landing_page === "banda-larga"
+    // ainda teria que entra aqui o business_partner
+    // mas o ideal é ja mandar eles filtrados na query
   );
 
   const { mutate: updateBandaLargaOrder, isPending: isUpdatePurchaseFetching } =
@@ -115,8 +122,6 @@ export function useAllOrdersController() {
       console.error(error.message);
     },
   });
-
-
 
   const updateDataIdCRMAndConsultorResponsavel = (
     id: string | undefined,
