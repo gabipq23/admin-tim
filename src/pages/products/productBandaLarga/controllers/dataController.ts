@@ -1,8 +1,9 @@
-import { ProductsResponse } from "@/interfaces/products";
+import { IProduct, ProductsResponse } from "@/interfaces/products";
 import { ProductsService } from "@/services/products";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
+import { getFiltersFromURL } from "./filters";
 
 export function useProductBLController() {
   const productBLService = new ProductsService();
@@ -16,8 +17,9 @@ export function useProductBLController() {
     setShowEditProductLayout(false);
     setIsModalOpen(false);
   };
-  const params = new URLSearchParams(window.location.search);
-  const filters = Object.fromEntries(params.entries());
+  const filters = getFiltersFromURL();
+  const getErrorMessage = (error: unknown) =>
+    error instanceof Error ? error.message : "Erro desconhecido";
 
   const { data: productBLQuery, isFetching: productBLQueryFetching } =
     useQuery<ProductsResponse>({
@@ -26,7 +28,7 @@ export function useProductBLController() {
         "productBL",
         filters.page || 1,
         filters.per_page || 20,
-        filters.online || "",
+        filters.online === null ? "" : String(filters.online),
         filters.company || "",
         filters.category || "",
         filters.business_partner || "",
@@ -39,45 +41,65 @@ export function useProductBLController() {
         const response = await productBLService.allProductsFiltered({
           page: 1,
           per_page: 100,
-          online: filters.online,
-          company: filters.company,
-          category: filters.category,
-          business_partner: filters.business_partner,
-          landing_page: filters.landing_page,
-          order: filters.order,
-          sort: filters.sort,
-          client_type: filters.client_type,
+          online: filters.online === null ? undefined : String(filters.online),
+          company: filters.company ?? undefined,
+          category: filters.category ?? undefined,
+          business_partner: filters.business_partner ?? undefined,
+          landing_page: filters.landing_page ?? undefined,
+          order: filters.order ?? undefined,
+          sort: filters.sort ?? undefined,
+          client_type: filters.client_type ?? undefined,
         });
         return response;
       },
     });
 
   const { mutate: updateProductBL } = useMutation({
-    mutationFn: async ({ id, values }: { id: number; values: any }) =>
-      productBLService.updateProduct(id, values),
+    mutationFn: async ({
+      id,
+      values,
+    }: {
+      id: number;
+      values: Partial<IProduct>;
+    }) => productBLService.updateProduct(id, values),
     onMutate: async () =>
       await queryClient.cancelQueries({ queryKey: ["productBL"] }),
     onSuccess: () => {
       toast.success("Produto alterado com sucesso!");
       queryClient.invalidateQueries({ queryKey: ["productBL"] });
     },
-    onError: (error) => {
+    onError: (error: unknown) => {
       toast.error("Houve um erro ao alterar o produto. Tente novamente");
-      console.error(error.message);
+      console.error(getErrorMessage(error));
     },
   });
 
-  const { mutate: createProductBL } = useMutation({
-    mutationFn: async (data: any) => productBLService.createProduct(data),
+  const { mutateAsync: createProductBL } = useMutation({
+    mutationFn: async (data: FormData | Record<string, unknown>) =>
+      productBLService.createProduct(data),
     onMutate: async () =>
       await queryClient.cancelQueries({ queryKey: ["productBL"] }),
     onSuccess: () => {
       toast.success("Produto criado com sucesso!");
       queryClient.invalidateQueries({ queryKey: ["productBL"] });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast.error("Houve um erro ao criar o produto. Tente novamente");
-      console.error(error.message);
+      console.error(getErrorMessage(error));
+    },
+  });
+
+  const { mutateAsync: uploadProductConditionsBL } = useMutation({
+    mutationFn: async ({ id, files }: { id: number; files: File[] }) =>
+      productBLService.uploadProductConditions(id, files),
+    onMutate: async () =>
+      await queryClient.cancelQueries({ queryKey: ["productBL"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["productBL"] });
+    },
+    onError: (error: unknown) => {
+      toast.error("Houve um erro ao enviar os documentos de condição.");
+      console.error(getErrorMessage(error));
     },
   });
 
@@ -89,13 +111,16 @@ export function useProductBLController() {
       toast.success("Produto removido com sucesso!");
       queryClient.invalidateQueries({ queryKey: ["productBL"] });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast.error("Houve um erro ao remover o produto. Tente novamente");
-      console.error(error.message);
+      console.error(getErrorMessage(error));
     },
   });
 
-  const productsBL = productBLQuery?.products || [];
+  const productsBL = (productBLQuery?.products || []).filter(
+    (product) =>
+      product.company === "TIM" && product.category === "Banda Larga",
+  );
 
   return {
     isModalOpen,
@@ -109,5 +134,6 @@ export function useProductBLController() {
     updateProductBL,
     removeProductBL,
     createProductBL,
+    uploadProductConditionsBL,
   };
 }

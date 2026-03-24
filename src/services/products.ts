@@ -1,5 +1,10 @@
 import { apiPurchase } from "@/configs/api";
-import { ProductsResponse } from "@/interfaces/products";
+import { IProduct, ProductsResponse } from "@/interfaces/products";
+import { isAxiosError } from "axios";
+
+export interface CreatedProductResponse {
+  id: number;
+}
 
 export class ProductsService {
   async allProductsFiltered({
@@ -43,12 +48,67 @@ export class ProductsService {
     return res.data;
   }
 
-  async createProduct(data: any): Promise<any> {
-    const response = await apiPurchase.post(`/telecom-products`, data);
-    return response.data;
+  async createProduct(
+    data: FormData | Record<string, unknown>,
+  ): Promise<CreatedProductResponse> {
+    const headers =
+      data instanceof FormData
+        ? {
+            "Content-Type": "multipart/form-data",
+          }
+        : undefined;
+
+    try {
+      const response = await apiPurchase.post(`/telecom-products`, data, {
+        headers,
+      });
+
+      const id = Number(response?.data?.product?.id);
+      if (!Number.isFinite(id) || id <= 0) {
+        throw new Error("Resposta de criacao sem id valido");
+      }
+
+      return { id };
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        console.error("Erro do backend - Status:", error.response?.status);
+        console.error("Erro do backend - Data:", error.response?.data);
+      }
+      throw error;
+    }
   }
 
-  async updateProduct(id: number, data: any): Promise<any> {
+  async uploadProductConditions(id: number, files: File[]): Promise<unknown> {
+    const formData = new FormData();
+
+    files.forEach((file) => {
+      formData.append("file", file);
+    });
+
+    try {
+      const response = await apiPurchase.post(
+        `/telecom-products/${id}/conditions`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+      return response.data;
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        console.error("Erro no upload - Status:", error.response?.status);
+        console.error("Erro no upload - Data:", error.response?.data);
+      }
+      throw error;
+    }
+  }
+
+  async updateProduct(
+    id: number,
+    data: Partial<IProduct> | Record<string, unknown>,
+  ): Promise<unknown> {
     const response = await apiPurchase.put(`/telecom-products/${id}`, data);
     return response.data;
   }

@@ -93,11 +93,11 @@ export default function ImportXLSX() {
             theme={{
               components: {
                 Input: {
-                  activeBorderColor: "#660099",
-                  hoverBorderColor: "#660099",
+                  activeBorderColor: "#0026d9",
+                  hoverBorderColor: "#0026d9",
                 },
                 Button: {
-                  colorPrimary: "#660099",
+                  colorPrimary: "#0026d9",
                   colorPrimaryHover: "#cb1ef5",
                 },
               },
@@ -131,9 +131,9 @@ export default function ImportXLSX() {
                   loading={isConsulting}
                   disabled={isConsulting || info.length <= 1}
                   style={{
-                    backgroundColor: "#660099",
+                    backgroundColor: "#0026d9",
                     color: "white",
-                    borderColor: "#660099",
+                    borderColor: "#0026d9",
                     borderTopLeftRadius: 0,
                     borderBottomLeftRadius: 0,
                     height: "32px",

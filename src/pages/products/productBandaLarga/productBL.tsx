@@ -3,8 +3,9 @@ import { ConfigProvider, Table } from "antd";
 import { customLocale } from "@/utils/customLocale";
 import { useProductBLController } from "./controllers/dataController";
 import { useProductsBLFilterController } from "./controllers/filterController";
-import { FilterProductBL } from "./components/filter";
-import ProductBLInfoModal from "./modals/BLPJInfo";
+import { FilterProductBL } from "./components/ProductBLFilter";
+import ProductBLInfoModal from "./modals/InfoProductBL";
+import { IProduct } from "@/interfaces/products";
 
 export default function ProductBL() {
   const queryClient = new QueryClient();
@@ -19,6 +20,7 @@ export default function ProductBL() {
     updateProductBL,
     removeProductBL,
     createProductBL,
+    uploadProductConditionsBL,
   } = useProductBLController();
 
   const {
@@ -31,7 +33,7 @@ export default function ProductBL() {
     onSubmit,
     clearFilters,
     isFiltered,
-  } = useProductsBLFilterController();
+  } = useProductsBLFilterController(updateProductBL);
 
   return (
     <>
@@ -49,6 +51,7 @@ export default function ProductBL() {
                 onClear={clearFilters}
                 isFiltered={isFiltered}
                 createProductBL={createProductBL}
+                uploadProductConditionsBL={uploadProductConditionsBL}
               />
             </div>
           </div>
@@ -65,7 +68,7 @@ export default function ProductBL() {
           >
             {/* Tabela  */}
             <div className="overflow-y-auto mb-4">
-              <Table<any>
+              <Table<IProduct>
                 sticky={{ offsetHeader: 0 }}
                 className={styles.customTable}
                 loading={productBLQueryFetching}
@@ -109,6 +112,7 @@ export default function ProductBL() {
             }
             updateProductBL={updateProductBL}
             removeProductBL={removeProductBL}
+            uploadProductConditionsBL={uploadProductConditionsBL}
           />
         </div>
       </QueryClientProvider>

@@ -55,7 +55,7 @@ export default function ResultBulkAvailability() {
               theme={{
                 components: {
                   Button: {
-                    colorBorder: "#660099",
+                    colorBorder: "#0026d9",
                     colorText: "#fff",
                     colorPrimaryHover: "#fff",
                     colorPrimaryBorderHover: "#cb1ef5",
@@ -74,8 +74,8 @@ export default function ResultBulkAvailability() {
                   currentData.resultados.length === 0
                 }
                 style={{
-                  backgroundColor: "#660099",
-                  borderColor: "#660099",
+                  backgroundColor: "#0026d9",
+                  borderColor: "#0026d9",
                 }}
               >
                 {isExporting ? "Exportando..." : "Exportar em .xlsx"}
@@ -91,8 +91,8 @@ export default function ResultBulkAvailability() {
                   currentData.resultados.length === 0
                 }
                 style={{
-                  backgroundColor: "#660099",
-                  borderColor: "#660099",
+                  backgroundColor: "#0026d9",
+                  borderColor: "#0026d9",
                 }}
               >
                 {isExportingCSV ? "Exportando..." : "Exportar em .csv"}
@@ -104,8 +104,8 @@ export default function ResultBulkAvailability() {
               theme={{
                 components: {
                   Button: {
-                    colorBorder: "#660099",
-                    colorText: "#660099",
+                    colorBorder: "#0026d9",
+                    colorText: "#0026d9",
                     colorPrimaryHover: "#cb1ef5",
                     colorPrimaryBorderHover: "#cb1ef5",
                   },
@@ -130,15 +130,15 @@ export default function ResultBulkAvailability() {
           locale={customLocale}
           theme={{
             token: {
-              colorPrimary: "#660099",
+              colorPrimary: "#0026d9",
               colorPrimaryHover: "#833baa",
-              colorLink: "#660099",
+              colorLink: "#0026d9",
               colorPrimaryBg: "transparent",
             },
             components: {
               Checkbox: {
-                colorPrimary: "#660099",
-                colorPrimaryHover: "#660099",
+                colorPrimary: "#0026d9",
+                colorPrimaryHover: "#0026d9",
                 borderRadius: 4,
                 controlInteractiveSize: 18,
                 lineWidth: 2,

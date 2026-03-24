@@ -35,7 +35,7 @@ export interface ProductExtras {
   non_client: ProductExtraGroup[];
 }
 
-export interface Product {
+export interface IProduct {
   id: number;
   company: string;
   business_partner: string;
@@ -57,7 +57,7 @@ export interface Product {
 
 export interface ProductsResponse {
   success: boolean;
-  products: Product[];
+  products: IProduct[];
   total: number;
   page: number;
   perPage: number;
