@@ -38,6 +38,7 @@ import { Chats } from "./pages/chats/chats";
 import Evolution from "./pages/evolution/evolution";
 import AdminLayout from "./layouts/adminLayout";
 import PublicLayout from "./layouts/publicLayout";
+import ProductBL from "./pages/products/productBandaLarga/productBL";
 
 export default function App() {
   const { user, checkAuth } = useAuthContext();
@@ -102,7 +103,10 @@ export default function App() {
               element={<OrdersBandaLargaPF />}
             />
 
-
+            <Route
+              path="/admin/produto-banda-larga"
+              element={<ProductBL />}
+            />
 
 
             <Route

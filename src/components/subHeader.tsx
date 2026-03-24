@@ -239,6 +239,23 @@ export default function SubHeader() {
     },
   ];
 
+  const productsMenuItems: MenuProps["items"] = [
+    {
+      key: "produto-banda-larga",
+      label: (
+        <span className="text-[#0026d9]"
+          onClick={() => {
+            setSelectedLink("produto-banda-larga");
+            navigate(`/admin/produto-banda-larga`);
+          }}
+        >
+          Banda Larga
+        </span>
+      ),
+    },
+
+  ];
+
 
   const chatsMenuItems: MenuProps["items"] = [
     {
@@ -313,6 +330,17 @@ export default function SubHeader() {
                   }`}
               >
                 Pedidos
+              </a>
+            </Dropdown>
+            <Dropdown menu={{ items: productsMenuItems }} placement="bottom">
+              <a
+                onClick={(e) => e.preventDefault()}
+                className={`text-[14px] cursor-pointer text-[#0026d9] hover:text-[#2a4bdf] ${selectedLink === "produto-banda-larga"
+                  ? "font-bold text-[#2a4bdf]"
+                  : ""
+                  }`}
+              >
+                Produtos
               </a>
             </Dropdown>
 
