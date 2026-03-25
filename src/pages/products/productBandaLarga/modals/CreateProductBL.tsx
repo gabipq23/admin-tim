@@ -5,7 +5,11 @@ import {
 } from "antd";
 import { useEffect, useState } from "react";
 import { parseBRLInput } from "@/utils/formatBRL";
-import type { CreatedProductResponse } from "@/services/products";
+import type {
+    CreatedProductResponse,
+    UploadedProductDetailImageResponse,
+} from "@/services/products";
+import type { IProduct } from "@/interfaces/products";
 import type { ExtraGroupFormValue } from "../components/ProductBLExtrasBuilder";
 import { normalizeExtras } from "./productBL.helpers";
 import { ProductBLDetailFields } from "../components/ProductBLDetailFields";
@@ -46,17 +50,27 @@ type CreateProductBLFormValues = {
 
 type CreateProductBLProps = {
     createProductBL: (planData: Record<string, unknown>) => Promise<CreatedProductResponse>;
+    updateProductBLAsync: (payload: {
+        id: number;
+        values: Partial<IProduct>;
+    }) => Promise<unknown>;
     uploadProductConditionsBL: (payload: {
         id: number;
         files: File[];
     }) => Promise<unknown>;
+    uploadProductDetailsBL: (payload: {
+        id: number;
+        file: File;
+    }) => Promise<UploadedProductDetailImageResponse>;
     showCreateModal: boolean;
     setShowCreateModal: (value: boolean) => void;
 };
 
 export default function CreateProductBL({
     createProductBL,
+    updateProductBLAsync,
     uploadProductConditionsBL,
+    uploadProductDetailsBL,
     showCreateModal,
     setShowCreateModal,
 }: CreateProductBLProps) {
@@ -129,9 +143,48 @@ export default function CreateProductBL({
             const createdProduct = await createProductBL(payload);
             const createdProductId = createdProduct.id;
 
+            const detailImageUploads = (values.details || [])
+                .flatMap((detail, detailIndex) => (detail.images || [])
+                    .map((fileObj: UploadFormFile) => ({
+                        detailIndex,
+                        file: fileObj?.originFileObj,
+                    })))
+                .filter((entry): entry is { detailIndex: number; file: File } => Boolean(entry.file));
+
             const offerConditionFiles: File[] = (values.offer_conditions || [])
                 .map((fileObj: UploadFormFile) => fileObj?.originFileObj)
                 .filter((file: File | undefined): file is File => Boolean(file));
+
+            if (detailImageUploads.length > 0 && Number.isFinite(createdProductId) && createdProductId > 0) {
+                const detailImageUrlsByIndex = new Map<number, string[]>();
+
+                for (const uploadEntry of detailImageUploads) {
+                    const uploadResponse = await uploadProductDetailsBL({
+                        id: createdProductId,
+                        file: uploadEntry.file,
+                    });
+
+                    if (uploadResponse?.url) {
+                        const currentUrls = detailImageUrlsByIndex.get(uploadEntry.detailIndex) || [];
+                        currentUrls.push(uploadResponse.url);
+                        detailImageUrlsByIndex.set(uploadEntry.detailIndex, currentUrls);
+                    }
+                }
+
+                if (detailImageUrlsByIndex.size > 0) {
+                    const detailsWithUploadedImages = detailsWithoutImages.map((detail, detailIndex) => ({
+                        ...detail,
+                        images: detailImageUrlsByIndex.get(detailIndex) || [],
+                    }));
+
+                    await updateProductBLAsync({
+                        id: createdProductId,
+                        values: {
+                            details: detailsWithUploadedImages,
+                        },
+                    });
+                }
+            }
 
             if (offerConditionFiles.length > 0 && Number.isFinite(createdProductId) && createdProductId > 0) {
                 await uploadProductConditionsBL({

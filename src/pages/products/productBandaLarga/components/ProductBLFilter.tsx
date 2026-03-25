@@ -9,10 +9,16 @@ import { useState } from "react";
 import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 import CreateProductBL from "../modals/CreateProductBL";
 import type { ProductBLFiltersFormValues } from "../controllers/filters";
-import type { CreatedProductResponse } from "@/services/products";
+import type {
+    CreatedProductResponse,
+    UploadedProductDetailImageResponse,
+} from "@/services/products";
+import type { IProduct } from "@/interfaces/products";
 
 type ProductCreatePayload = Record<string, unknown>;
+type ProductUpdatePayload = { id: number; values: Partial<IProduct> };
 type UploadConditionsPayload = { id: number; files: File[] };
+type UploadDetailsPayload = { id: number; file: File };
 
 interface FiltroProductBLFormProps {
     control: Control<ProductBLFiltersFormValues>;
@@ -21,7 +27,9 @@ interface FiltroProductBLFormProps {
     onClear: () => void;
     isFiltered: boolean;
     createProductBL: (data: ProductCreatePayload) => Promise<CreatedProductResponse>;
+    updateProductBLAsync: (data: ProductUpdatePayload) => Promise<unknown>;
     uploadProductConditionsBL: (data: UploadConditionsPayload) => Promise<unknown>;
+    uploadProductDetailsBL: (data: UploadDetailsPayload) => Promise<UploadedProductDetailImageResponse>;
 }
 
 export function FilterProductBL({
@@ -30,7 +38,9 @@ export function FilterProductBL({
     onSubmit,
     onClear,
     createProductBL,
+    updateProductBLAsync,
     uploadProductConditionsBL,
+    uploadProductDetailsBL,
 }: FiltroProductBLFormProps) {
     const [showCreateModal, setShowCreateModal] = useState(false);
 
@@ -213,7 +223,9 @@ export function FilterProductBL({
             </form>
             <CreateProductBL
                 createProductBL={createProductBL}
+                updateProductBLAsync={updateProductBLAsync}
                 uploadProductConditionsBL={uploadProductConditionsBL}
+                uploadProductDetailsBL={uploadProductDetailsBL}
                 showCreateModal={showCreateModal}
                 setShowCreateModal={setShowCreateModal}
             />

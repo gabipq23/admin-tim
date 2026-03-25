@@ -18,9 +18,11 @@ export default function ProductBL() {
     productsBL,
     productBLQueryFetching,
     updateProductBL,
+    updateProductBLAsync,
     removeProductBL,
     createProductBL,
     uploadProductConditionsBL,
+    uploadProductDetailsBL,
   } = useProductBLController();
 
   const {
@@ -52,7 +54,9 @@ export default function ProductBL() {
                 onClear={clearFilters}
                 isFiltered={isFiltered}
                 createProductBL={createProductBL}
+                updateProductBLAsync={updateProductBLAsync}
                 uploadProductConditionsBL={uploadProductConditionsBL}
+                uploadProductDetailsBL={uploadProductDetailsBL}
               />
             </div>
           </div>

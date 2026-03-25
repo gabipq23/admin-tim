@@ -6,6 +6,12 @@ export interface CreatedProductResponse {
   id: number;
 }
 
+export interface UploadedProductDetailImageResponse {
+  success?: boolean;
+  url?: string;
+  product?: IProduct;
+}
+
 export class ProductsService {
   async allProductsFiltered({
     page,
@@ -100,6 +106,39 @@ export class ProductsService {
       if (isAxiosError(error)) {
         console.error("Erro no upload - Status:", error.response?.status);
         console.error("Erro no upload - Data:", error.response?.data);
+      }
+      throw error;
+    }
+  }
+
+  async uploadProductDetails(
+    id: number,
+    file: File,
+  ): Promise<UploadedProductDetailImageResponse> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await apiPurchase.post(
+        `/telecom-products/${id}/details`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+      return response.data as UploadedProductDetailImageResponse;
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        console.error(
+          "Erro no upload de imagens dos detalhes - Status:",
+          error.response?.status,
+        );
+        console.error(
+          "Erro no upload de imagens dos detalhes - Data:",
+          error.response?.data,
+        );
       }
       throw error;
     }
