@@ -18,7 +18,6 @@ export default function ProductBL() {
     productsBL,
     productBLQueryFetching,
     updateProductBL,
-    updateProductBLAsync,
     removeProductBL,
     createProductBL,
     uploadProductConditionsBL,
@@ -54,7 +53,6 @@ export default function ProductBL() {
                 onClear={clearFilters}
                 isFiltered={isFiltered}
                 createProductBL={createProductBL}
-                updateProductBLAsync={updateProductBLAsync}
                 uploadProductConditionsBL={uploadProductConditionsBL}
                 uploadProductDetailsBL={uploadProductDetailsBL}
               />
@@ -119,6 +117,7 @@ export default function ProductBL() {
             updateProductBL={updateProductBL}
             removeProductBL={removeProductBL}
             uploadProductConditionsBL={uploadProductConditionsBL}
+            uploadProductDetailsBL={uploadProductDetailsBL}
           />
         </div>
       </QueryClientProvider>

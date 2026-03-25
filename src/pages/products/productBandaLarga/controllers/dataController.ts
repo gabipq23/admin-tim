@@ -74,25 +74,6 @@ export function useProductBLController() {
     },
   });
 
-  const { mutateAsync: updateProductBLAsync } = useMutation({
-    mutationFn: async ({
-      id,
-      values,
-    }: {
-      id: number;
-      values: Partial<IProduct>;
-    }) => productBLService.updateProduct(id, values),
-    onMutate: async () =>
-      await queryClient.cancelQueries({ queryKey: ["productBL"] }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["productBL"] });
-    },
-    onError: (error: unknown) => {
-      toast.error("Houve um erro ao consolidar os detalhes do produto.");
-      console.error(getErrorMessage(error));
-    },
-  });
-
   const { mutateAsync: createProductBL } = useMutation({
     mutationFn: async (data: FormData | Record<string, unknown>) =>
       productBLService.createProduct(data),
@@ -123,8 +104,15 @@ export function useProductBLController() {
   });
 
   const { mutateAsync: uploadProductDetailsBL } = useMutation({
-    mutationFn: async ({ id, file }: { id: number; file: File }) =>
-      productBLService.uploadProductDetails(id, file),
+    mutationFn: async ({
+      id,
+      detailIndex,
+      files,
+    }: {
+      id: number;
+      detailIndex: number;
+      files: File[];
+    }) => productBLService.uploadProductDetails(id, detailIndex, files),
     onMutate: async () =>
       await queryClient.cancelQueries({ queryKey: ["productBL"] }),
     onSuccess: () => {
@@ -165,7 +153,6 @@ export function useProductBLController() {
     productBLQuery,
     productsBL,
     updateProductBL,
-    updateProductBLAsync,
     removeProductBL,
     createProductBL,
     uploadProductConditionsBL,

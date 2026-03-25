@@ -52,6 +52,7 @@ interface BLPJInfoModalProps {
   removeProductBL: (id: number) => void;
   updateProductBL?: (payload: { id: number; values: Partial<IProduct> }) => void;
   uploadProductConditionsBL?: (payload: { id: number; files: File[] }) => Promise<unknown>;
+  uploadProductDetailsBL?: (payload: { id: number; detailIndex: number; files: File[] }) => Promise<unknown>;
 }
 
 function ProductBLInfoModal({
@@ -63,6 +64,7 @@ function ProductBLInfoModal({
   updateProductBL,
   removeProductBL,
   uploadProductConditionsBL,
+  uploadProductDetailsBL,
 }: BLPJInfoModalProps) {
   const [form] = Form.useForm();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -236,6 +238,19 @@ function ProductBLInfoModal({
 
       if (newConditionFiles.length > 0 && uploadProductConditionsBL && planData.id) {
         await uploadProductConditionsBL({ id: planData.id, files: newConditionFiles });
+      }
+
+      if (uploadProductDetailsBL && planData.id) {
+        for (const [detailIndex, detail] of (values.details || []).entries()) {
+          const newDetailFiles: File[] = (detail.images || [])
+            .filter((img: ModalUploadFile) => !img.isExisting)
+            .map((img: ModalUploadFile) => img.originFileObj as File)
+            .filter(Boolean);
+
+          if (newDetailFiles.length > 0) {
+            await uploadProductDetailsBL({ id: planData.id, detailIndex, files: newDetailFiles });
+          }
+        }
       }
 
       setShowEditProductLayout(false);

@@ -113,10 +113,12 @@ export class ProductsService {
 
   async uploadProductDetails(
     id: number,
-    file: File,
+    detailIndex: number,
+    files: File[],
   ): Promise<UploadedProductDetailImageResponse> {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("detail_index", String(detailIndex));
+    files.forEach((file) => formData.append("file", file));
 
     try {
       const response = await apiPurchase.post(
