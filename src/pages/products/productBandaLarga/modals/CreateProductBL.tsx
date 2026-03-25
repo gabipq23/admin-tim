@@ -35,6 +35,7 @@ type CreateProductBLFormValues = {
     badge?: string;
     offer_title?: string;
     offer_subtitle?: string;
+    pricing_base_monthly_original?: string | number;
     pricing_base_monthly?: string | number;
     pricing_installation?: string | number;
     offer_conditions?: UploadFormFile[];
@@ -95,6 +96,11 @@ export default function CreateProductBL({
             };
 
             // Construir payload JSON
+            const parsedOriginalPrice = parseBRLInput(values.pricing_base_monthly_original);
+            const hasOriginalPrice = values.pricing_base_monthly_original !== undefined
+                && values.pricing_base_monthly_original !== null
+                && values.pricing_base_monthly_original !== "";
+
             const payload = {
                 company: "TIM",
                 business_partner: "TIM",
@@ -107,8 +113,13 @@ export default function CreateProductBL({
                 offer_title: values.offer_title || "",
                 offer_subtitle: values.offer_subtitle || "",
                 pricing: {
-                    base_monthly: Number(parseBRLInput(values.pricing_base_monthly)),
-                    installation: Number(parseBRLInput(values.pricing_installation)),
+                    base_monthly: {
+                        ...(hasOriginalPrice ? { original_price: Number(parsedOriginalPrice) } : {}),
+                        current_price: Number(parseBRLInput(values.pricing_base_monthly)),
+                    },
+                    installation: {
+                        current_price: Number(parseBRLInput(values.pricing_installation)),
+                    },
                 },
                 details: detailsWithoutImages,
                 extras: extras,

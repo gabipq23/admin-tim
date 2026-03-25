@@ -21,10 +21,16 @@ export const useAllTableColumns = (updateProductBL: (payload: { id: number; valu
             title: "Valor ",
             dataIndex: ["pricing", "base_monthly"],
             width: 140,
-            render: (_value, record) =>
-                `R$ ${record?.pricing?.base_monthly?.toLocaleString("pt-BR", {
+            render: (_value, record) => {
+                const monthlyCurrentPrice =
+                    typeof record?.pricing?.base_monthly === "number"
+                        ? record.pricing.base_monthly
+                        : Number(record?.pricing?.base_monthly?.current_price ?? 0);
+
+                return `R$ ${monthlyCurrentPrice.toLocaleString("pt-BR", {
                     minimumFractionDigits: 2,
-                })}`,
+                })}`;
+            },
         },
         { title: " Tipo", dataIndex: "client_type", width: 100 },
 

@@ -26,6 +26,21 @@ export default function ProductBLInfoView({
     setShowEditProductLayout,
     setShowDeleteModal,
 }: ProductBLInfoViewProps) {
+    const monthlyCurrentPrice =
+        typeof planData.pricing?.base_monthly === "number"
+            ? planData.pricing.base_monthly
+            : Number(planData.pricing?.base_monthly?.current_price ?? 0);
+
+    const monthlyOriginalPrice =
+        typeof planData.pricing?.base_monthly === "number"
+            ? planData.pricing.base_monthly
+            : planData.pricing?.base_monthly?.original_price;
+
+    const installationCurrentPrice =
+        typeof planData.pricing?.installation === "number"
+            ? planData.pricing.installation
+            : Number(planData.pricing?.installation?.current_price ?? 0);
+
     return (
         <>
             <div>
@@ -100,28 +115,40 @@ export default function ProductBLInfoView({
                     </div>
 
                     {/* Preços */}
-                    <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6 flex flex-col md:flex-row gap-6 items-center justify-start">
-                        <div className="flex flex-col items-center md:items-start flex-1">
-                            <div className="text-sm text-gray-500 mb-1">
-                                Mensalidade
-                            </div>
-                            <div className="text-3xl font-bold text-neutral-700 flex items-end">
-                                {formatBRL(planData.pricing?.base_monthly || 0)}
-                                <span className="text-sm text-gray-500 ml-2 mb-1">
-                                    /mês
-                                </span>
-                            </div>
-                        </div>
-                        {typeof planData.pricing?.installation === "number" && (
-                            <div className="flex flex-col items-center md:items-start flex-1">
+                    <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="flex flex-col items-center md:items-start">
                                 <div className="text-sm text-gray-500 mb-1">
-                                    Instalação
+                                    Preço Inicial
                                 </div>
                                 <div className="text-2xl font-bold text-neutral-700 flex items-end">
-                                    {formatBRL(planData.pricing.installation)}
+                                    {monthlyOriginalPrice !== undefined ? formatBRL(monthlyOriginalPrice) : "-"}
                                 </div>
                             </div>
-                        )}
+
+                            <div className="flex flex-col items-center md:items-start">
+                                <div className="text-sm text-gray-500 mb-1">
+                                    Preço Atual
+                                </div>
+                                <div className="text-3xl font-bold text-neutral-700 flex items-end">
+                                    {formatBRL(monthlyCurrentPrice)}
+                                    <span className="text-sm text-gray-500 ml-2 mb-1">
+                                        /mês
+                                    </span>
+                                </div>
+                            </div>
+
+                            {installationCurrentPrice >= 0 && (
+                                <div className="flex flex-col items-center md:items-start">
+                                    <div className="text-sm text-gray-500 mb-1">
+                                        Instalação
+                                    </div>
+                                    <div className="text-2xl font-bold text-neutral-700 flex items-end">
+                                        {formatBRL(installationCurrentPrice)}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Detalhes do Plano */}

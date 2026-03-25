@@ -2,7 +2,6 @@ import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 import {
     Button,
     Form,
-    Select,
 } from "antd";
 import { useState } from "react";
 import type { FormInstance } from "antd";
@@ -18,20 +17,7 @@ export default function EditProductBL({ handleCancel, handleSave, form }: { hand
                 <div className="max-h-[460px] overflow-y-auto scrollbar-thin">
                     <ProductBLHeaderPricingFields />
 
-                    <div className="bg-neutral-50 p-2 rounded-lg mb-4">
-                        <div className="grid grid-cols-1 w-full gap-4">
-                            <Form.Item
-                                label="Status"
-                                name="online"
-                                rules={[{ required: true, message: "Status é obrigatório" }]}
-                            >
-                                <Select placeholder="Selecione o status">
-                                    <Select.Option value={true}>Online</Select.Option>
-                                    <Select.Option value={false}>Offline</Select.Option>
-                                </Select>
-                            </Form.Item>
-                        </div>
-                    </div>
+
 
                     {/* Características do Plano */}
                     <ProductBLDetailFields />

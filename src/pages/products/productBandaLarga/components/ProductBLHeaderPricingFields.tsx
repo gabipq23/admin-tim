@@ -120,17 +120,24 @@ export function ProductBLHeaderPricingFields() {
             </div>
 
             {/* PREÇOS */}
-            <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+            <div className="bg-white border border-gray-200 rounded-lg p-4 pb-0 mb-6">
+                {/* <h3 className="text-lg font-semibold text-gray-800 mb-4">
                     Preços
-                </h3>
-                <div className="grid grid-cols-2 w-full gap-4 mb-1">
+                </h3> */}
+                <div className="grid grid-cols-3 w-full gap-4 mb-1">
                     <Form.Item
-                        label="Mensalidade (R$)"
-                        name="pricing_base_monthly"
-                        rules={[{ required: true, message: "Mensalidade obrigatória" }]}
+                        label="Preço Inicial (R$)"
+                        name="pricing_base_monthly_original"
                     >
-                        <Input inputMode="decimal" placeholder="Ex: 99,90" />
+                        <Input inputMode="decimal" placeholder="Ex: 369,99" />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Preço Atual (R$)"
+                        name="pricing_base_monthly"
+                        rules={[{ required: true, message: "Preço atual obrigatório" }]}
+                    >
+                        <Input inputMode="decimal" placeholder="Ex: 300,99" />
                     </Form.Item>
 
                     <Form.Item label="Instalação (R$)" name="pricing_installation">

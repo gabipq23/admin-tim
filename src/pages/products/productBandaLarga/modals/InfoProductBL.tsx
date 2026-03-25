@@ -29,6 +29,7 @@ interface ProductFormDetail {
 
 interface ProductFormValues {
   name: string;
+  pricing_base_monthly_original?: string | number;
   pricing_base_monthly: string | number;
   pricing_installation: string | number;
   badge?: string | null;
@@ -65,6 +66,23 @@ function ProductBLInfoModal({
 }: BLPJInfoModalProps) {
   const [form] = Form.useForm();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const getMonthlyOriginalPrice = (pricing: IProduct["pricing"]): number | undefined => {
+    if (typeof pricing?.base_monthly === "number") return pricing.base_monthly;
+    if (pricing?.base_monthly?.original_price === undefined) return undefined;
+    return Number(pricing.base_monthly.original_price);
+  };
+
+  const getMonthlyCurrentPrice = (pricing: IProduct["pricing"]): number => {
+    if (typeof pricing?.base_monthly === "number") return pricing.base_monthly;
+    return Number(pricing?.base_monthly?.current_price ?? 0);
+  };
+
+  const getInstallationCurrentPrice = (pricing: IProduct["pricing"]): number => {
+    if (typeof pricing?.installation === "number") return pricing.installation;
+    return Number(pricing?.installation?.current_price ?? 0);
+  };
+
   useEffect(() => {
     if (planData && showEditProductLayout) {
       const offerConditionsFileList = (
@@ -116,8 +134,9 @@ function ProductBLInfoModal({
 
       form.setFieldsValue({
         name: planData.name,
-        pricing_base_monthly: formatBRL(planData.pricing?.base_monthly),
-        pricing_installation: formatBRL(planData.pricing?.installation),
+        pricing_base_monthly_original: formatBRL(getMonthlyOriginalPrice(planData.pricing)),
+        pricing_base_monthly: formatBRL(getMonthlyCurrentPrice(planData.pricing)),
+        pricing_installation: formatBRL(getInstallationCurrentPrice(planData.pricing)),
         badge: planData.badge,
         offer_title: planData.offer_title,
         offer_subtitle: planData.offer_subtitle,
@@ -177,6 +196,11 @@ function ProductBLInfoModal({
         }),
       );
 
+      const parsedOriginalPrice = parseBRLInput(values.pricing_base_monthly_original);
+      const hasOriginalPrice = values.pricing_base_monthly_original !== undefined
+        && values.pricing_base_monthly_original !== null
+        && values.pricing_base_monthly_original !== "";
+
       const payload = {
         id: planData?.id,
         name: values.name,
@@ -190,8 +214,13 @@ function ProductBLInfoModal({
         offer_title: values.offer_title,
         offer_subtitle: values.offer_subtitle,
         pricing: {
-          base_monthly: parseBRLInput(values.pricing_base_monthly),
-          installation: parseBRLInput(values.pricing_installation),
+          base_monthly: {
+            ...(hasOriginalPrice ? { original_price: parsedOriginalPrice } : {}),
+            current_price: parseBRLInput(values.pricing_base_monthly),
+          },
+          installation: {
+            current_price: parseBRLInput(values.pricing_installation),
+          },
         },
         details,
         extras: {

@@ -1,6 +1,15 @@
 export interface ProductPricing {
-  base_monthly: number;
-  installation: number;
+  base_monthly:
+    | number
+    | {
+        original_price?: number;
+        current_price: number;
+      };
+  installation:
+    | number
+    | {
+        current_price: number;
+      };
 }
 
 export interface ProductOfferConditionFile {

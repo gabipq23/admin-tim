@@ -20,7 +20,7 @@ export function ProductBLExtrasFields({ activeTab, onTabChange }: ProductBLExtra
                     placement="top"
                     styles={{ body: { fontSize: "12px" } }}
                 >
-                    <span className="text-blue-500 text-[12px] cursor-pointer ml-1">
+                    <span className="text-red-500 text-[12px] cursor-pointer">
                         <ExclamationCircleOutlined />
                     </span>
                 </Tooltip>

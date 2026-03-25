@@ -37,7 +37,7 @@ export function ProductExtras({
                                 <Form.Item
                                     {...restField}
                                     name={[name, "input_type"]}
-                                    label={<h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                                    label={<h3 className=" mb-4 flex items-center gap-2">
                                         Tipo
                                         <Tooltip
                                             className="cursor-pointer"
@@ -45,7 +45,7 @@ export function ProductExtras({
                                             placement="top"
                                             styles={{ body: { fontSize: "12px" } }}
                                         >
-                                            <span className="text-blue-500 text-[12px] cursor-pointer ml-1">
+                                            <span className="text-red-500 text-[12px] cursor-pointer">
                                                 <ExclamationCircleOutlined />
                                             </span>
                                         </Tooltip>
