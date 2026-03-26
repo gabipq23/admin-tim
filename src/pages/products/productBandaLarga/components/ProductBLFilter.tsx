@@ -13,6 +13,7 @@ import type { CreatedProductResponse } from "@/services/products";
 
 type ProductCreatePayload = Record<string, unknown>;
 type UploadConditionsPayload = { id: number; files: File[] };
+type UploadDetailsPayload = { id: number; detailIndex: number; files: File[] };
 
 interface FiltroProductBLFormProps {
     control: Control<ProductBLFiltersFormValues>;
@@ -22,6 +23,7 @@ interface FiltroProductBLFormProps {
     isFiltered: boolean;
     createProductBL: (data: ProductCreatePayload) => Promise<CreatedProductResponse>;
     uploadProductConditionsBL: (data: UploadConditionsPayload) => Promise<unknown>;
+    uploadProductDetailsBL: (data: UploadDetailsPayload) => Promise<unknown>;
 }
 
 export function FilterProductBL({
@@ -31,6 +33,7 @@ export function FilterProductBL({
     onClear,
     createProductBL,
     uploadProductConditionsBL,
+    uploadProductDetailsBL,
 }: FiltroProductBLFormProps) {
     const [showCreateModal, setShowCreateModal] = useState(false);
 
@@ -214,6 +217,7 @@ export function FilterProductBL({
             <CreateProductBL
                 createProductBL={createProductBL}
                 uploadProductConditionsBL={uploadProductConditionsBL}
+                uploadProductDetailsBL={uploadProductDetailsBL}
                 showCreateModal={showCreateModal}
                 setShowCreateModal={setShowCreateModal}
             />

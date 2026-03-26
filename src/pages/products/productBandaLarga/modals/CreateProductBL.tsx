@@ -50,6 +50,11 @@ type CreateProductBLProps = {
         id: number;
         files: File[];
     }) => Promise<unknown>;
+    uploadProductDetailsBL: (payload: {
+        id: number;
+        detailIndex: number;
+        files: File[];
+    }) => Promise<unknown>;
     showCreateModal: boolean;
     setShowCreateModal: (value: boolean) => void;
 };
@@ -57,6 +62,7 @@ type CreateProductBLProps = {
 export default function CreateProductBL({
     createProductBL,
     uploadProductConditionsBL,
+    uploadProductDetailsBL,
     showCreateModal,
     setShowCreateModal,
 }: CreateProductBLProps) {
@@ -128,6 +134,22 @@ export default function CreateProductBL({
 
             const createdProduct = await createProductBL(payload);
             const createdProductId = createdProduct.id;
+
+            if (Number.isFinite(createdProductId) && createdProductId > 0) {
+                for (const [detailIndex, detail] of (values.details || []).entries()) {
+                    const detailFiles: File[] = (detail.images || [])
+                        .map((fileObj: UploadFormFile) => fileObj?.originFileObj)
+                        .filter((file: File | undefined): file is File => Boolean(file));
+
+                    if (detailFiles.length > 0) {
+                        await uploadProductDetailsBL({
+                            id: createdProductId,
+                            detailIndex,
+                            files: detailFiles,
+                        });
+                    }
+                }
+            }
 
             const offerConditionFiles: File[] = (values.offer_conditions || [])
                 .map((fileObj: UploadFormFile) => fileObj?.originFileObj)

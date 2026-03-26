@@ -103,6 +103,27 @@ export function useProductBLController() {
     },
   });
 
+  const { mutateAsync: uploadProductDetailsBL } = useMutation({
+    mutationFn: async ({
+      id,
+      detailIndex,
+      files,
+    }: {
+      id: number;
+      detailIndex: number;
+      files: File[];
+    }) => productBLService.uploadProductDetails(id, detailIndex, files),
+    onMutate: async () =>
+      await queryClient.cancelQueries({ queryKey: ["productBL"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["productBL"] });
+    },
+    onError: (error: unknown) => {
+      toast.error("Houve um erro ao enviar as imagens dos detalhes.");
+      console.error(getErrorMessage(error));
+    },
+  });
+
   const { mutate: removeProductBL } = useMutation({
     mutationFn: async (id: number) => productBLService.removeProduct(id),
     onMutate: async () =>
@@ -135,5 +156,6 @@ export function useProductBLController() {
     removeProductBL,
     createProductBL,
     uploadProductConditionsBL,
+    uploadProductDetailsBL,
   };
 }

@@ -21,6 +21,7 @@ export default function ProductBL() {
     removeProductBL,
     createProductBL,
     uploadProductConditionsBL,
+    uploadProductDetailsBL,
   } = useProductBLController();
 
   const {
@@ -53,6 +54,7 @@ export default function ProductBL() {
                 isFiltered={isFiltered}
                 createProductBL={createProductBL}
                 uploadProductConditionsBL={uploadProductConditionsBL}
+                uploadProductDetailsBL={uploadProductDetailsBL}
               />
             </div>
           </div>
@@ -115,6 +117,7 @@ export default function ProductBL() {
             updateProductBL={updateProductBL}
             removeProductBL={removeProductBL}
             uploadProductConditionsBL={uploadProductConditionsBL}
+            uploadProductDetailsBL={uploadProductDetailsBL}
           />
         </div>
       </QueryClientProvider>
