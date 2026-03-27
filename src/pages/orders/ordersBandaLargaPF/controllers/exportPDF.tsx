@@ -89,7 +89,7 @@ export const generatePDF = async (order: OrderBandaLargaPF | undefined) => {
               { text: order.plan?.name || "-", style: "tableBody" },
 
               {
-                text: formatBRL(order.plan?.price ?? order.plan?.value ?? 0),
+                text: formatBRL(order.price_summary?.plan_price ?? order.plan?.value ?? 0),
                 style: "tableBody",
               },
             ],
@@ -195,7 +195,7 @@ export const generatePDF = async (order: OrderBandaLargaPF | undefined) => {
         columns: [
           { text: "Valor Mensal do Plano", style: "content" },
           {
-            text: formatBRL(order.plan?.price ?? order.plan?.value ?? 0),
+            text: formatBRL(order.price_summary?.plan_price ?? order.plan?.value ?? 0),
             style: "content",
             alignment: "right",
           },

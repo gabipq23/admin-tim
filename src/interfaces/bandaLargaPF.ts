@@ -29,6 +29,20 @@ export interface OperatorsAvailability {
 
 type TelecomLineAction = "new_number" | "port_in_to_vivo" | "keep_vivo_number";
 
+export interface PlanExtraBonus {
+  type: string;
+  speed: number;
+  description: string;
+}
+
+export interface PlanSelectedExtra {
+  id: string;
+  label: string;
+  description: string;
+  price: number;
+  bonus?: PlanExtraBonus;
+}
+
 export interface OrderBandaLargaPF {
   id: number;
   company?: string;
@@ -57,11 +71,12 @@ export interface OrderBandaLargaPF {
   cnpj?: string | null;
   company_legal_name?: string | null;
   plan: {
-    name: string;
-    value?: number;
-    price?: number;
-    id?: string;
+    id?: number | string;
+    name?: string;
     speed?: string;
+    value?: number;
+    original_value?: number;
+    selected_extras?: PlanSelectedExtra[];
   };
   due_day: string | number;
   terms_accepted: boolean;
@@ -244,7 +259,12 @@ export interface OrderBandaLargaPF {
   category: string;
   landing_page: string;
   address_reference_point: string;
-  price_summary: Record<string, unknown> | null;
+  price_summary?: {
+    plan_price?: number;
+    original_price?: number;
+    extras_price?: number;
+    total_monthly?: number;
+  } | null;
   line_action?: TelecomLineAction;
   line_number_informed?: string | null;
   line_number?: string | null;

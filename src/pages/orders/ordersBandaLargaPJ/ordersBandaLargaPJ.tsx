@@ -10,6 +10,7 @@ import { OrderBandaLargaPJ } from "@/interfaces/bandaLargaPJ";
 import { TableProps } from "antd/lib";
 import { useState } from "react";
 import { OrderBandaLargaPJDetailsModal } from "./modals/orderBandaLargaPJDetails";
+import { useProductBLController } from "@/pages/products/productBandaLarga/controllers/dataController";
 export default function OrdersBandaLargaPJ() {
   const queryClient = new QueryClient();
   const {
@@ -27,7 +28,7 @@ export default function OrdersBandaLargaPJ() {
     updateDataIdCRMAndConsultorResponsavel
   } = useAllOrdersController();
   const navigate = useNavigate();
-  const planBLPJ: any[] = [];
+  const { productsBL } = useProductBLController();
   const {
     control,
     onSubmit,
@@ -95,7 +96,7 @@ export default function OrdersBandaLargaPJ() {
                 onClear={clearFilters}
                 statusOptions={ordersBandaLarga?.status_pos_venda_enum}
                 orderBandaLargaPJ={orderBandaLargaPJ}
-                planBLPJStock={planBLPJ}
+                planBLPJStock={productsBL}
                 allColumnOptions={allColumnOptions}
                 visibleColumns={visibleColumns}
                 handleColumnsChange={handleColumnsChange}
@@ -163,7 +164,7 @@ export default function OrdersBandaLargaPJ() {
           {/* Modal */}
           <OrderBandaLargaPJDetailsModal
             statusOptions={ordersBandaLarga?.status_pos_venda_enum}
-            planBLPJStock={planBLPJ}
+            planBLPJStock={productsBL}
             updateOrderData={updateBandaLargaOrder}
             isModalOpen={isModalOpen}
             closeModal={closeModal}

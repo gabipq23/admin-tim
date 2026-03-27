@@ -258,8 +258,8 @@ export function OrderBandaLargaPFDisplay({
                 {localData.plan?.name || "-"}
               </p>
               <p className="text-[14px] font-semibold w-32 text-center">
-                {localData.plan?.value
-                  ? ` ${formatBRL(localData.plan.value)}`
+                {localData.price_summary?.plan_price
+                  ? ` ${formatBRL(localData.price_summary?.plan_price || 0)}`
                   : "-"}
               </p>
               <p className="text-[14px] w-40 text-center">
@@ -290,10 +290,10 @@ export function OrderBandaLargaPFDisplay({
               value={
                 localData.line_action
                   ? {
-                      new_number: "Novo Número",
-                      port_in_to_vivo: "Portabilidade para Vivo",
-                      keep_vivo_number: "Manter Número Vivo",
-                    }[localData.line_action] || "-"
+                    new_number: "Novo Número",
+                    port_in_to_vivo: "Portabilidade para Vivo",
+                    keep_vivo_number: "Manter Número Vivo",
+                  }[localData.line_action] || "-"
                   : "-"
               }
             />

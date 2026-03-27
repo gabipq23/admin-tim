@@ -10,6 +10,7 @@ import { FiltroOrdersBandaLargaPFForm } from "./components/filter";
 import { OrderBandaLargaPF } from "@/interfaces/bandaLargaPF";
 import { TableProps } from "antd/lib";
 import { useState } from "react";
+import { useProductBLController } from "@/pages/products/productBandaLarga/controllers/dataController";
 export default function OrdersBandaLargaPF() {
   const queryClient = new QueryClient();
   const {
@@ -26,7 +27,7 @@ export default function OrdersBandaLargaPF() {
     updateDataIdCRMAndConsultorResponsavel
   } = useAllOrdersController();
   const navigate = useNavigate();
-  const planBLPF: any[] = [];
+  const { productsBL } = useProductBLController();
   const {
     control,
     onSubmit,
@@ -96,7 +97,7 @@ export default function OrdersBandaLargaPF() {
                 onClear={clearFilters}
                 statusOptions={ordersBandaLarga?.status_pos_venda_enum}
                 orderBandaLargaPF={orderBandaLargaPF}
-                planBLPFStock={planBLPF}
+                planBLPFStock={productsBL}
                 allColumnOptions={allColumnOptions}
                 visibleColumns={visibleColumns}
                 handleColumnsChange={handleColumnsChange}
@@ -164,7 +165,7 @@ export default function OrdersBandaLargaPF() {
           {/* Modal */}
           <OrderBandaLargaPFDetailsModal
             statusOptions={ordersBandaLarga?.status_pos_venda_enum}
-            planBLPFStock={planBLPF}
+            planBLPFStock={productsBL}
             updateOrderData={updateBandaLargaOrder}
             isModalOpen={isModalOpen}
             closeModal={closeModal}

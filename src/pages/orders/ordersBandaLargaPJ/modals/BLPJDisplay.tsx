@@ -257,8 +257,8 @@ export function OrderBandaLargaPJDisplay({
                 {localData.plan?.name || "-"}
               </p>
               <p className="text-[14px] font-semibold w-32 text-center">
-                {localData.plan?.value
-                  ? ` ${formatBRL(localData.plan.value)}`
+                {localData.price_summary?.plan_price
+                  ? ` ${formatBRL(localData.price_summary?.plan_price || 0)}`
                   : "-"}
               </p>
               <p className="text-[14px] w-40 text-center">

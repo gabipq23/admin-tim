@@ -50,15 +50,16 @@ export function OrderBandaLargaPJDetailsModal({
   }, [selectedId]);
 
   const planOptions = Array.isArray(planBLPJStock)
-    ? planBLPJStock.map((plan: any) => ({
-      value: plan.id,
-      label: `${plan.plan_name} 
-        } - R$ ${plan.value}`,
-      name: plan.plan_name,
-      price: plan.value,
-
-    }))
+    ? planBLPJStock
+      .filter((plan: any) => plan.client_type === 'PJ')
+      .map((plan: any) => ({
+        value: plan.id,
+        label: plan.name,
+        name: plan.name,
+        price: plan.pricing?.base_monthly?.current_price,
+      }))
     : [];
+
 
   const handlePlanChange = (planId: number) => {
     const selectedPlan = planOptions.find((plan) => plan.value === planId);
@@ -69,21 +70,24 @@ export function OrderBandaLargaPJDetailsModal({
         id: localData?.plan?.id || "",
       });
 
-      setLocalData((prev) =>
-        prev
-          ? {
-            ...prev,
-            plan: {
-              name: selectedPlan.name,
-              value: parseFloat(selectedPlan.value),
-
-              id: selectedPlan.value,
-            },
-          }
-          : null,
-      );
+      setLocalData((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          plan: {
+            name: selectedPlan.name,
+            value: parseFloat(selectedPlan.value),
+            id: selectedPlan.value,
+          },
+          price_summary: {
+            ...prev.price_summary,
+            plan_price: selectedPlan.price,
+          },
+        };
+      });
     }
   };
+
 
   useEffect(() => {
     setConsultor(localData?.responsible_consultant
@@ -213,6 +217,10 @@ export function OrderBandaLargaPJDetailsModal({
             },
           },
         ];
+        formattedData.price_summary = {
+          ...localData?.price_summary,
+          plan_price: selectedPlan.plan_price_to || selectedPlan.price,
+        };
       }
 
       if (updateOrderData && localData && localData.id) {
