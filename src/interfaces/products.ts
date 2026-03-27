@@ -30,6 +30,12 @@ export interface ProductExtraOption {
   label: string;
   price: number;
   description: string | null;
+  bonus: {
+    type: string;
+    speed: number;
+    description: string;
+    price: number;
+  };
 }
 
 export interface ProductExtraGroup {

@@ -1,4 +1,5 @@
 import { Button, Form, Input, Select, Tooltip } from "antd";
+import { useState } from "react";
 import type { ProductExtraGroup } from "@/interfaces/products";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 
@@ -7,6 +8,12 @@ export type ExtraOptionFormValue = {
     label?: string;
     price?: number;
     description?: string | null;
+    bonus?: {
+        type?: string;
+        speed?: number;
+        description?: string;
+        price?: number;
+    };
 };
 
 export type ExtraGroupFormValue = {
@@ -27,6 +34,13 @@ export function ProductExtras({
     groupButtonLabel = "+ Grupo",
     groupPlaceholder = "Ex: Opcoes adicionais",
 }: ProductExtrasProps) {
+    // Estado para controlar quais opções têm bônus visível
+    const [bonusVisible, setBonusVisible] = useState<Record<string, boolean>>({});
+
+    const handleToggleBonus = (optionKey: string) => {
+        setBonusVisible((prev) => ({ ...prev, [optionKey]: !prev[optionKey] }));
+    };
+
     return (
         <Form.List name={fieldName}>
             {(groupFields, { add: addGroup, remove: removeGroup }) => (
@@ -74,37 +88,93 @@ export function ProductExtras({
                                 {(optionFields, { add: addOption, remove: removeOption }) => (
                                     <div className="space-y-2">
                                         {optionFields.map(
-                                            ({ key: optionKey, name: optionName, ...optionRest }) => (
-                                                <div key={optionKey} className="grid grid-cols-3 gap-2">
-                                                    <Form.Item
-                                                        {...optionRest}
-                                                        name={[optionName, "label"]}
-                                                        rules={[{ required: true, message: "Título obrigatório" }]}
-                                                    >
-                                                        <Input placeholder="Título" />
-                                                    </Form.Item>
-                                                    <Form.Item
-                                                        {...optionRest}
-                                                        name={[optionName, "price"]}
-                                                        rules={[{ required: false }]}
-                                                    >
-                                                        <Input inputMode="decimal" placeholder="Preço" />
-                                                    </Form.Item>
-                                                    <div className="flex gap-1">
-                                                        <Form.Item
-                                                            {...optionRest}
-                                                            name={[optionName, "description"]}
-                                                            className="flex-1"
-                                                            rules={[{ required: false }]}
-                                                        >
-                                                            <Input placeholder="Descrição" />
-                                                        </Form.Item>
-                                                        <Button danger onClick={() => removeOption(optionName)}>
-                                                            X
-                                                        </Button>
+                                            ({ key: optionKey, name: optionName, ...optionRest }) => {
+                                                const bonusKey = String(optionKey);
+                                                const isBonusVisible = bonusVisible[bonusKey];
+                                                return (
+                                                    <div key={optionKey} className="bg-white rounded-lg shadow-sm border border-gray-100 p-3 mb-2 flex flex-col gap-2">
+                                                        <div className="flex flex-col md:flex-row gap-2 w-full">
+                                                            <Form.Item
+                                                                {...optionRest}
+                                                                name={[optionName, "label"]}
+                                                                className="flex-1"
+                                                                rules={[{ required: true, message: "Título obrigatório" }]}
+                                                            >
+                                                                <Input placeholder="Título" />
+                                                            </Form.Item>
+                                                            <Form.Item
+                                                                {...optionRest}
+                                                                name={[optionName, "price"]}
+                                                                className="w-36"
+                                                                rules={[{ required: false }]}
+                                                            >
+                                                                <Input inputMode="decimal" placeholder="Preço" />
+                                                            </Form.Item>
+                                                            <Form.Item
+                                                                {...optionRest}
+                                                                name={[optionName, "description"]}
+                                                                className="flex-1"
+                                                                rules={[{ required: false }]}
+                                                            >
+                                                                <Input placeholder="Descrição" />
+                                                            </Form.Item>
+                                                            <Button danger onClick={() => removeOption(optionName)} className="w-8">
+                                                                <span aria-label="Remover opção" title="Remover opção">✕</span>
+                                                            </Button>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <Button
+                                                                type={isBonusVisible ? "default" : "dashed"}
+                                                                size="small"
+                                                                onClick={() => handleToggleBonus(bonusKey)}
+                                                                className="!px-2 !py-0 h-7"
+                                                            >
+                                                                {isBonusVisible ? "Ocultar bônus" : "Adicionar bônus"}
+                                                            </Button>
+                                                        </div>
+                                                        {isBonusVisible && (
+                                                            <div className="flex flex-col md:flex-row gap-2 mt-2 bg-gray-50 rounded p-2 w-full shadow-inner">
+                                                                <Form.Item
+                                                                    {...optionRest}
+                                                                    name={[optionName, "bonus", "type"]}
+                                                                    label="Tipo do Bônus"
+                                                                    className="w-56"
+                                                                    rules={[{ required: false }]}
+                                                                >
+                                                                    <Input placeholder="Tipo do bônus" />
+                                                                </Form.Item>
+                                                                <Form.Item
+                                                                    {...optionRest}
+                                                                    name={[optionName, "bonus", "speed"]}
+                                                                    label="Velocidade"
+                                                                    className="w-36"
+                                                                    rules={[{ required: false }]}
+                                                                >
+                                                                    <Input inputMode="numeric" placeholder="Velocidade" />
+                                                                </Form.Item>
+                                                                <Form.Item
+                                                                    {...optionRest}
+                                                                    name={[optionName, "bonus", "description"]}
+                                                                    label="Descrição do Bônus"
+                                                                    className="flex-1"
+                                                                    rules={[{ required: false }]}
+                                                                >
+                                                                    <Input placeholder="Descrição" />
+                                                                </Form.Item>
+                                                                <Form.Item
+                                                                    {...optionRest}
+                                                                    name={[optionName, "bonus", "price"]}
+                                                                    label="Preço do Bônus"
+                                                                    className="w-36"
+                                                                    rules={[{ required: false }]}
+                                                                >
+                                                                    <Input inputMode="decimal" placeholder="Preço" />
+                                                                </Form.Item>
+                                                            </div>
+                                                        )}
                                                     </div>
-                                                </div>
-                                            ),
+                                                );
+                                            },
                                         )}
                                         <Button type="dashed" onClick={() => addOption()} block>
                                             + Opção

@@ -18,6 +18,12 @@ export const normalizeExtras = (
           label: option.label!,
           price: Number(option.price || 0),
           description: option.description || null,
+          bonus: {
+            type: option.bonus?.type || "",
+            speed: Number(option.bonus?.speed || 0),
+            description: option.bonus?.description || "",
+            price: Number(option.bonus?.price || 0),
+          },
         })),
     }));
 };
