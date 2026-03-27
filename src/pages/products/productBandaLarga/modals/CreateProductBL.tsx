@@ -55,6 +55,11 @@ type CreateProductBLProps = {
         detailIndex: number;
         files: File[];
     }) => Promise<unknown>;
+    uploadProductExtrasBL: (payload: {
+        id: number;
+        extraId: string;
+        files: File[];
+    }) => Promise<unknown>;
     showCreateModal: boolean;
     setShowCreateModal: (value: boolean) => void;
 };
@@ -63,6 +68,7 @@ export default function CreateProductBL({
     createProductBL,
     uploadProductConditionsBL,
     uploadProductDetailsBL,
+    uploadProductExtrasBL,
     showCreateModal,
     setShowCreateModal,
 }: CreateProductBLProps) {
@@ -160,6 +166,29 @@ export default function CreateProductBL({
                     id: createdProductId,
                     files: offerConditionFiles,
                 });
+            }
+
+            // Envio das imagens dos extras (client e non_client)
+            if (Number.isFinite(createdProductId) && createdProductId > 0) {
+                // Helper para envio
+                const uploadExtrasImages = async (extrasArr?: ExtraGroupFormValue[]) => {
+                    if (!Array.isArray(extrasArr)) return;
+                    for (const extra of extrasArr) {
+                        const extraId = extra.id || extra.label;
+                        const files: File[] = (extra.images || [])
+                            .map((fileObj: any) => fileObj?.originFileObj)
+                            .filter((file: File | undefined): file is File => Boolean(file));
+                        if (extraId && files.length > 0) {
+                            await uploadProductExtrasBL({
+                                id: createdProductId,
+                                extraId: String(extraId),
+                                files,
+                            });
+                        }
+                    }
+                };
+                await uploadExtrasImages(values.extras_client);
+                await uploadExtrasImages(values.extras_non_client);
             }
 
             setShowCreateModal(false);

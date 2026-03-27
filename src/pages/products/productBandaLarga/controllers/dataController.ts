@@ -124,6 +124,27 @@ export function useProductBLController() {
     },
   });
 
+  const { mutateAsync: uploadProductExtrasBL } = useMutation({
+    mutationFn: async ({
+      id,
+      extraId,
+      files,
+    }: {
+      id: number;
+      extraId: string;
+      files: File[];
+    }) => productBLService.uploadProductExtras(id, extraId, files),
+    onMutate: async () =>
+      await queryClient.cancelQueries({ queryKey: ["productBL"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["productBL"] });
+    },
+    onError: (error: unknown) => {
+      toast.error("Houve um erro ao enviar as imagens dos extras.");
+      console.error(getErrorMessage(error));
+    },
+  });
+
   const { mutate: removeProductBL } = useMutation({
     mutationFn: async (id: number) => productBLService.removeProduct(id),
     onMutate: async () =>
@@ -157,5 +178,6 @@ export function useProductBLController() {
     createProductBL,
     uploadProductConditionsBL,
     uploadProductDetailsBL,
+    uploadProductExtrasBL,
   };
 }

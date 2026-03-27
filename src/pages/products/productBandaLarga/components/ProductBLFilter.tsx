@@ -24,6 +24,11 @@ interface FiltroProductBLFormProps {
     createProductBL: (data: ProductCreatePayload) => Promise<CreatedProductResponse>;
     uploadProductConditionsBL: (data: UploadConditionsPayload) => Promise<unknown>;
     uploadProductDetailsBL: (data: UploadDetailsPayload) => Promise<unknown>;
+    uploadProductExtrasBL: (payload: {
+        id: number;
+        extraId: string;
+        files: File[];
+    }) => Promise<unknown>;
 }
 
 export function FilterProductBL({
@@ -34,6 +39,7 @@ export function FilterProductBL({
     createProductBL,
     uploadProductConditionsBL,
     uploadProductDetailsBL,
+    uploadProductExtrasBL,
 }: FiltroProductBLFormProps) {
     const [showCreateModal, setShowCreateModal] = useState(false);
 
@@ -218,6 +224,7 @@ export function FilterProductBL({
                 createProductBL={createProductBL}
                 uploadProductConditionsBL={uploadProductConditionsBL}
                 uploadProductDetailsBL={uploadProductDetailsBL}
+                uploadProductExtrasBL={uploadProductExtrasBL}
                 showCreateModal={showCreateModal}
                 setShowCreateModal={setShowCreateModal}
             />

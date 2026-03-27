@@ -53,6 +53,11 @@ interface BLPJInfoModalProps {
   updateProductBL?: (payload: { id: number; values: Partial<IProduct> }) => void;
   uploadProductConditionsBL?: (payload: { id: number; files: File[] }) => Promise<unknown>;
   uploadProductDetailsBL?: (payload: { id: number; detailIndex: number; files: File[] }) => Promise<unknown>;
+  uploadProductExtrasBL: (payload: {
+    id: number;
+    extraId: string;
+    files: File[];
+  }) => Promise<unknown>;
 }
 
 function ProductBLInfoModal({
@@ -65,6 +70,7 @@ function ProductBLInfoModal({
   removeProductBL,
   uploadProductConditionsBL,
   uploadProductDetailsBL,
+  uploadProductExtrasBL,
 }: BLPJInfoModalProps) {
   const [form] = Form.useForm();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -141,7 +147,8 @@ function ProductBLInfoModal({
         pricing_installation: formatBRL(getInstallationCurrentPrice(planData.pricing)),
         badge: planData.badge,
         offer_title: planData.offer_title,
-        offer_subtitle: planData.offer_subtitle,
+        uploadProductDetailsBL,
+        uploadProductExtrasBL,
         client_type: planData.client_type,
         online: planData.online,
         details,
@@ -150,12 +157,30 @@ function ProductBLInfoModal({
           id: g.id,
           input_type: g.input_type,
           label: g.label,
+          images: Array.isArray(g.images)
+            ? g.images.map((imgUrl: string, idx: number) => ({
+              uid: `existing-extra-client-img-${g.id}-${idx}`,
+              name: imgUrl.split("/").pop() || `imagem_${idx + 1}`,
+              status: "done" as const,
+              url: imgUrl,
+              isExisting: true,
+            }))
+            : [],
           options: g.options,
         })),
         extras_non_client: (planData.extras?.non_client || []).map((g) => ({
           id: g.id,
           input_type: g.input_type,
           label: g.label,
+          images: Array.isArray(g.images)
+            ? g.images.map((imgUrl: string, idx: number) => ({
+              uid: `existing-extra-nonclient-img-${g.id}-${idx}`,
+              name: imgUrl.split("/").pop() || `imagem_${idx + 1}`,
+              status: "done" as const,
+              url: imgUrl,
+              isExisting: true,
+            }))
+            : [],
           options: g.options,
         })),
       });
@@ -251,6 +276,25 @@ function ProductBLInfoModal({
             await uploadProductDetailsBL({ id: planData.id, detailIndex, files: newDetailFiles });
           }
         }
+      }
+
+      // Upload de novas imagens dos extras (client e non_client)
+      if (uploadProductExtrasBL && planData.id) {
+        // Função auxiliar para processar cada grupo
+        const processExtrasImages = async (groups: any[] = []) => {
+          for (const group of groups) {
+            const groupId = group.id;
+            const newExtraFiles: File[] = (group.images || [])
+              .filter((img: any) => img && typeof img === 'object' && !img.isExisting && img.originFileObj)
+              .map((img: any) => img.originFileObj as File)
+              .filter(Boolean);
+            if (newExtraFiles.length > 0) {
+              await uploadProductExtrasBL({ id: planData.id, extraId: groupId, files: newExtraFiles });
+            }
+          }
+        };
+        await processExtrasImages(values.extras_client);
+        await processExtrasImages(values.extras_non_client);
       }
 
       setShowEditProductLayout(false);

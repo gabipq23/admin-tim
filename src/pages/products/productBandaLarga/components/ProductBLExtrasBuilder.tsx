@@ -1,7 +1,9 @@
-import { Button, Form, Input, Select, Tooltip } from "antd";
+import { Button, Form, Input, Select, Tooltip, Upload } from "antd";
 import { useState } from "react";
+
 import type { ProductExtraGroup } from "@/interfaces/products";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
+import { ExclamationCircleOutlined, UploadOutlined } from "@ant-design/icons";
+import InputTypeTooltipContent from "@/components/InputTypeTooltipContent";
 
 export type ExtraOptionFormValue = {
     id?: string;
@@ -20,6 +22,7 @@ export type ExtraGroupFormValue = {
     id?: string;
     input_type?: ProductExtraGroup["input_type"];
     label?: string;
+    images?: string[];
     options?: ExtraOptionFormValue[];
 };
 
@@ -55,7 +58,7 @@ export function ProductExtras({
                                         Tipo
                                         <Tooltip
                                             className="cursor-pointer"
-                                            title="Escolher o formato que as opções serão apresentadas para o cliente"
+                                            title={<InputTypeTooltipContent />}
                                             placement="top"
                                             styles={{ body: { fontSize: "12px" } }}
                                         >
@@ -84,7 +87,36 @@ export function ProductExtras({
                                     <Input placeholder={groupPlaceholder} />
                                 </Form.Item>
                             </div>
-
+                            <Form.Item
+                                {...restField}
+                                name={[name, "images"]}
+                                label="Imagens"
+                                valuePropName="fileList"
+                                getValueFromEvent={(e) => Array.isArray(e) ? e : e && e.fileList}
+                            >
+                                <Upload
+                                    multiple
+                                    accept="image/*"
+                                    action={undefined}
+                                    beforeUpload={() => false}
+                                    listType="picture-card"
+                                    showUploadList={{
+                                        showRemoveIcon: true,
+                                        showPreviewIcon: false,
+                                        showDownloadIcon: false,
+                                    }}
+                                    onPreview={(file) => {
+                                        if (file.url) {
+                                            window.open(file.url, "_blank");
+                                        }
+                                    }}
+                                >
+                                    <div>
+                                        <UploadOutlined />
+                                        <div style={{ marginTop: 8 }}>Upload</div>
+                                    </div>
+                                </Upload>
+                            </Form.Item>
                             <Form.List name={[name, "options"]}>
                                 {(optionFields, { add: addOption, remove: removeOption }) => (
                                     <div className="space-y-2">

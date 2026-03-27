@@ -146,6 +146,41 @@ export class ProductsService {
     }
   }
 
+  async uploadProductExtras(
+    id: number,
+    extraId: string,
+    files: File[],
+  ): Promise<UploadedProductDetailImageResponse> {
+    const formData = new FormData();
+    formData.append("extra_id", extraId);
+    files.forEach((file) => formData.append("file", file));
+
+    try {
+      const response = await apiPurchase.post(
+        `/telecom-products/${id}/extras-images`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+      return response.data as UploadedProductDetailImageResponse;
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        console.error(
+          "Erro no upload de imagens dos detalhes - Status:",
+          error.response?.status,
+        );
+        console.error(
+          "Erro no upload de imagens dos detalhes - Data:",
+          error.response?.data,
+        );
+      }
+      throw error;
+    }
+  }
+
   async updateProduct(
     id: number,
     data: Partial<IProduct> | Record<string, unknown>,
