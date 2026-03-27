@@ -240,23 +240,67 @@ export default function ProductBLInfoView({
                                                                 {group.options.map((option, optionIdx) => (
                                                                     <div
                                                                         key={`${option.id}-${optionIdx}`}
-                                                                        className="flex items-center justify-between border border-gray-100 rounded px-3 py-2"
+                                                                        className="flex flex-col gap-1 border border-gray-100 rounded px-3 py-2"
                                                                     >
-                                                                        <div>
-                                                                            <div className="text-gray-800 text-sm">
-                                                                                {option.label}
-                                                                            </div>
-                                                                            {option.description && (
-                                                                                <div className="text-xs text-gray-500">
-                                                                                    {option.description}
+                                                                        <div className="flex items-center justify-between">
+                                                                            <div>
+                                                                                <div className="text-gray-800 text-sm">
+                                                                                    {option.label}
                                                                                 </div>
-                                                                            )}
+                                                                                {option.description && (
+                                                                                    <div className="text-xs text-gray-500">
+                                                                                        {option.description}
+                                                                                    </div>
+                                                                                )}
+                                                                            </div>
+                                                                            <div className="text-sm font-semibold text-gray-700">
+                                                                                {option.price > 0
+                                                                                    ? formatBRL(option.price)
+                                                                                    : "-"}
+                                                                            </div>
                                                                         </div>
-                                                                        <div className="text-sm font-semibold text-gray-700">
-                                                                            {option.price > 0
-                                                                                ? formatBRL(option.price)
-                                                                                : "-"}
-                                                                        </div>
+                                                                        {/* Exibe bônus se for objeto ou array */}
+                                                                        {option.bonus && (
+                                                                            <div style={{
+                                                                                background: 'var(--color-background-secondary)',
+                                                                                borderRadius: 8,
+                                                                                padding: '8px 10px',
+                                                                                display: 'grid',
+                                                                                gridTemplateColumns: '1fr 1fr',
+                                                                                gap: '6px 12px',
+                                                                                marginTop: 8
+                                                                            }}>
+                                                                                {/* Header */}
+                                                                                <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', gap: 6, paddingBottom: 6, borderBottom: '0.5px solid var(--color-border-tertiary)', marginBottom: 2 }}>
+                                                                                    <span className="text-[10px] font-medium uppercase tracking-wider bg-blue-50 text-blue-700 rounded px-2 py-0.5">
+                                                                                        Bônus
+                                                                                    </span>
+                                                                                    <span className="text-xs font-medium text-gray-800">{option.bonus.type}</span>
+                                                                                </div>
+
+                                                                                {/* Campos */}
+                                                                                {option.bonus.speed && (
+                                                                                    <div className="flex flex-col gap-0.5">
+                                                                                        <span className="text-[10px] text-gray-400 uppercase tracking-wide">Velocidade</span>
+                                                                                        <span className="text-xs text-gray-600 font-medium">{option.bonus.speed} Mbps</span>
+                                                                                    </div>
+                                                                                )}
+                                                                                {option.bonus.description && (
+                                                                                    <div className="flex flex-col gap-0.5">
+                                                                                        <span className="text-[10px] text-gray-400 uppercase tracking-wide">Descrição</span>
+                                                                                        <span className="text-xs text-gray-600 font-medium">{option.bonus.description}</span>
+                                                                                    </div>
+                                                                                )}
+                                                                                {typeof option.bonus.price !== 'undefined' && (
+                                                                                    <div className="flex flex-col gap-0.5">
+                                                                                        <span className="text-[10px] text-gray-400 uppercase tracking-wide">Preço do bônus</span>
+                                                                                        <span className="text-xs text-blue-700 font-medium">
+                                                                                            {option.bonus.price > 0 ? formatBRL(option.bonus.price) : '-'}
+                                                                                        </span>
+                                                                                    </div>
+                                                                                )}
+                                                                            </div>
+                                                                        )}
                                                                     </div>
                                                                 ))}
                                                             </div>
@@ -286,28 +330,84 @@ export default function ProductBLInfoView({
                                                                 {group.input_type}
                                                             </div>
                                                             <div className="space-y-2">
-                                                                {group.options.map((option, optionIdx) => (
-                                                                    <div
-                                                                        key={`${option.id}-${optionIdx}`}
-                                                                        className="flex items-center justify-between border border-gray-100 rounded px-3 py-2"
-                                                                    >
-                                                                        <div>
-                                                                            <div className="text-gray-800 text-sm">
-                                                                                {option.label}
+                                                                {group.options.map((option, optionIdx) => {
+
+                                                                    return (
+                                                                        <div
+                                                                            key={`${option.id}-${optionIdx}`}
+                                                                            className="flex flex-col gap-1 border border-gray-100 rounded px-3 py-2"
+                                                                        >
+                                                                            <div className="flex items-center justify-between">
+                                                                                <div>
+                                                                                    <div className="text-gray-800 text-sm">
+                                                                                        {option.label}
+                                                                                    </div>
+                                                                                    {option.description && (
+                                                                                        <div className="text-xs text-gray-500">
+                                                                                            {option.description}
+                                                                                        </div>
+                                                                                    )}
+                                                                                </div>
+                                                                                <div className="text-sm font-semibold text-gray-700">
+                                                                                    {option.price > 0
+                                                                                        ? formatBRL(option.price)
+                                                                                        : "-"}
+                                                                                </div>
                                                                             </div>
-                                                                            {option.description && (
-                                                                                <div className="text-xs text-gray-500">
-                                                                                    {option.description}
+                                                                            {/* Exibe bônus se for objeto ou array */}
+                                                                            {option.bonus && (
+                                                                                <div style={{
+                                                                                    borderTop: '0.5px solid var(--color-border-tertiary)',
+                                                                                    background: 'var(--color-background-secondary)',
+                                                                                    padding: '10px 12px',
+                                                                                    display: 'flex',
+                                                                                    flexDirection: 'column',
+                                                                                    gap: 8,
+                                                                                    marginTop: 8,
+                                                                                    borderRadius: 8,
+                                                                                }}>
+                                                                                    {/* Linha 1: badge + tipo */}
+                                                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                                                        <span className="text-[10px] font-medium uppercase tracking-wider bg-blue-50 text-blue-700 rounded px-2 py-0.5">
+                                                                                            Bônus
+                                                                                        </span>
+                                                                                        {option.bonus.type && (
+                                                                                            <span className="text-xs text-gray-500 font-medium">{option.bonus.type}</span>
+                                                                                        )}
+                                                                                    </div>
+
+                                                                                    {/* Linha 2: velocidade + preço lado a lado */}
+                                                                                    <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: 12 }}>
+                                                                                        {option.bonus.speed > 0 ? (
+                                                                                            <div className="flex flex-col gap-0.5">
+                                                                                                <span className="text-[10px] text-gray-400 uppercase tracking-wide">Velocidade</span>
+                                                                                                <span className="text-xs text-gray-600 font-medium">{option.bonus.speed} Mbps</span>
+                                                                                            </div>
+                                                                                        ) : "-"}
+                                                                                        {typeof option.bonus.price !== 'undefined' && (
+                                                                                            <div className="flex flex-col gap-0.5">
+                                                                                                <span className="text-[10px] text-gray-400 uppercase tracking-wide">Preço</span>
+                                                                                                <span className="text-xs text-blue-700 font-medium">
+                                                                                                    {option.bonus.price > 0 ? formatBRL(option.bonus.price) : "-"}
+                                                                                                </span>
+                                                                                            </div>
+                                                                                        )}
+                                                                                    </div>
+
+                                                                                    {/* Linha 3: descrição em largura total */}
+                                                                                    {option.bonus.description && (
+                                                                                        <div className="flex flex-col gap-0.5">
+                                                                                            <span className="text-[10px] text-gray-400 uppercase tracking-wide">Descrição</span>
+                                                                                            <span className="text-xs text-gray-600 font-medium leading-relaxed">
+                                                                                                {option.bonus.description}
+                                                                                            </span>
+                                                                                        </div>
+                                                                                    )}
                                                                                 </div>
                                                                             )}
                                                                         </div>
-                                                                        <div className="text-sm font-semibold text-gray-700">
-                                                                            {option.price > 0
-                                                                                ? formatBRL(option.price)
-                                                                                : "-"}
-                                                                        </div>
-                                                                    </div>
-                                                                ))}
+                                                                    );
+                                                                })}
                                                             </div>
                                                         </div>
                                                     ),
