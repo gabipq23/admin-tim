@@ -67,6 +67,7 @@ export function ProductExtras({
                                     rules={[{ required: true, message: "Tipo obrigatório" }]}
                                 >
                                     <Select placeholder="Selecione o tipo">
+                                        <Select.Option value="radio">Radio</Select.Option>
                                         <Select.Option value="checkbox">Checkbox</Select.Option>
                                         <Select.Option value="checkbox_group">
                                             Grupo de Checkbox
