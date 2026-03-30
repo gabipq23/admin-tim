@@ -1,8 +1,11 @@
+import React, { useState } from "react";
 import {
   Button,
   Form,
   Select,
   DatePicker,
+  Checkbox,
+  Radio,
 } from "antd";
 import { FormInstance } from "antd/es/form";
 import { OrderBandaLargaPF } from "@/interfaces/bandaLargaPF";
@@ -28,7 +31,29 @@ export function OrderBandaLargaPFEdit({
   handleCancel,
   loading,
 }: OrderBandaLargaPFEditProps) {
+  // Estado para extras dinâmicos
+  const [extrasOptions, setExtrasOptions] = useState<any[]>([]);
 
+  // Atualiza extras ao trocar plano
+  const handlePlanChange = (planId: number) => {
+    onPlanChange(planId);
+    const found = planOptions.find((p: any) => p.value === planId);
+    if (found && found.plan && found.plan.online) {
+      setExtrasOptions(found.plan.extras?.non_client || []);
+      form.setFieldsValue({ selected_extras: [] });
+    } else {
+      setExtrasOptions([]);
+      form.setFieldsValue({ selected_extras: [] });
+    }
+  };
+
+  // Inicializa extras se já houver plano selecionado
+  React.useEffect(() => {
+    if (form.getFieldValue("plan_id")) {
+      handlePlanChange(form.getFieldValue("plan_id"));
+    }
+    // eslint-disable-next-line
+  }, []);
   return (
     <Form
       form={form}
@@ -65,7 +90,7 @@ export function OrderBandaLargaPFEdit({
                     showSearch
                     placeholder="Selecione o plano"
                     className="min-w-64"
-                    onChange={onPlanChange}
+                    onChange={handlePlanChange}
                     options={planOptions}
                   />
                 </Form.Item>
@@ -160,56 +185,90 @@ export function OrderBandaLargaPFEdit({
             <hr className="border-t border-neutral-300 mx-2" />
           </div>
 
-          {/* Detalhes adicionais em lista */}
-          <div className="mt-4  rounded-md p-2">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <div className="flex h-9 gap-4 text-[14px] w-full text-neutral-700">
-                <div className="flex">
-                  <p><strong>Escolha:</strong></p>
+          {extrasOptions.length > 0 && (
+            <div className="mt-4 bg-neutral-50 rounded-md p-4">
+              <div className="font-semibold text-[#666666] text-[14px] mb-2">Extras disponíveis</div>
+              {extrasOptions.map((extra) => (
+                <div key={extra.id} className="mb-2">
+                  <div className="font-medium text-sm mb-1">{extra.label}</div>
+                  {extra.options && extra.options.length > 1 ? (
+                    <Form.Item name={["extra_option", extra.id]} className="mb-0">
+                      <Radio.Group>
+                        {extra.options.map((opt: any) => (
+                          <Radio key={opt.id} value={opt.id}>
+                            {opt.label}  R${opt.price} <span className="text-xs text-neutral-600">{opt.description}</span>
+                          </Radio>
+                        ))}
+                      </Radio.Group>
+                    </Form.Item>
+                  ) : (
+                    <Form.Item name={["selected_extras", extra.id]} valuePropName="checked" className="mb-0">
+                      <Checkbox>
+                        {extra.options && extra.options[0] && (
+                          <>
+                            {extra.options[0].label}  R${extra.options[0].price}{" "}
+                            <span className="text-xs text-neutral-600">{extra.options[0].description}</span>
+                          </>
+                        )}
+                      </Checkbox>
+                    </Form.Item>
+                  )}
                 </div>
-                <div className="flex flex-1">
-                  <Form.Item name="line_action" className="mb-0">
-                    <Select
-                      size="small"
-                      placeholder="Selecione"
-                      className="min-w-[200px]"
-                    >
-                      <Select.Option value="new_number">Novo Número</Select.Option>
-                      <Select.Option value="port_in_to_vivo">Portabilidade para Vivo</Select.Option>
-                      <Select.Option value="keep_vivo_number">Manter Número Vivo</Select.Option>
-                    </Select>
-                  </Form.Item>
-                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Detalhes adicionais em lista */}
+        <div className="mt-4  rounded-md p-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="flex h-9 gap-4 text-[14px] w-full text-neutral-700">
+              <div className="flex">
+                <p><strong>Escolha:</strong></p>
               </div>
+              <div className="flex flex-1">
+                <Form.Item name="line_action" className="mb-0">
+                  <Select
+                    size="small"
+                    placeholder="Selecione"
+                    className="min-w-[200px]"
+                  >
+                    <Select.Option value="new_number">Novo Número</Select.Option>
+                    <Select.Option value="port_in_to_vivo">Portabilidade para Vivo</Select.Option>
+                    <Select.Option value="keep_vivo_number">Manter Número Vivo</Select.Option>
+                  </Select>
+                </Form.Item>
+              </div>
+            </div>
 
-              <InputGenerator
-                title="Número Informado:"
-                formItemName="line_number_informed"
-                formItemValue={localData.line_number_informed || ""}
-                placeholder="Número"
-              />
+            <InputGenerator
+              title="Número Informado:"
+              formItemName="line_number_informed"
+              formItemValue={localData.line_number_informed || ""}
+              placeholder="Número"
+            />
 
-              <div className="flex h-9 gap-4 text-[14px] w-full text-neutral-700">
-                <div className="flex">
-                  <p><strong>eSIM:</strong></p>
-                </div>
-                <div className="flex flex-1">
-                  <Form.Item name="wants_esim" className="mb-0">
-                    <Select
-                      size="small"
-                      placeholder="Selecione"
-                      className="min-w-[150px]"
-                    >
-                      <Select.Option value={true}>Sim</Select.Option>
-                      <Select.Option value={false}>Não</Select.Option>
-                    </Select>
-                  </Form.Item>
-                </div>
+            <div className="flex h-9 gap-4 text-[14px] w-full text-neutral-700">
+              <div className="flex">
+                <p><strong>eSIM:</strong></p>
+              </div>
+              <div className="flex flex-1">
+                <Form.Item name="wants_esim" className="mb-0">
+                  <Select
+                    size="small"
+                    placeholder="Selecione"
+                    className="min-w-[150px]"
+                  >
+                    <Select.Option value={true}>Sim</Select.Option>
+                    <Select.Option value={false}>Não</Select.Option>
+                  </Select>
+                </Form.Item>
               </div>
             </div>
           </div>
-
         </div>
+
+
         {/* Seção de Disponibilidade */}
         <div className="flex flex-col bg-neutral-100 mb-3 rounded-[4px] p-3 pb-0 w-full">
           <div>

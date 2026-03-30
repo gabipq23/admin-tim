@@ -57,6 +57,7 @@ export function OrderBandaLargaPFDetailsModal({
         label: plan.name,
         name: plan.name,
         price: plan.pricing?.base_monthly?.current_price,
+        plan,
       }))
     : [];
 
@@ -177,6 +178,45 @@ export function OrderBandaLargaPFDetailsModal({
         due_day: values.due_day,
       };
 
+      // --- ADAPTAÇÃO DOS EXTRAS ---
+      const selectedExtrasIds = values.selected_extras || [];
+      const extraOptions = values.extra_option || {};
+      const selectedPlanObj = planBLPFStock.find((plan: any) => plan.id === values.plan_id);
+      let selected_extras = [];
+      if (selectedPlanObj && selectedPlanObj.extras) {
+        const extrasArr = selectedPlanObj.extras.non_client || [];
+        selected_extras = extrasArr
+          .map((extra: any) => {
+            // Se for múltipla opção (radio), pega a opção escolhida
+            if (extra.options && extra.options.length > 1 && extraOptions[extra.id]) {
+              const opt = extra.options.find((o: any) => o.id === extraOptions[extra.id]);
+              if (opt) {
+                return {
+                  id: extra.id,
+                  label: opt.label,
+                  price: opt.price,
+                  description: opt.description,
+                  bonus: opt.bonus,
+                };
+              }
+              return null;
+            }
+            // Se for checkbox simples
+            if (selectedExtrasIds.includes(extra.id) && extra.options && extra.options.length === 1) {
+              const opt = extra.options[0];
+              return {
+                id: extra.id,
+                label: opt.label,
+                price: opt.price,
+                description: opt.description,
+                bonus: opt.bonus,
+              };
+            }
+            return null;
+          })
+          .filter(Boolean);
+      }
+
       let selectedPlan = planBLPFStock.find(
         (plan: any) => plan.id === normalizedValues.plan_id,
       );
@@ -194,9 +234,8 @@ export function OrderBandaLargaPFDetailsModal({
         ).format("DD/MM/YYYY");
       }
       const formattedData: any = {
-
         ...normalizedValues,
-
+        selected_extras,
       };
 
       if (selectedPlan && selectedPlan.id) {

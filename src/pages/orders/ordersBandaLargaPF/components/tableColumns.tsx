@@ -503,7 +503,7 @@ export const useAllTableColumns = ({
         {
             title: "Telefone",
             dataIndex: "phone",
-            width: 150,
+            width: 180,
             render: (_, record) => {
                 if (!record.phone) return "-";
 

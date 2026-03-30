@@ -78,7 +78,7 @@ export default function OrdersBandaLargaPF() {
     },
   };
 
-  console.log(orderBandaLargaPF)
+
   return (
     <>
       <QueryClientProvider client={queryClient}>
