@@ -161,7 +161,7 @@ export function OrderBandaLargaPJEdit({
             <hr className="border-t border-neutral-300 mx-2" />
           </div>
           {/* Detalhes adicionais em lista */}
-          <div className="mt-4  rounded-md p-2">
+          {/* <div className="mt-4  rounded-md p-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <div className="flex h-9 gap-4 text-[14px] w-full text-neutral-700">
                 <div className="flex">
@@ -207,7 +207,7 @@ export function OrderBandaLargaPJEdit({
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
         </div>
         {/* Seção de Disponibilidade */}

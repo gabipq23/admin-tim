@@ -5,7 +5,7 @@ import {
   Select,
   DatePicker,
   Checkbox,
-  Radio,
+
 } from "antd";
 import { FormInstance } from "antd/es/form";
 import { OrderBandaLargaPF } from "@/interfaces/bandaLargaPF";
@@ -188,39 +188,27 @@ export function OrderBandaLargaPFEdit({
           {extrasOptions.length > 0 && (
             <div className="mt-4 bg-neutral-50 rounded-md p-4">
               <div className="font-semibold text-[#666666] text-[14px] mb-2">Extras disponíveis</div>
-              {extrasOptions.map((extra) => (
-                <div key={extra.id} className="mb-2">
-                  <div className="font-medium text-sm mb-1">{extra.label}</div>
-                  {extra.options && extra.options.length > 1 ? (
-                    <Form.Item name={["extra_option", extra.id]} className="mb-0">
-                      <Radio.Group>
-                        {extra.options.map((opt: any) => (
-                          <Radio key={opt.id} value={opt.id}>
-                            {opt.label}  R${opt.price} <span className="text-xs text-neutral-600">{opt.description}</span>
-                          </Radio>
-                        ))}
-                      </Radio.Group>
-                    </Form.Item>
-                  ) : (
-                    <Form.Item name={["selected_extras", extra.id]} valuePropName="checked" className="mb-0">
-                      <Checkbox>
-                        {extra.options && extra.options[0] && (
-                          <>
-                            {extra.options[0].label}  R${extra.options[0].price}{" "}
-                            <span className="text-xs text-neutral-600">{extra.options[0].description}</span>
-                          </>
-                        )}
-                      </Checkbox>
-                    </Form.Item>
-                  )}
-                </div>
-              ))}
+              {/* Agrupa todos os checkboxes em um Checkbox.Group controlado por selected_extras */}
+              <Form.Item name="selected_extras" valuePropName="value" className="mb-0">
+                <Checkbox.Group style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {extrasOptions.map((extra) => (
+                    <Checkbox key={extra.id} value={extra.id}>
+                      <span className="font-medium text-sm">{extra.label}</span>
+                      {extra.options && extra.options[0] && (
+                        <>
+                          &nbsp; R${extra.options[0].price} <span className="text-xs text-neutral-600">{extra.options[0].description}</span>
+                        </>
+                      )}
+                    </Checkbox>
+                  ))}
+                </Checkbox.Group>
+              </Form.Item>
             </div>
           )}
         </div>
 
         {/* Detalhes adicionais em lista */}
-        <div className="mt-4  rounded-md p-2">
+        {/* <div className="mt-4  rounded-md p-2">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div className="flex h-9 gap-4 text-[14px] w-full text-neutral-700">
               <div className="flex">
@@ -266,7 +254,7 @@ export function OrderBandaLargaPFEdit({
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
 
         {/* Seção de Disponibilidade */}

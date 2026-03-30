@@ -241,7 +241,7 @@ export function OrderBandaLargaPFDisplay({
         <PlanosTable plans={Array.isArray(localData) ? localData : [localData]} />
 
         {/* Detalhes adicionais em lista */}
-        <div className="mt-4 bg-white rounded-md p-2">
+        {/* <div className="mt-4 bg-white rounded-md p-2">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <DisplayGenerator
               title="Escolha:"
@@ -274,7 +274,7 @@ export function OrderBandaLargaPFDisplay({
               }
             />
           </div>
-        </div>
+        </div> */}
       </div>
 
 

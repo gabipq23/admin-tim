@@ -179,38 +179,29 @@ export function OrderBandaLargaPFDetailsModal({
       };
 
       // --- ADAPTAÇÃO DOS EXTRAS ---
-      const selectedExtrasIds = values.selected_extras || [];
+      const selectedExtrasIds = Array.isArray(values.selected_extras) ? values.selected_extras : [];
       const extraOptions = values.extra_option || {};
       const selectedPlanObj = planBLPFStock.find((plan: any) => plan.id === values.plan_id);
       let selected_extras = [];
       if (selectedPlanObj && selectedPlanObj.extras) {
         const extrasArr = selectedPlanObj.extras.non_client || [];
+        // Monta selected_extras com os objetos completos dos extras selecionados
         selected_extras = extrasArr
-          .map((extra: any) => {
-            // Se for múltipla opção (radio), pega a opção escolhida
-            if (extra.options && extra.options.length > 1 && extraOptions[extra.id]) {
-              const opt = extra.options.find((o: any) => o.id === extraOptions[extra.id]);
-              if (opt) {
+          .map((extra) => {
+            // Checkbox simples
+            if (extra.input_type === 'checkbox' && selectedExtrasIds.includes(extra.id)) {
+              return extra;
+            }
+            // Radio: selecionado se extraOptions[extra.id] existir e corresponder a uma opção
+            if (extra.input_type === 'radio' && extraOptions[extra.id]) {
+              // Clona o objeto extra e filtra a opção escolhida
+              const chosenOption = extra.options.find((o) => o.id === extraOptions[extra.id]);
+              if (chosenOption) {
                 return {
-                  id: extra.id,
-                  label: opt.label,
-                  price: opt.price,
-                  description: opt.description,
-                  bonus: opt.bonus,
+                  ...extra,
+                  options: [chosenOption],
                 };
               }
-              return null;
-            }
-            // Se for checkbox simples
-            if (selectedExtrasIds.includes(extra.id) && extra.options && extra.options.length === 1) {
-              const opt = extra.options[0];
-              return {
-                id: extra.id,
-                label: opt.label,
-                price: opt.price,
-                description: opt.description,
-                bonus: opt.bonus,
-              };
             }
             return null;
           })
@@ -239,6 +230,14 @@ export function OrderBandaLargaPFDetailsModal({
       };
 
       if (selectedPlan && selectedPlan.id) {
+        // Inclui o objeto completo do plano no payload
+        formattedData.plan = {
+          id: selectedPlan.id,
+          name: selectedPlan.plan_name || selectedPlan.name,
+          speed: selectedPlan.plan_speed || selectedPlan.speed,
+          value: selectedPlan.plan_price_to || selectedPlan.price,
+          original_value: selectedPlan.original_value || selectedPlan.original_price || selectedPlan.original_value,
+        };
         formattedData.itens = [
           {
             plan: {
@@ -249,9 +248,33 @@ export function OrderBandaLargaPFDetailsModal({
             },
           },
         ];
+
+        // Calcula extras_price somando price dos extras (options e bonus)
+        let extras_price = 0;
+        selected_extras.forEach((extra: any) => {
+          // Soma price de cada option selecionada
+          if (Array.isArray(extra.options)) {
+            extra.options.forEach((opt: any) => {
+              if (typeof opt.price === 'number') extras_price += opt.price;
+              if (opt.bonus && typeof opt.bonus.price === 'number') extras_price += opt.bonus.price;
+            });
+          }
+        });
+
+        // Preço original do plano (base_monthly)
+        let original_price = 0;
+        if (selectedPlan.pricing && selectedPlan.pricing.base_monthly && typeof selectedPlan.pricing.base_monthly.current_price === 'number') {
+          original_price = selectedPlan.pricing.base_monthly.current_price;
+        } else {
+          original_price = selectedPlan.original_value || selectedPlan.original_price || selectedPlan.price || 0;
+        }
+        // Soma total
+        const total_monthly = original_price + extras_price;
+
         formattedData.price_summary = {
-          ...localData?.price_summary,
-          plan_price: selectedPlan.plan_price_to || selectedPlan.price,
+          extras_price,
+          total_monthly,
+          original_price,
         };
       }
 

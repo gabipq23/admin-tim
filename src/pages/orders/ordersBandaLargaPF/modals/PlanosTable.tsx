@@ -34,7 +34,7 @@ export function PlanosTable({ plans }: { plans: any[] }) {
                     <div className="flex items-center py-4 text-[14px] text-neutral-700 hover:bg-neutral-50 transition">
                         <p className="text-[14px] font-semibold w-72 text-center">
                             {plan.plan?.name
-                                ? `${plan.plan.name} - ${plan.price_summary?.plan_price != null ? formatBRL(plan.price_summary.plan_price) : "-"}`
+                                ? `${plan.plan.name} - ${plan.price_summary?.original_price != null ? formatBRL(plan.price_summary.original_price) : "-"}`
                                 : "-"}
                         </p>
                         {/* <p className="text-[14px] font-semibold w-32 text-center">
@@ -91,22 +91,27 @@ export function PlanosTable({ plans }: { plans: any[] }) {
                                 Extras adicionados
                             </div>
                             <ul className="divide-y divide-neutral-100">
-                                {plan.selected_extras.map((extra: PlanSelectedExtra) => (
-                                    <li key={extra.id} className="flex justify-between items-center py-2">
-                                        <div>
-                                            <div className="font-medium text-sm">{extra.label}</div>
-                                            <div className="text-xs text-neutral-600">{extra.description}</div>
-                                            {extra.bonus && (
-                                                <div className="text-xs text-green-700">
-                                                    {extra.bonus.type} {extra.bonus.speed} {extra.bonus.description}
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="font-semibold text-sm">
-                                            {formatBRL(extra.price)}
-                                        </div>
-                                    </li>
-                                ))}
+                                {plan.selected_extras.map((extra: PlanSelectedExtra) => {
+                                    const opt = extra.options && extra.options[0] ? extra.options[0] : undefined;
+                                    return (
+                                        <li key={extra.id} className="flex justify-between items-center py-2">
+                                            <div>
+                                                <div className="font-medium text-sm">{extra.label}</div>
+                                                <div className="text-xs text-neutral-600">{opt?.description || ''}</div>
+                                                {opt?.bonus && (opt.bonus.type || opt.bonus.speed || opt.bonus.description) && (
+                                                    <div className="text-xs text-green-700">
+                                                        {opt.bonus.type ? `Com ${extra.label}` : ''}
+                                                        {opt.bonus.speed ? `+ ganhe ${opt.bonus.speed}` : ''}
+                                                        {opt.bonus.description ? ` ${opt.bonus.description}` : ''}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="font-semibold text-sm">
+                                                {typeof opt?.price === 'number' ? formatBRL(opt.price) : '-'}
+                                            </div>
+                                        </li>
+                                    );
+                                })}
                             </ul>
                         </div>
                     )}
