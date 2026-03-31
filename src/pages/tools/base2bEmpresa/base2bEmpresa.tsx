@@ -30,7 +30,6 @@ export default function Base2bEmpresa() {
     useBase2bEmpresaController(cnpj);
 
   const handleSubmit = (values: any) => {
-    // Remove a formatação do CNPJ (pontos, barras e hífens)
     const cnpjLimpo = values.numero?.replace(/[^\d]/g, "") || "";
     setCnpj(cnpjLimpo);
   };

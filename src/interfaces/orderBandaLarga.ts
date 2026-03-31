@@ -176,7 +176,6 @@ export interface OrderBandaLarga {
   service?: string | null;
   created_at: string;
   updated_at: string;
-  // Campos legados (compatibilidade)
   credito?: number | string;
   cep_unico?: number;
   encontrado_via_range?: number;

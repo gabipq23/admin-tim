@@ -649,7 +649,7 @@ export const useAllTableColumns = ({
             render: (is_comercial, record) => {
                 const whatsappData = record?.whatsapp;
 
-                // Cenário 1: Telefone inválido
+                // Cenário 1: Telefone invalido
                 const hasInvalidPhoneError =
                     (whatsappData as { erro?: string } | null)?.erro === "Telefone inválido";
 
@@ -662,7 +662,7 @@ export const useAllTableColumns = ({
                     return <div className="flex items-center justify-center">Não</div>;
                 }
 
-                // Casos normais com WhatsApp válido
+                // Casos com wpp valido
                 return (
                     <div className="flex items-center justify-center">
                         {is_comercial === true ? (

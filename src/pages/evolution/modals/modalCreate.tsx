@@ -16,7 +16,6 @@ export function ModalCreateEvolution({
   const selectedClientId = import.meta.env.VITE_CLIENT_ID;
   const handleClose = () => {
     setShowModal(false);
-    // Limpar campos ao fechar
     setName("");
     setPhone("");
   };

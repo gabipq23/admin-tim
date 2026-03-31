@@ -53,7 +53,6 @@ export default function Base2bSocio() {
     const cnpjLimpo = values.numero?.replace(/[^\d]/g, "") || "";
     const cpfLimpo = values.cpf?.replace(/[^\d]/g, "") || "";
 
-    // Resetar paginação ao fazer nova consulta
     setCurrentPage(1);
     setPageSize(50);
 

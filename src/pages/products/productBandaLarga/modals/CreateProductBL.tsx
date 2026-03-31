@@ -89,8 +89,6 @@ export default function CreateProductBL({
     const handleSave = async () => {
         try {
             const values = await form.validateFields();
-
-            // Preparar detalhes sem imagens para JSON
             const detailsArr = Array.isArray(values.details) ? [...values.details] : [];
             const detailsWithoutImages = detailsArr.map((detail) => ({
                 title: detail.title,
@@ -100,14 +98,12 @@ export default function CreateProductBL({
                 highlight_bottom: detail.highlight_bottom || false,
             }));
 
-            // Adicionar extras
             const extras = {
                 non_client: normalizeExtras(values.extras_non_client),
                 client: normalizeExtras(values.extras_client),
 
             };
 
-            // Construir payload JSON
             const parsedOriginalPrice = parseBRLInput(values.pricing_base_monthly_original);
             const hasOriginalPrice = values.pricing_base_monthly_original !== undefined
                 && values.pricing_base_monthly_original !== null
@@ -168,9 +164,7 @@ export default function CreateProductBL({
                 });
             }
 
-            // Envio das imagens dos extras (client e non_client)
             if (Number.isFinite(createdProductId) && createdProductId > 0) {
-                // Helper para envio
                 const uploadExtrasImages = async (extrasArr?: ExtraGroupFormValue[]) => {
                     if (!Array.isArray(extrasArr)) return;
                     for (const extra of extrasArr) {

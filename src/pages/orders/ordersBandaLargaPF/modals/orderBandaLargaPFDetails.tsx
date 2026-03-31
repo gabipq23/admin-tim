@@ -246,7 +246,6 @@ export function OrderBandaLargaPFDetailsModal({
         ];
         let extras_price = 0;
         (selected_extras as import("@/interfaces/orderBandaLarga").PlanSelectedExtra[]).forEach((extra) => {
-          // Soma price de cada option selecionada
           if (Array.isArray(extra.options)) {
             (extra.options as import("@/interfaces/orderBandaLarga").PlanExtraOption[]).forEach((opt) => {
               if (typeof opt.price === 'number') extras_price += opt.price;

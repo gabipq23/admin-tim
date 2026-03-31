@@ -193,7 +193,6 @@ function ProductBLInfoModal({
 
       const values = (await form.validateFields()) as ProductFormValues;
 
-      // Condições da oferta: existentes ficam como URL no payload; novos arquivos são uploadados separadamente
       const existingConditions: ProductOfferConditionFile[] = [];
       const newConditionFiles: File[] = [];
 
@@ -208,7 +207,6 @@ function ProductBLInfoModal({
         }
       }
 
-      // Detalhes: imagens existentes mantêm URL, novas são descartadas (igual ao criar)
       const details: ProductDetail[] = (values.details || []).map(
         (detail: ProductFormDetail) => ({
           title: detail.title,
@@ -278,9 +276,7 @@ function ProductBLInfoModal({
         }
       }
 
-      // Upload de novas imagens dos extras (client e non_client)
       if (uploadProductExtrasBL && planData.id) {
-        // Função auxiliar para processar cada grupo
         const processExtrasImages = async (groups: any[] = []) => {
           for (const group of groups) {
             const groupId = group.id;
