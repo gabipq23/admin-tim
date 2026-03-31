@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Tooltip } from "antd";
 import { formatBRL } from "@/utils/formatBRL";
-import { PlanSelectedExtra } from "@/interfaces/bandaLargaPF";
+import { PlanSelectedExtra } from "@/interfaces/orderBandaLarga";
 
 export function PlanosTable({ plans }: { plans: any[] }) {
     const [expanded, setExpanded] = useState<Record<string, boolean>>({});

@@ -1,4 +1,4 @@
-import { OrderBandaLargaPFResponse } from "@/interfaces/bandaLargaPF";
+import { OrderBandaLargaResponse } from "@/interfaces/orderBandaLarga";
 import { BandaLargaService } from "@/services/bandaLarga";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -16,7 +16,7 @@ export function useAllOrdersController() {
   const closeModal = () => setIsModalOpen(false);
 
   const { data: ordersBandaLarga, isLoading } =
-    useQuery<OrderBandaLargaPFResponse>({
+    useQuery<OrderBandaLargaResponse>({
       refetchOnWindowFocus: false,
       queryKey: [
         "ordersBandaLargaPF",
@@ -36,7 +36,7 @@ export function useAllOrdersController() {
         filters.order_number
 
       ],
-      queryFn: async (): Promise<OrderBandaLargaPFResponse> => {
+      queryFn: async (): Promise<OrderBandaLargaResponse> => {
         const response = await bandaLargaService.allBandaLargaFiltered({
           page: filters.page,
           per_page: filters.per_page,

@@ -1,6 +1,5 @@
 import { ConfigProvider, Modal, Form } from "antd";
 import { useState, useEffect } from "react";
-import { OrderBandaLargaPF } from "@/interfaces/bandaLargaPF";
 import { OrderBandaLargaPFDisplay } from "./BLPFDisplay";
 import { OrderBandaLargaPFEdit } from "./BLPFEdit";
 import HeaderInputs from "./headerInputs";
@@ -8,6 +7,7 @@ import dayjs from "dayjs";
 import ConfirmDeleteModal from "@/components/confirmDeleteModal";
 import FooterButtons from "@/components/orders/footerButtons";
 import { generatePDF } from "../controllers/exportPDF";
+import { OrderBandaLarga } from "@/interfaces/orderBandaLarga";
 
 export function OrderBandaLargaPFDetailsModal({
   isModalOpen,
@@ -23,7 +23,7 @@ export function OrderBandaLargaPFDetailsModal({
 }: {
   isModalOpen: boolean;
   closeModal: () => void;
-  selectedId: OrderBandaLargaPF | null;
+  selectedId: OrderBandaLarga | null;
   updateOrderData?: (params: { id: number; data: any }) => void;
   removeOrderData: any;
   isRemoveOrderFetching: boolean;
@@ -34,7 +34,7 @@ export function OrderBandaLargaPFDetailsModal({
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [localData, setLocalData] = useState<OrderBandaLargaPF | null>(null);
+  const [localData, setLocalData] = useState<OrderBandaLarga | null>(null);
   const [form] = Form.useForm();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [consultor, setConsultor] = useState<string>("");

@@ -1,7 +1,6 @@
 import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import { formatCEP } from "@/utils/formatCEP";
 import { formatCPF } from "@/utils/formatCPF";
-import { OrderBandaLargaPJ } from "@/interfaces/bandaLargaPJ";
 import { formatBRL } from "@/utils/formatBRL";
 import {
   formatBrowserDisplay,
@@ -13,10 +12,11 @@ import { useEffect } from "react";
 import { ExclamationOutlined } from "@ant-design/icons";
 import { EmpresasDisplay } from "@/components/empresasDisplay";
 import { formatCNPJ } from "@/utils/formatCNPJ";
+import { OrderBandaLarga } from "@/interfaces/orderBandaLarga";
 
 
 interface OrderBandaLargaPJDisplayProps {
-  localData: OrderBandaLargaPJ;
+  localData: OrderBandaLarga;
   updateOrderData: any;
 }
 

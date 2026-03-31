@@ -15,7 +15,7 @@ import { DatePicker } from "antd";
 import { PatternFormat, PatternFormatProps } from "react-number-format";
 import dayjs from "dayjs";
 import { handleExportXLSX } from "../controllers/exportXLSX";
-import { BandaLargaFilters } from "@/interfaces/bandaLargaPJ";
+import { BandaLargaFilters } from "@/interfaces/orderBandaLarga";
 import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 import { customLocale } from "@/utils/customLocale";
 

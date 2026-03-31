@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { formatBrowserDisplay, formatOSDisplay } from "@/utils/formatClientEnvironment";
 import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
-import { OrderBandaLargaPF } from "@/interfaces/bandaLargaPF";
+import { OrderBandaLarga } from "@/interfaces/orderBandaLarga";
 import { useNavigate } from "react-router-dom";
 import { getFiltersFromURL } from "../controllers/filterController";
 export const useAllTableColumns = ({
@@ -27,7 +27,7 @@ export const useAllTableColumns = ({
 }: {
     setSelectedAvatar: Dispatch<SetStateAction<string | null>>;
     setIsModalAvatarOpen: Dispatch<SetStateAction<boolean>>;
-}): TableColumnsType<OrderBandaLargaPF> => {
+}): TableColumnsType<OrderBandaLarga> => {
     const navigate = useNavigate();
     const filters = getFiltersFromURL();
 

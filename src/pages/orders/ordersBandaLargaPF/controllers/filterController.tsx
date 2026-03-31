@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { TableColumnsType } from "antd";
-import { BandaLargaFilters, OrderBandaLargaPF } from "@/interfaces/bandaLargaPF";
 import { useStyle } from "@/style/tableStyle";
 import { useAllTableColumns } from "../components/tableColumns";
+import { BandaLargaFilters, OrderBandaLarga } from "@/interfaces/orderBandaLarga";
 
 export function getFiltersFromURL(): BandaLargaFilters {
   const params = new URLSearchParams(window.location.search);
@@ -37,7 +37,7 @@ export function useAllOrdersFilterController() {
   const navigate = useNavigate();
   const filters = getFiltersFromURL();
 
-  const [selectedBLOrder, setSelectedBLOrder] = useState<OrderBandaLargaPF | null>(null);
+  const [selectedBLOrder, setSelectedBLOrder] = useState<OrderBandaLarga | null>(null);
   const [isModalAvatarOpen, setIsModalAvatarOpen] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
   const currentPage = filters.page;
@@ -103,7 +103,7 @@ export function useAllOrdersFilterController() {
 
   const { styles } = useStyle();
 
-  const allTableColumns: TableColumnsType<OrderBandaLargaPF> = useAllTableColumns({
+  const allTableColumns: TableColumnsType<OrderBandaLarga> = useAllTableColumns({
     setSelectedAvatar,
     setIsModalAvatarOpen,
   });

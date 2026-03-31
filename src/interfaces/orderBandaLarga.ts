@@ -1,29 +1,60 @@
-export interface OrderBandaLargaPJResponse {
+export interface OrderBandaLargaResponse {
   success: boolean;
-  orders: OrderBandaLargaPJ[];
+  orders: OrderBandaLarga[];
   total: number;
   page: number;
   perPage: number;
   totalPages: number;
-  pedidos?: OrderBandaLargaPJ[];
+  pedidos?: OrderBandaLarga[];
   status_pos_venda_enum?: string[];
 }
+
+export interface OperatorAvailabilityItem {
+  range_max: number | null;
+  range_min: number | null;
+  availability: boolean;
+  encontrado_via_range: boolean;
+}
+
+export interface OperatorsAvailability {
+  tim?: OperatorAvailabilityItem;
+  oi?: OperatorAvailabilityItem;
+  claro?: OperatorAvailabilityItem;
+  net?: OperatorAvailabilityItem;
+  nio?: OperatorAvailabilityItem;
+  sky?: OperatorAvailabilityItem;
+  algar?: OperatorAvailabilityItem;
+  [operatorName: string]: OperatorAvailabilityItem | undefined;
+}
+
 export interface PlanExtraBonus {
   type: string;
+  price: number;
   speed: number;
   description: string;
+}
+
+export interface PlanExtraOption {
+  id: string;
+  label: string;
+  price: number;
+  description: string;
+  bonus?: PlanExtraBonus;
+  speed?: number;
+  type?: string;
 }
 
 export interface PlanSelectedExtra {
   id: string;
   label: string;
+  input_type: string;
   description: string;
-  price: number;
-  bonus?: PlanExtraBonus;
+  options: PlanExtraOption[];
 }
+
 type TelecomLineAction = "new_number" | "port_in_to_vivo" | "keep_vivo_number";
 
-export interface OrderBandaLargaPJ {
+export interface OrderBandaLarga {
   id: number;
   company?: string;
   order_number?: number | null;
@@ -58,7 +89,7 @@ export interface OrderBandaLargaPJ {
     original_value?: number;
     selected_extras?: PlanSelectedExtra[];
   };
-
+  selected_extras?: PlanSelectedExtra[];
   due_day: string | number;
   terms_accepted: boolean;
   accept_offers: boolean;
@@ -115,7 +146,7 @@ export interface OrderBandaLargaPJ {
     street_view_link: string;
     formatted_address: string;
   } | null;
-  operators_availability?: object | null;
+  operators_availability?: OperatorsAvailability | null;
   pf_temperature?: number | null;
   credit?: number | string | null;
   cpf_second_call?: string | null;
@@ -270,6 +301,7 @@ interface SociosEmpresas {
   nome: string;
   porte: string;
 }
+
 export interface BandaLargaFilters {
   page?: string | number;
   per_page?: string | number;

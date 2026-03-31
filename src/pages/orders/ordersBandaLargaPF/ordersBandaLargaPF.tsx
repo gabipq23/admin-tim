@@ -7,7 +7,7 @@ import { useAllOrdersFilterController } from "./controllers/filterController";
 import { useNavigate } from "react-router-dom";
 import { OrderBandaLargaPFDetailsModal } from "./modals/orderBandaLargaPFDetails";
 import { FiltroOrdersBandaLargaPFForm } from "./components/filter";
-import { OrderBandaLargaPF } from "@/interfaces/bandaLargaPF";
+import { OrderBandaLarga } from "@/interfaces/orderBandaLarga";
 import { TableProps } from "antd/lib";
 import { useState } from "react";
 import { useProductBLController } from "@/pages/products/productBandaLarga/controllers/dataController";
@@ -50,7 +50,7 @@ export default function OrdersBandaLargaPF() {
   const totalItems =
     ordersBandaLarga?.total ?? orderBandaLargaPF?.length ?? 0;
 
-  const rowClassName = (record: OrderBandaLargaPF) => {
+  const rowClassName = (record: OrderBandaLarga) => {
     const hasAvaiability = record?.availability;
     const isCoveredByRange = record?.found_via_range;
     const hasUnicCep = record?.single_zip_code;

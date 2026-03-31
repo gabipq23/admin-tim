@@ -1,5 +1,5 @@
 import { apiPurchase } from "@/configs/api";
-import { OrderBandaLargaPFResponse } from "@/interfaces/bandaLargaPF";
+import { OrderBandaLargaResponse } from "@/interfaces/orderBandaLarga";
 
 export class BandaLargaService {
   async allBandaLargaFiltered({
@@ -34,7 +34,7 @@ export class BandaLargaService {
     order_number?: string;
     type_client?: string;
     client_type?: string;
-  }): Promise<OrderBandaLargaPFResponse> {
+  }): Promise<OrderBandaLargaResponse> {
     const clientTypeFilter = type_client || client_type;
 
     const res = await apiPurchase.get(`/tim/orders`, {

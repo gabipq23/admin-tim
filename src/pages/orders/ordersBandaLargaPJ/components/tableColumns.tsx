@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { formatBrowserDisplay, formatOSDisplay } from "@/utils/formatClientEnvironment";
 import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
-import { OrderBandaLargaPJ } from "@/interfaces/bandaLargaPJ";
+import { OrderBandaLarga } from "@/interfaces/orderBandaLarga";
 import { formatCNPJ } from "@/utils/formatCNPJ";
 import { capitalizeWords } from "@/utils/capitaliWords";
 import { useNavigate } from "react-router-dom";
@@ -30,7 +30,7 @@ export const useAllTableColumns = ({
 }: {
     setSelectedAvatar: Dispatch<SetStateAction<string | null>>;
     setIsModalAvatarOpen: Dispatch<SetStateAction<boolean>>;
-}): TableColumnsType<OrderBandaLargaPJ> => {
+}): TableColumnsType<OrderBandaLarga> => {
     const navigate = useNavigate();
     const filters = getFiltersFromURL();
     return [

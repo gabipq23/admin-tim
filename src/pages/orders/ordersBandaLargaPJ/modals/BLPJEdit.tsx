@@ -5,14 +5,14 @@ import {
   DatePicker,
 } from "antd";
 import { FormInstance } from "antd/es/form";
-import { OrderBandaLargaPJ } from "@/interfaces/bandaLargaPJ";
 import InputGenerator from "@/components/inputGenerator";
 import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 import { formatCPF } from "@/utils/formatCPF";
 import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
+import { OrderBandaLarga } from "@/interfaces/orderBandaLarga";
 
 interface OrderBandaLargaPJEditProps {
-  localData: OrderBandaLargaPJ;
+  localData: OrderBandaLarga;
   form: FormInstance;
   onPlanChange: (planId: number) => void;
   planOptions: any;

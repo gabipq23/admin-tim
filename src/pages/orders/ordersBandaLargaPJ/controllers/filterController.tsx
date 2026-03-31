@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { TableColumnsType } from "antd";
 import { useStyle } from "@/style/tableStyle";
 import { useAllTableColumns } from "../components/tableColumns";
-import { BandaLargaFilters, OrderBandaLargaPJ } from "@/interfaces/bandaLargaPJ";
+import { BandaLargaFilters, OrderBandaLarga } from "@/interfaces/orderBandaLarga";
 
 export function getFiltersFromURL(): BandaLargaFilters {
   const params = new URLSearchParams(window.location.search);
@@ -106,7 +106,7 @@ export function useAllOrdersFilterController() {
 
   const { styles } = useStyle();
 
-  const allTableColumns: TableColumnsType<OrderBandaLargaPJ> = useAllTableColumns({
+  const allTableColumns: TableColumnsType<OrderBandaLarga> = useAllTableColumns({
     setSelectedAvatar,
     setIsModalAvatarOpen,
   });

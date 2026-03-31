@@ -8,12 +8,12 @@ import {
 
 } from "antd";
 import { FormInstance } from "antd/es/form";
-import { OrderBandaLargaPF } from "@/interfaces/bandaLargaPF";
 import InputGenerator from "@/components/inputGenerator";
 import { blueOutlineButtonClass } from "@/utils/buttonStyles";
+import { OrderBandaLarga } from "@/interfaces/orderBandaLarga";
 
 interface OrderBandaLargaPFEditProps {
-  localData: OrderBandaLargaPF;
+  localData: OrderBandaLarga;
   form: FormInstance;
   onPlanChange: (planId: number) => void;
   planOptions: any;
