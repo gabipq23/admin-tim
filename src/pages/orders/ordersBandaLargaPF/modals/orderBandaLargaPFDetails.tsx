@@ -1,13 +1,13 @@
 import { ConfigProvider, Modal, Form } from "antd";
 import { useState, useEffect } from "react";
-import { OrderBandaLargaPF } from "@/interfaces/bandaLargaPF";
 import { OrderBandaLargaPFDisplay } from "./BLPFDisplay";
 import { OrderBandaLargaPFEdit } from "./BLPFEdit";
-import HeaderInputs from "./headerInputs";
+import HeaderInputs from "../../../../components/orders/headerInputs";
 import dayjs from "dayjs";
 import ConfirmDeleteModal from "@/components/confirmDeleteModal";
 import FooterButtons from "@/components/orders/footerButtons";
 import { generatePDF } from "../controllers/exportPDF";
+import { OrderBandaLarga } from "@/interfaces/orderBandaLarga";
 
 export function OrderBandaLargaPFDetailsModal({
   isModalOpen,
@@ -23,7 +23,7 @@ export function OrderBandaLargaPFDetailsModal({
 }: {
   isModalOpen: boolean;
   closeModal: () => void;
-  selectedId: OrderBandaLargaPF | null;
+  selectedId: OrderBandaLarga | null;
   updateOrderData?: (params: { id: number; data: any }) => void;
   removeOrderData: any;
   isRemoveOrderFetching: boolean;
@@ -34,7 +34,7 @@ export function OrderBandaLargaPFDetailsModal({
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [localData, setLocalData] = useState<OrderBandaLargaPF | null>(null);
+  const [localData, setLocalData] = useState<OrderBandaLarga | null>(null);
   const [form] = Form.useForm();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [consultor, setConsultor] = useState<string>("");
@@ -54,9 +54,10 @@ export function OrderBandaLargaPFDetailsModal({
       .filter((plan: any) => plan.client_type === 'PF')
       .map((plan: any) => ({
         value: plan.id,
-        label: plan.name,
-        name: plan.name,
+        label: plan.name + " " + plan.pricing?.base_monthly?.current_price,
+        name: plan.name + " " + plan.pricing?.base_monthly?.current_price,
         price: plan.pricing?.base_monthly?.current_price,
+        plan,
       }))
     : [];
 
@@ -141,7 +142,6 @@ export function OrderBandaLargaPFDetailsModal({
         line_number_informed: localData.line_number_informed,
         line_action: localData.line_action,
         address_reference_point: localData.address_reference_point,
-
         due_day: localData.due_day,
         accept_offers: localData.accept_offers,
         terms_accepted: localData.terms_accepted,
@@ -174,8 +174,36 @@ export function OrderBandaLargaPFDetailsModal({
         building_or_house: values.building_or_house,
         zip_code: values.zip_code,
         single_zip_code: values.single_zip_code,
-        due_day: values.due_day,
+        due_day: typeof values.due_day === "number" ? String(values.due_day) : values.due_day,
       };
+
+      const selectedExtrasIds = Array.isArray(values.selected_extras) ? values.selected_extras : [];
+      const extraOptions = values.extra_option || {};
+      const selectedPlanObj = planBLPFStock.find((plan: any) => plan.id === values.plan_id);
+      let selected_extras: import("@/interfaces/orderBandaLarga").PlanSelectedExtra[] = [];
+      if (selectedPlanObj && selectedPlanObj.extras) {
+        const extrasArr = selectedPlanObj.extras.non_client as import("@/interfaces/orderBandaLarga").PlanSelectedExtra[] || [];
+        selected_extras = extrasArr
+          .map(function (extra) {
+            const extraTyped = extra as import("@/interfaces/orderBandaLarga").PlanSelectedExtra;
+            if (extraTyped.input_type === 'checkbox' && selectedExtrasIds.includes(extraTyped.id)) {
+              return extraTyped;
+            }
+            if (extraTyped.input_type === 'radio' && extraOptions[extraTyped.id]) {
+              const chosenOption = (extraTyped.options as import("@/interfaces/orderBandaLarga").PlanExtraOption[]).find(function (o) {
+                return o.id === extraOptions[extraTyped.id];
+              });
+              if (chosenOption) {
+                return {
+                  ...extraTyped,
+                  options: [chosenOption],
+                };
+              }
+            }
+            return null;
+          })
+          .filter((x): x is import("@/interfaces/orderBandaLarga").PlanSelectedExtra => x != null) as import("@/interfaces/orderBandaLarga").PlanSelectedExtra[];
+      }
 
       let selectedPlan = planBLPFStock.find(
         (plan: any) => plan.id === normalizedValues.plan_id,
@@ -194,12 +222,18 @@ export function OrderBandaLargaPFDetailsModal({
         ).format("DD/MM/YYYY");
       }
       const formattedData: any = {
-
         ...normalizedValues,
-
+        selected_extras,
       };
 
       if (selectedPlan && selectedPlan.id) {
+        formattedData.plan = {
+          id: selectedPlan.id,
+          name: selectedPlan.plan_name || selectedPlan.name,
+          speed: selectedPlan.plan_speed || selectedPlan.speed,
+          value: selectedPlan.plan_price_to || selectedPlan.price,
+          original_value: selectedPlan.original_value || selectedPlan.original_price || selectedPlan.original_value,
+        };
         formattedData.itens = [
           {
             plan: {
@@ -210,9 +244,29 @@ export function OrderBandaLargaPFDetailsModal({
             },
           },
         ];
+        let extras_price = 0;
+        (selected_extras as import("@/interfaces/orderBandaLarga").PlanSelectedExtra[]).forEach((extra) => {
+          // Soma price de cada option selecionada
+          if (Array.isArray(extra.options)) {
+            (extra.options as import("@/interfaces/orderBandaLarga").PlanExtraOption[]).forEach((opt) => {
+              if (typeof opt.price === 'number') extras_price += opt.price;
+              if (opt.bonus && typeof opt.bonus.price === 'number') extras_price += opt.bonus.price;
+            });
+          }
+        });
+
+        let original_price = 0;
+        if (selectedPlan.pricing && selectedPlan.pricing.base_monthly && typeof selectedPlan.pricing.base_monthly.current_price === 'number') {
+          original_price = selectedPlan.pricing.base_monthly.current_price;
+        } else {
+          original_price = selectedPlan.original_value || selectedPlan.original_price || selectedPlan.price || 0;
+        }
+        const total_monthly = original_price + extras_price;
+
         formattedData.price_summary = {
-          ...localData?.price_summary,
-          plan_price: selectedPlan.plan_price_to || selectedPlan.price,
+          extras_price,
+          total_monthly,
+          original_price,
         };
       }
 
@@ -222,14 +276,19 @@ export function OrderBandaLargaPFDetailsModal({
           data: formattedData,
         });
 
-        setLocalData((prev) =>
-          prev
-            ? {
-              ...prev,
-              ...normalizedValues,
-            }
-            : null,
-        );
+        setLocalData((prev) => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            ...normalizedValues,
+            selected_extras,
+            price_summary: formattedData.price_summary,
+            plan: {
+              ...prev.plan,
+              ...formattedData.plan,
+            },
+          };
+        });
         setIsEditing(false);
       }
     } catch (error) {
@@ -241,6 +300,9 @@ export function OrderBandaLargaPFDetailsModal({
 
   const handleCancel = () => {
     setIsEditing(false);
+    if (selectedId) {
+      setLocalData(selectedId);
+    }
     form.resetFields();
   };
 
@@ -268,7 +330,7 @@ export function OrderBandaLargaPFDetailsModal({
             colorBorder: "#0026d9",
             colorText: "#0026d9",
             colorPrimary: "#0026d9",
-            colorPrimaryHover: "#883fa2",
+            colorPrimaryHover: "#0026d9",
           },
         },
       }}

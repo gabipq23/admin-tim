@@ -1,4 +1,5 @@
-import { OrderBandaLargaPF } from "@/interfaces/bandaLargaPF";
+
+import { OrderBandaLarga } from "@/interfaces/orderBandaLarga";
 import { formatBRL } from "@/utils/formatBRL";
 import { formatCEP } from "@/utils/formatCEP";
 import { formatCPF } from "@/utils/formatCPF";
@@ -29,7 +30,7 @@ const getBase64FromImageUrl = (url: string): Promise<string> => {
   });
 };
 
-export const generatePDF = async (order: OrderBandaLargaPF | undefined) => {
+export const generatePDF = async (order: OrderBandaLarga | undefined) => {
   if (!order) return;
 
   const paymentMethodLabel =

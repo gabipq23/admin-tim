@@ -1,6 +1,5 @@
 import { Controller, Control, UseFormHandleSubmit } from "react-hook-form";
 import {
-
   Button,
   Tooltip,
   ConfigProvider,
@@ -15,7 +14,7 @@ import { DatePicker } from "antd";
 import { PatternFormat, PatternFormatProps } from "react-number-format";
 import dayjs from "dayjs";
 import { handleExportXLSX } from "../controllers/exportXLSX";
-import { BandaLargaFilters } from "@/interfaces/bandaLargaPJ";
+import { BandaLargaFilters } from "@/interfaces/orderBandaLarga";
 import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 import { customLocale } from "@/utils/customLocale";
 
@@ -50,20 +49,12 @@ export function FiltroOrdersBandaLargaPJForm({
   onClear,
   selectedRowKeys,
   orderBandaLargaPJ,
-  // planBLPJStock,
   allColumnOptions,
   visibleColumns,
   handleColumnsChange,
 }: FiltroPedidosFormProps) {
   const { RangePicker } = DatePicker;
 
-  // const uniquePlans = Array.isArray(planBLPJStock)
-  //   ? Array.from(
-  //     new Map(
-  //       planBLPJStock.map((plan: any) => [plan.plan_name, plan]),
-  //     ).values(),
-  //   )
-  //   : [];
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}

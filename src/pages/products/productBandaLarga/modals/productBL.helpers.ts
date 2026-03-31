@@ -1,6 +1,5 @@
 import type { ProductExtraGroup } from "@/interfaces/products";
 import { type ExtraGroupFormValue } from "../components/ProductBLExtrasBuilder";
-import { generateIdFromLabel } from "@/utils/generateId";
 
 export const normalizeExtras = (
   groups: ExtraGroupFormValue[] = [],
@@ -8,7 +7,7 @@ export const normalizeExtras = (
   return groups
     .filter((group) => group?.input_type && group?.label)
     .map((group) => ({
-      id: generateIdFromLabel(group.label),
+      id: group.id ?? "",
       input_type: group.input_type!,
       label: group.label!,
       images: Array.isArray(group.images)
@@ -38,7 +37,7 @@ export const normalizeExtras = (
             bonus.price
           );
           const base = {
-            id: generateIdFromLabel(option.label),
+            id: option.id ?? "",
             label: option.label!,
             price: Number(option.price || 0),
             description: option.description || null,

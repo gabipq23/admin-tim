@@ -1,22 +1,25 @@
 import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import { formatCEP } from "@/utils/formatCEP";
 import { formatCPF } from "@/utils/formatCPF";
-import { OrderBandaLargaPJ } from "@/interfaces/bandaLargaPJ";
-import { formatBRL } from "@/utils/formatBRL";
 import {
   formatBrowserDisplay,
+  formatDevice,
   formatOSDisplay,
+  formatResolution,
 } from "@/utils/formatClientEnvironment";
 import DisplayGenerator from "@/components/displayGenerator";
-import { Button, ConfigProvider, Form, Input, Tooltip } from "antd";
+import { Button, ConfigProvider, Form, Input } from "antd";
 import { useEffect } from "react";
 import { ExclamationOutlined } from "@ant-design/icons";
 import { EmpresasDisplay } from "@/components/empresasDisplay";
 import { formatCNPJ } from "@/utils/formatCNPJ";
-
+import { OrderBandaLarga } from "@/interfaces/orderBandaLarga";
+import { formatPaymentMethod } from "@/utils/formatPaymentMethod";
+import { AvailabilityStatus, PAPStatus } from "../../../../components/orders/availabilityLayout";
+import { PlanosTable } from "../../../../components/orders/PlanosTable";
 
 interface OrderBandaLargaPJDisplayProps {
-  localData: OrderBandaLargaPJ;
+  localData: OrderBandaLarga;
   updateOrderData: any;
 }
 
@@ -25,142 +28,6 @@ export function OrderBandaLargaPJDisplay({
   updateOrderData,
 }: OrderBandaLargaPJDisplayProps) {
   const [form] = Form.useForm();
-
-  const formatPaymentMethod = (method?: string | null) => {
-    if (!method) return "-";
-
-    const paymentMethodLabels: Record<string, string> = {
-      automatic_debit: "Debito Automatico",
-      credit_card: "Cartao de Credito",
-      boleto: "Boleto",
-      pix: "PIX",
-    };
-
-    return paymentMethodLabels[method] || method;
-  };
-
-  const formatDevice = (device: string) => {
-    if (!device) return "-";
-    return device === "mobile"
-      ? "Mobile"
-      : device === "desktop"
-        ? "Desktop"
-        : device === "tablet"
-          ? "Tablet"
-          : device.charAt(0).toUpperCase() + device.slice(1);
-  };
-
-  const formatResolution = (resolution: any) => {
-    if (resolution && resolution.width && resolution.height) {
-      return `${resolution.width} x ${resolution.height}`;
-    }
-    return "-";
-  };
-
-  const AvailabilityStatus = () => {
-    if (
-      localData.availability === null ||
-      localData.availability === undefined
-    ) {
-      return (
-        <div className="flex flex-col items-center mt-2">
-          <div className="flex items-center justify-center">-</div>
-        </div>
-      );
-    }
-
-    if (localData.availability) {
-      if (localData.encontrado_via_range === 1) {
-        return (
-          <div className="flex flex-col items-center mt-2">
-            <div className="flex items-center justify-center mb-2">
-              <Tooltip
-                title="Disponibilidade - Disponível (via range numérico)"
-                placement="top"
-                styles={{ body: { fontSize: "12px" } }}
-              >
-                <div className="h-2 w-2 bg-yellow-500 rounded-full cursor-pointer"></div>
-              </Tooltip>
-            </div>
-            <div className="text-center text-[11px] text-neutral-600 bg-yellow-50 px-2 py-1 rounded">
-              <strong>Range numérico:</strong> {localData.range_min} -{" "}
-              {localData.range_max}
-            </div>
-          </div>
-        );
-      } else {
-        return (
-          <div className="flex flex-col items-center mt-2">
-            <div className="flex items-center justify-center">
-              <Tooltip
-                title="Disponibilidade - Disponível"
-                placement="top"
-                styles={{ body: { fontSize: "12px" } }}
-              >
-                <div className="h-2 w-2 bg-green-500 rounded-full cursor-pointer"></div>
-              </Tooltip>
-            </div>
-          </div>
-        );
-      }
-    }
-
-    return (
-      <div className="flex flex-col items-center mt-2">
-        <div className="flex items-center justify-center">
-          <Tooltip
-            title="Disponibilidade - Indisponível"
-            placement="top"
-            styles={{ body: { fontSize: "12px" } }}
-          >
-            <div className="h-2 w-2 bg-red-500 rounded-full"></div>
-          </Tooltip>
-        </div>
-      </div>
-    );
-  };
-  const PAPStatus = () => {
-    if (
-      localData.availability_pap === null ||
-      localData.availability_pap === undefined
-    ) {
-      return (
-        <div className="flex flex-col items-center">
-          <div className="flex items-center justify-center">-</div>
-        </div>
-      );
-    }
-
-    if (localData.availability_pap) {
-      return (
-        <div className="flex flex-col items-center mt-2">
-          <div className="flex items-center justify-center">
-            <Tooltip
-              title="PAP - Disponível"
-              placement="top"
-              styles={{ body: { fontSize: "12px" } }}
-            >
-              <div className="h-2 w-2 bg-green-500 rounded-full"></div>
-            </Tooltip>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div className="flex flex-col items-center mt-2">
-        <div className="flex items-center justify-center">
-          <Tooltip
-            title="PAP - Indisponível"
-            placement="top"
-            styles={{ body: { fontSize: "12px" } }}
-          >
-            <div className="h-2 w-2 bg-red-500 rounded-full"></div>
-          </Tooltip>
-        </div>
-      </div>
-    );
-  };
 
   useEffect(() => {
     if (localData) {
@@ -232,93 +99,11 @@ export function OrderBandaLargaPJDisplay({
     }
   };
   return (
-    <div className="flex flex-col w-full gap-2">
-      {/* Detalhes dos Planos */}
-      <div className="flex flex-col bg-neutral-100 mb-3 rounded-[4px] p-3 w-full">
-        <div className="flex items-center">
-          <h2 className="text-[14px] text-[#666666]">Detalhes </h2>
-        </div>
-
-        <div className="mt-4 text-neutral-700">
-          {/* Header da tabela */}
-          <div className="flex items-center font-semibold text-[#666666] text-[14px]">
-            <p className="w-48 text-center">Plano</p>
-            <p className="w-32 text-center">Valor (R$)</p>
-            <p className="w-40 text-center">Data Instalação 1</p>
-            <p className="w-32 text-center">Período 1</p>
-            <p className="w-40 text-center">Data Instalação 2</p>
-            <p className="w-32 text-center">Período 2</p>
-            <p className="w-32 text-center">Vencimento</p>
-          </div>
-          <hr className="border-t border-neutral-300 mx-2" />
-          <div>
-            <div className="flex items-center py-4 text-[14px] text-neutral-700">
-              <p className="text-[14px] font-semibold w-48 text-center">
-                {localData.plan?.name || "-"}
-              </p>
-              <p className="text-[14px] font-semibold w-32 text-center">
-                {localData.price_summary?.plan_price
-                  ? ` ${formatBRL(localData.price_summary?.plan_price || 0)}`
-                  : "-"}
-              </p>
-              <p className="text-[14px] w-40 text-center">
-                {localData.installation_preferred_date_one || "-"}
-              </p>
-              <p className="text-[14px] w-32 text-center">
-                {localData.installation_preferred_period_one || "-"}
-              </p>
-              <p className="text-[14px] w-40 text-center">
-                {localData.installation_preferred_date_two || "-"}
-              </p>
-              <p className="text-[14px] w-32 text-center">
-                {localData.installation_preferred_period_two || "-"}
-              </p>
-              <p className="text-[14px] font-semibold w-32 text-center">
-                {localData.due_day?.toString() || "-"}
-              </p>
-            </div>
-            <hr className="border-t border-neutral-300 mx-2" />
-          </div>
-
-        </div>
-
-        {/* Detalhes adicionais em lista */}
-        <div className="mt-4 bg-white rounded-md p-2">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            <DisplayGenerator
-              title="Escolha:"
-              value={
-                localData.line_action
-                  ? {
-                    new_number: "Novo Número",
-                    port_in_to_vivo: "Portabilidade para Vivo",
-                    keep_vivo_number: "Manter Número Vivo",
-                  }[localData.line_action] || "-"
-                  : "-"
-              }
-            />
-            <DisplayGenerator
-              title="Número Informado:"
-              value={
-                localData.line_number_informed
-                  ? formatPhoneNumber(localData.line_number_informed)
-                  : "-"
-              }
-            />
-            <DisplayGenerator
-              title="eSIM:"
-              value={
-                localData.wants_esim === true
-                  ? "Sim"
-                  : localData.wants_esim === false
-                    ? "Não"
-                    : "-"
-              }
-            />
-          </div>
-        </div>
+    <div>
+      <div className="flex flex-col w-full gap-2">
+        {/* Detalhes dos Planos */}
+        <PlanosTable plans={Array.isArray(localData) ? localData : [localData]} />
       </div>
-
 
       {/* Seção de Disponibilidade */}
       <div className="flex flex-col bg-neutral-100 mb-3 rounded-[4px] p-3 w-full">
@@ -327,11 +112,11 @@ export function OrderBandaLargaPJDisplay({
             <p className="text-[14px] font-medium text-neutral-700 ">
               Disponibilidade
             </p>
-            <AvailabilityStatus />
+            <AvailabilityStatus localData={localData} />
           </div>
           <div className="bg-white rounded-md p-4 flex flex-col items-center">
             <p className="text-[14px] font-medium text-neutral-700 mb-2">PAP</p>
-            <PAPStatus />
+            <PAPStatus localData={localData} />
           </div>
 
         </div>
@@ -676,8 +461,6 @@ export function OrderBandaLargaPJDisplay({
         </div>
       </div>
 
-
-
       {/* Dados do Tráfego */}
       <div className="flex flex-col bg-neutral-100 mb-3 rounded-[4px] p-3 w-full">
         <div className="flex items-center mb-3">
@@ -751,7 +534,8 @@ export function OrderBandaLargaPJDisplay({
           </div>
         </div>
       </div>
-      {localData?.status === "FECHADO" &&
+      {
+        localData?.status === "FECHADO" || localData?.status === "fechado" &&
         getAlertScenarios(
           localData?.availability ?? undefined,
           localData?.found_via_range,
@@ -777,7 +561,8 @@ export function OrderBandaLargaPJDisplay({
               </div>
             </div>
           </div>
-        ))}
+        ))
+      }
 
       <ConfigProvider
         theme={{
@@ -792,10 +577,8 @@ export function OrderBandaLargaPJDisplay({
             Button: {
               colorBorder: "#0026d9",
               colorText: "#0026d9",
-
               colorPrimary: "#0026d9",
-
-              colorPrimaryHover: "#883fa2",
+              colorPrimaryHover: "#0026d9",
             },
           },
         }}
@@ -835,6 +618,6 @@ export function OrderBandaLargaPJDisplay({
           </Form>
         </div>
       </ConfigProvider>
-    </div>
+    </div >
   );
 }

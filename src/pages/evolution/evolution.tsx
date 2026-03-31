@@ -219,7 +219,7 @@ export function ModalDelete({
                 colorBorder: "#0026d9",
                 colorText: "#0026d9",
                 colorPrimary: "#0026d9",
-                colorPrimaryHover: "#883fa2",
+                colorPrimaryHover: "#0026d9",
               },
             },
           }}
@@ -307,7 +307,7 @@ export function ModalDisconnect({
                 colorBorder: "#0026d9",
                 colorText: "#0026d9",
                 colorPrimary: "#0026d9",
-                colorPrimaryHover: "#883fa2",
+                colorPrimaryHover: "#0026d9",
               },
             },
           }}

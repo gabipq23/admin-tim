@@ -80,3 +80,21 @@ export const formatOSDisplay = (value: FingerprintNameVersion) =>
 
 export const formatBrowserDisplay = (value: FingerprintNameVersion) =>
   formatNameVersion(value, formatBrowserName);
+
+export const formatDevice = (device: string) => {
+  if (!device) return "-";
+  return device === "mobile"
+    ? "Mobile"
+    : device === "desktop"
+      ? "Desktop"
+      : device === "tablet"
+        ? "Tablet"
+        : device.charAt(0).toUpperCase() + device.slice(1);
+};
+
+export const formatResolution = (resolution: any) => {
+  if (resolution && resolution.width && resolution.height) {
+    return `${resolution.width} x ${resolution.height}`;
+  }
+  return "-";
+};

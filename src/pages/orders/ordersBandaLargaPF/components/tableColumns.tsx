@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { formatBrowserDisplay, formatOSDisplay } from "@/utils/formatClientEnvironment";
 import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
-import { OrderBandaLargaPF } from "@/interfaces/bandaLargaPF";
+import { OrderBandaLarga } from "@/interfaces/orderBandaLarga";
 import { useNavigate } from "react-router-dom";
 import { getFiltersFromURL } from "../controllers/filterController";
 export const useAllTableColumns = ({
@@ -27,7 +27,7 @@ export const useAllTableColumns = ({
 }: {
     setSelectedAvatar: Dispatch<SetStateAction<string | null>>;
     setIsModalAvatarOpen: Dispatch<SetStateAction<boolean>>;
-}): TableColumnsType<OrderBandaLargaPF> => {
+}): TableColumnsType<OrderBandaLarga> => {
     const navigate = useNavigate();
     const filters = getFiltersFromURL();
 
@@ -503,7 +503,7 @@ export const useAllTableColumns = ({
         {
             title: "Telefone",
             dataIndex: "phone",
-            width: 150,
+            width: 180,
             render: (_, record) => {
                 if (!record.phone) return "-";
 
@@ -796,40 +796,40 @@ export const useAllTableColumns = ({
             dataIndex: "due_day",
             width: 120,
         },
-        {
-            title: "Escolha",
-            dataIndex: "line_action",
-            width: 150,
-            render: (line_action) => {
-                const actionMap: Record<string, string> = {
-                    new_number: "Novo Número",
-                    port_in_to_vivo: "Portabilidade para Vivo",
-                    keep_vivo_number: "Manter Número Vivo",
-                };
-                return actionMap[line_action] || "-";
-            },
-        },
-        {
-            title: "Número Informado",
-            dataIndex: "line_number_informed",
-            width: 150,
-            render: (line_number_informed) => (
-                <span>
-                    {line_number_informed ? formatPhoneNumber(line_number_informed) : "-"}
-                </span>
-            ),
-        },
-        {
-            title: "eSIM",
-            dataIndex: "wants_esim",
-            width: 80,
-            render: (wants_esim) =>
-                wants_esim === true
-                    ? "Sim"
-                    : wants_esim === false
-                        ? "Não"
-                        : "-",
-        },
+        // {
+        //     title: "Escolha",
+        //     dataIndex: "line_action",
+        //     width: 150,
+        //     render: (line_action) => {
+        //         const actionMap: Record<string, string> = {
+        //             new_number: "Novo Número",
+        //             port_in_to_vivo: "Portabilidade para Vivo",
+        //             keep_vivo_number: "Manter Número Vivo",
+        //         };
+        //         return actionMap[line_action] || "-";
+        //     },
+        // },
+        // {
+        //     title: "Número Informado",
+        //     dataIndex: "line_number_informed",
+        //     width: 150,
+        //     render: (line_number_informed) => (
+        //         <span>
+        //             {line_number_informed ? formatPhoneNumber(line_number_informed) : "-"}
+        //         </span>
+        //     ),
+        // },
+        // {
+        //     title: "eSIM",
+        //     dataIndex: "wants_esim",
+        //     width: 80,
+        //     render: (wants_esim) =>
+        //         wants_esim === true
+        //             ? "Sim"
+        //             : wants_esim === false
+        //                 ? "Não"
+        //                 : "-",
+        // },
         {
             title: "CEP",
             dataIndex: "zip_code",

@@ -91,7 +91,8 @@ export default function ProductBLInfoView({
                                                     ? condition
                                                     : condition?.url;
                                             if (!conditionUrl) return null;
-
+                                            const fileName = conditionUrl.split("/").pop() || `arquivo_${idx + 1}`;
+                                            const ext = fileName.split(".").pop()?.toLowerCase();
                                             return (
                                                 <a
                                                     style={{ color: "#0026d9" }}
@@ -99,13 +100,14 @@ export default function ProductBLInfoView({
                                                     href={conditionUrl}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    download={`arquivo_${idx + 1}`}
-                                                    className="text-blue-600 underline text-xs"
+                                                    download={fileName}
+                                                    className="text-blue-600 underline text-xs flex items-center gap-1"
                                                 >
-                                                    <DownloadOutlined /> arquivo {idx + 1}
+                                                    <DownloadOutlined />
+                                                    <span>{fileName}</span>
                                                     {typeof condition !== "string" && condition?.type
                                                         ? ` (${condition.type})`
-                                                        : ""}
+                                                        : ext ? ` (${ext})` : ""}
                                                 </a>
                                             );
                                         })}
@@ -188,19 +190,27 @@ export default function ProductBLInfoView({
                                         {Array.isArray(detail.images) &&
                                             detail.images.length > 0 && (
                                                 <div className="mt-2 flex flex-wrap gap-2">
-                                                    {detail.images.map((imgUrl: string, idx: number) => (
-                                                        <a
-                                                            style={{ color: "#0026d9" }}
-                                                            key={idx}
-                                                            href={imgUrl}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            download={`imagem_${idx + 1}.jpg`}
-                                                            className="text-xs underline"
-                                                        >
-                                                            <DownloadOutlined /> imagem {idx + 1}
-                                                        </a>
-                                                    ))}
+                                                    {detail.images.map((imgUrl: string, idx: number) => {
+                                                        const imgName = imgUrl.split("/").pop() || `imagem_${idx + 1}`;
+                                                        return (
+                                                            <a
+                                                                style={{ color: "#0026d9" }}
+                                                                key={idx}
+                                                                href={imgUrl}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                download={imgName}
+                                                                className="flex flex-col items-center text-xs underline w-16"
+                                                            >
+                                                                <img
+                                                                    src={imgUrl}
+                                                                    alt={imgName}
+                                                                    className="w-10 h-10 object-cover rounded mb-1 border"
+                                                                />
+
+                                                            </a>
+                                                        );
+                                                    })}
                                                 </div>
                                             )}
                                     </div>

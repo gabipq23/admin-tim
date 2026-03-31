@@ -1,5 +1,6 @@
+import { OrderBandaLarga } from "@/interfaces/orderBandaLarga";
 import { formatBRL } from "@/utils/formatBRL";
-import { OrderBandaLargaPF } from "@/interfaces/bandaLargaPF";
+
 import * as XLSX from "xlsx";
 
 const getNestedValue = (obj: unknown, path: string): unknown => {
@@ -34,7 +35,7 @@ const formatPaymentMethod = (method?: string | null): string => {
 };
 
 export const handleExportXLSX = (
-  data: OrderBandaLargaPF[] | undefined,
+  data: OrderBandaLarga[] | undefined,
   selectedRowKeys: Array<string | number> | undefined,
 ) => {
   if (!data || !selectedRowKeys || selectedRowKeys.length === 0) {

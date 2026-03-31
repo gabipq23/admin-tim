@@ -14,9 +14,9 @@ import { DatePicker } from "antd";
 import { PatternFormat, PatternFormatProps } from "react-number-format";
 import dayjs from "dayjs";
 import { handleExportXLSX } from "../controllers/exportXLSX";
-import { BandaLargaFilters } from "@/interfaces/bandaLargaPF";
 import { blueOutlineButtonClass } from "@/utils/buttonStyles";
 import { customLocale } from "@/utils/customLocale";
+import { BandaLargaFilters } from "@/interfaces/orderBandaLarga";
 
 interface FiltroPedidosFormProps {
   control: Control<BandaLargaFilters>;
