@@ -50,6 +50,8 @@ export interface PlanSelectedExtra {
   input_type: string;
   description: string;
   options: PlanExtraOption[];
+  bonus?: PlanExtraBonus;
+  price: number;
 }
 
 type TelecomLineAction = "new_number" | "port_in_to_vivo" | "keep_vivo_number";

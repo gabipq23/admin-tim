@@ -249,19 +249,27 @@ export default function ProductBLInfoView({
                                                             {Array.isArray(group.images) &&
                                                                 group.images.length > 0 && (
                                                                     <div className="mt-2 flex flex-wrap gap-2">
-                                                                        {group.images.map((imgUrl: string, idx: number) => (
-                                                                            <a
-                                                                                style={{ color: "#0026d9" }}
-                                                                                key={idx}
-                                                                                href={imgUrl}
-                                                                                target="_blank"
-                                                                                rel="noopener noreferrer"
-                                                                                download={`imagem_${idx + 1}.jpg`}
-                                                                                className="text-xs underline"
-                                                                            >
-                                                                                <DownloadOutlined /> imagem {idx + 1}
-                                                                            </a>
-                                                                        ))}
+                                                                        {group.images.map((imgUrl: string, idx: number) => {
+                                                                            const imgName = imgUrl.split("/").pop() || `imagem_${idx + 1}`;
+                                                                            return (
+                                                                                <a
+                                                                                    style={{ color: "#0026d9" }}
+                                                                                    key={idx}
+                                                                                    href={imgUrl}
+                                                                                    target="_blank"
+                                                                                    rel="noopener noreferrer"
+                                                                                    download={imgName}
+                                                                                    className="flex flex-col items-center text-xs underline w-16"
+                                                                                >
+                                                                                    <img
+                                                                                        src={imgUrl}
+                                                                                        alt={imgName}
+                                                                                        className="w-10 h-10 object-cover rounded mb-1 border"
+                                                                                    />
+
+                                                                                </a>
+                                                                            );
+                                                                        })}
                                                                     </div>
                                                                 )}
                                                             <div className="space-y-2">
@@ -357,24 +365,34 @@ export default function ProductBLInfoView({
                                                             <div className="text-xs text-gray-500 uppercase mb-3">
                                                                 {group.input_type}
                                                             </div>
+
                                                             {Array.isArray(group.images) &&
                                                                 group.images.length > 0 && (
                                                                     <div className="mt-2 flex flex-wrap gap-2">
-                                                                        {group.images.map((imgUrl: string, idx: number) => (
-                                                                            <a
-                                                                                style={{ color: "#0026d9" }}
-                                                                                key={idx}
-                                                                                href={imgUrl}
-                                                                                target="_blank"
-                                                                                rel="noopener noreferrer"
-                                                                                download={`imagem_${idx + 1}.jpg`}
-                                                                                className="text-xs underline"
-                                                                            >
-                                                                                <DownloadOutlined /> imagem {idx + 1}
-                                                                            </a>
-                                                                        ))}
+                                                                        {group.images.map((imgUrl: string, idx: number) => {
+                                                                            const imgName = imgUrl.split("/").pop() || `imagem_${idx + 1}`;
+                                                                            return (
+                                                                                <a
+                                                                                    style={{ color: "#0026d9" }}
+                                                                                    key={idx}
+                                                                                    href={imgUrl}
+                                                                                    target="_blank"
+                                                                                    rel="noopener noreferrer"
+                                                                                    download={imgName}
+                                                                                    className="flex flex-col items-center text-xs underline w-16"
+                                                                                >
+                                                                                    <img
+                                                                                        src={imgUrl}
+                                                                                        alt={imgName}
+                                                                                        className="w-10 h-10 object-cover rounded mb-1 border"
+                                                                                    />
+
+                                                                                </a>
+                                                                            );
+                                                                        })}
                                                                     </div>
                                                                 )}
+
                                                             <div className="space-y-2">
                                                                 {group.options.map((option, optionIdx) => {
 
