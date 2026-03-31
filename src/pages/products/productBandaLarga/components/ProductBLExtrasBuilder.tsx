@@ -37,7 +37,6 @@ export function ProductExtras({
     groupButtonLabel = "+ Grupo",
     groupPlaceholder = "Ex: Opcoes adicionais",
 }: ProductExtrasProps) {
-    // Estado para controlar quais opções têm bônus visível
     const [bonusVisible, setBonusVisible] = useState<Record<string, boolean>>({});
 
     const handleToggleBonus = (optionKey: string) => {
@@ -71,7 +70,7 @@ export function ProductExtras({
                                 >
                                     <Select placeholder="Selecione o tipo">
                                         <Select.Option value="radio">Radio</Select.Option>
-                                        <Select.Option value="checkbox">Checkbox</Select.Option>
+                                        <Select.Option value="checkbox">Switch</Select.Option>
                                         <Select.Option value="checkbox_group">
                                             Grupo de Checkbox
                                         </Select.Option>
@@ -82,7 +81,14 @@ export function ProductExtras({
                                     {...restField}
                                     name={[name, "label"]}
                                     label="Título"
-                                    rules={[{ required: true, message: "Título obrigatório" }]}
+
+                                >
+                                    <Input placeholder={groupPlaceholder} />
+                                </Form.Item>
+                                <Form.Item
+                                    {...restField}
+                                    name={[name, "description"]}
+                                    label="Descrição"
                                 >
                                     <Input placeholder={groupPlaceholder} />
                                 </Form.Item>
@@ -117,7 +123,9 @@ export function ProductExtras({
                                     </div>
                                 </Upload>
                             </Form.Item>
+                            <p style={{ marginBottom: "8px" }}>Opções</p>
                             <Form.List name={[name, "options"]}>
+
                                 {(optionFields, { add: addOption, remove: removeOption }) => (
                                     <div className="space-y-2">
                                         {optionFields.map(

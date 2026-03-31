@@ -17,8 +17,6 @@ export default function EditProductBL({ handleCancel, handleSave, form }: { hand
                 <div className="max-h-[460px] overflow-y-auto scrollbar-thin">
                     <ProductBLHeaderPricingFields />
 
-
-
                     {/* Características do Plano */}
                     <ProductBLDetailFields />
 
