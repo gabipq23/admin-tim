@@ -52,7 +52,6 @@ export function useAllOrdersController() {
           sort: filters.sort,
           order_number: filters.order_number,
           type_client: "PF",
-
         });
 
         return response;

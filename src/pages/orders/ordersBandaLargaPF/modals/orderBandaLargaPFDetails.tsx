@@ -2,7 +2,7 @@ import { ConfigProvider, Modal, Form } from "antd";
 import { useState, useEffect } from "react";
 import { OrderBandaLargaPFDisplay } from "./BLPFDisplay";
 import { OrderBandaLargaPFEdit } from "./BLPFEdit";
-import HeaderInputs from "./headerInputs";
+import HeaderInputs from "../../../../components/orders/headerInputs";
 import dayjs from "dayjs";
 import ConfirmDeleteModal from "@/components/confirmDeleteModal";
 import FooterButtons from "@/components/orders/footerButtons";
@@ -178,23 +178,18 @@ export function OrderBandaLargaPFDetailsModal({
         due_day: values.due_day,
       };
 
-      // --- ADAPTAÇÃO DOS EXTRAS ---
       const selectedExtrasIds = Array.isArray(values.selected_extras) ? values.selected_extras : [];
       const extraOptions = values.extra_option || {};
       const selectedPlanObj = planBLPFStock.find((plan: any) => plan.id === values.plan_id);
       let selected_extras = [];
       if (selectedPlanObj && selectedPlanObj.extras) {
         const extrasArr = selectedPlanObj.extras.non_client || [];
-        // Monta selected_extras com os objetos completos dos extras selecionados
         selected_extras = extrasArr
           .map((extra) => {
-            // Checkbox simples
             if (extra.input_type === 'checkbox' && selectedExtrasIds.includes(extra.id)) {
               return extra;
             }
-            // Radio: selecionado se extraOptions[extra.id] existir e corresponder a uma opção
             if (extra.input_type === 'radio' && extraOptions[extra.id]) {
-              // Clona o objeto extra e filtra a opção escolhida
               const chosenOption = extra.options.find((o) => o.id === extraOptions[extra.id]);
               if (chosenOption) {
                 return {
@@ -230,7 +225,6 @@ export function OrderBandaLargaPFDetailsModal({
       };
 
       if (selectedPlan && selectedPlan.id) {
-        // Inclui o objeto completo do plano no payload
         formattedData.plan = {
           id: selectedPlan.id,
           name: selectedPlan.plan_name || selectedPlan.name,
@@ -248,8 +242,6 @@ export function OrderBandaLargaPFDetailsModal({
             },
           },
         ];
-
-        // Calcula extras_price somando price dos extras (options e bonus)
         let extras_price = 0;
         selected_extras.forEach((extra: any) => {
           // Soma price de cada option selecionada
@@ -261,14 +253,12 @@ export function OrderBandaLargaPFDetailsModal({
           }
         });
 
-        // Preço original do plano (base_monthly)
         let original_price = 0;
         if (selectedPlan.pricing && selectedPlan.pricing.base_monthly && typeof selectedPlan.pricing.base_monthly.current_price === 'number') {
           original_price = selectedPlan.pricing.base_monthly.current_price;
         } else {
           original_price = selectedPlan.original_value || selectedPlan.original_price || selectedPlan.price || 0;
         }
-        // Soma total
         const total_monthly = original_price + extras_price;
 
         formattedData.price_summary = {
@@ -330,7 +320,7 @@ export function OrderBandaLargaPFDetailsModal({
             colorBorder: "#0026d9",
             colorText: "#0026d9",
             colorPrimary: "#0026d9",
-            colorPrimaryHover: "#883fa2",
+            colorPrimaryHover: "#0026d9",
           },
         },
       }}

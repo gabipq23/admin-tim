@@ -1,6 +1,5 @@
 import { Controller, Control, UseFormHandleSubmit } from "react-hook-form";
 import {
-
   Button,
   Tooltip,
   ConfigProvider,
@@ -50,20 +49,12 @@ export function FiltroOrdersBandaLargaPJForm({
   onClear,
   selectedRowKeys,
   orderBandaLargaPJ,
-  // planBLPJStock,
   allColumnOptions,
   visibleColumns,
   handleColumnsChange,
 }: FiltroPedidosFormProps) {
   const { RangePicker } = DatePicker;
 
-  // const uniquePlans = Array.isArray(planBLPJStock)
-  //   ? Array.from(
-  //     new Map(
-  //       planBLPJStock.map((plan: any) => [plan.plan_name, plan]),
-  //     ).values(),
-  //   )
-  //   : [];
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}

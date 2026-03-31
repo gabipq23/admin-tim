@@ -64,7 +64,7 @@ export function ModalObs({
                 colorBorder: "#0026d9",
                 colorText: "#0026d9",
                 colorPrimary: "#0026d9",
-                colorPrimaryHover: "#883fa2",
+                colorPrimaryHover: "#0026d9",
               },
             },
           }}

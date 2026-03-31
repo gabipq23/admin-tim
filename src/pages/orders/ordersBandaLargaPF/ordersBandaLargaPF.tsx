@@ -54,7 +54,7 @@ export default function OrdersBandaLargaPF() {
     const hasAvaiability = record?.availability;
     const isCoveredByRange = record?.found_via_range;
     const hasUnicCep = record?.single_zip_code;
-    if (record?.status === "FECHADO") {
+    if (record?.status === "FECHADO" || record?.status === "fechado") {
       if (
         hasAvaiability === false ||
         hasAvaiability === null ||

@@ -65,8 +65,6 @@ export function useAllOrdersFilterController() {
 
   const onSubmit = (data: BandaLargaFilters) => {
     const params = new URLSearchParams();
-
-    // When applying filters, always restart at page 1 to avoid empty pages.
     params.set("page", "1");
     if (data.per_page) params.set("per_page", String(data.per_page));
     if (data.data_to) params.set("data_to", data.data_to);

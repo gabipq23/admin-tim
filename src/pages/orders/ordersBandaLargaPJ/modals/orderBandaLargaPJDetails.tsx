@@ -2,12 +2,12 @@ import { ConfigProvider, Modal, Form } from "antd";
 import { useState, useEffect } from "react";
 import { OrderBandaLargaPJDisplay } from "./BLPJDisplay";
 import { OrderBandaLargaPJEdit } from "./BLPJEdit";
-import HeaderInputs from "./headerInputs";
 import dayjs from "dayjs";
 import ConfirmDeleteModal from "@/components/confirmDeleteModal";
 import FooterButtons from "@/components/orders/footerButtons";
 import { generatePDF } from "../controllers/exportPDF";
 import { OrderBandaLarga } from "@/interfaces/orderBandaLarga";
+import HeaderInputs from "@/components/orders/headerInputs";
 
 export function OrderBandaLargaPJDetailsModal({
   isModalOpen,
@@ -275,7 +275,7 @@ export function OrderBandaLargaPJDetailsModal({
             colorBorder: "#0026d9",
             colorText: "#0026d9",
             colorPrimary: "#0026d9",
-            colorPrimaryHover: "#883fa2",
+            colorPrimaryHover: "#0026d9",
           },
         },
       }}

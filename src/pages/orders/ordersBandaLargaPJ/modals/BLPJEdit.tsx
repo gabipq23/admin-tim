@@ -160,55 +160,6 @@ export function OrderBandaLargaPJEdit({
             </div>
             <hr className="border-t border-neutral-300 mx-2" />
           </div>
-          {/* Detalhes adicionais em lista */}
-          {/* <div className="mt-4  rounded-md p-2">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <div className="flex h-9 gap-4 text-[14px] w-full text-neutral-700">
-                <div className="flex">
-                  <p><strong>Escolha:</strong></p>
-                </div>
-                <div className="flex flex-1">
-                  <Form.Item name="line_action" className="mb-0">
-                    <Select
-                      size="small"
-                      placeholder="Selecione"
-                      className="min-w-[200px]"
-                    >
-                      <Select.Option value="new_number">Novo Número</Select.Option>
-                      <Select.Option value="port_in_to_vivo">Portabilidade para Vivo</Select.Option>
-                      <Select.Option value="keep_vivo_number">Manter Número Vivo</Select.Option>
-                    </Select>
-                  </Form.Item>
-                </div>
-              </div>
-
-              <InputGenerator
-                title="Número Informado:"
-                formItemName="line_number_informed"
-                formItemValue={localData.line_number_informed || ""}
-                placeholder="Número"
-              />
-
-              <div className="flex h-9 gap-4 text-[14px] w-full text-neutral-700">
-                <div className="flex">
-                  <p><strong>eSIM:</strong></p>
-                </div>
-                <div className="flex flex-1">
-                  <Form.Item name="wants_esim" className="mb-0">
-                    <Select
-                      size="small"
-                      placeholder="Selecione"
-                      className="min-w-[150px]"
-                    >
-                      <Select.Option value={true}>Sim</Select.Option>
-                      <Select.Option value={false}>Não</Select.Option>
-                    </Select>
-                  </Form.Item>
-                </div>
-              </div>
-            </div>
-          </div> */}
-
         </div>
         {/* Seção de Disponibilidade */}
         <div className="flex flex-col bg-neutral-100 mb-3 rounded-[4px] p-3 pb-0 w-full">
