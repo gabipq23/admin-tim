@@ -1,5 +1,4 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
 import { ConfigProvider, Modal, Table } from "antd";
 import { customLocale } from "@/utils/customLocale";
 import { useAllOrdersController } from "./controllers/dataController";
@@ -13,21 +12,6 @@ import { useState } from "react";
 import { useProductBLController } from "@/pages/products/productBandaLarga/controllers/dataController";
 export default function OrdersBandaLargaPF() {
   const queryClient = new QueryClient();
-  const {
-    ordersBandaLarga,
-    showModal,
-    closeModal,
-    isModalOpen,
-    isLoading,
-    orderBandaLargaPF,
-    updateBandaLargaOrder,
-    removeBandaLargaOrder,
-    isRemoveBandaLargaOrderFetching,
-    changeBandaLargaOrderStatus,
-    updateDataIdCRMAndConsultorResponsavel
-  } = useAllOrdersController();
-  const navigate = useNavigate();
-  const { productsBL } = useProductBLController();
   const {
     control,
     onSubmit,
@@ -46,6 +30,21 @@ export default function OrdersBandaLargaPF() {
     setIsModalAvatarOpen,
     selectedAvatar,
   } = useAllOrdersFilterController();
+  const {
+    ordersBandaLarga,
+    showModal,
+    closeModal,
+    isModalOpen,
+    isLoading,
+    orderBandaLargaPF,
+    updateBandaLargaOrder,
+    removeBandaLargaOrder,
+    isRemoveBandaLargaOrderFetching,
+    changeBandaLargaOrderStatus,
+    updateDataIdCRMAndConsultorResponsavel
+  } = useAllOrdersController(setSelectedBLOrder);
+  const navigate = useNavigate();
+  const { productsBL } = useProductBLController();
 
   const totalItems =
     ordersBandaLarga?.total ?? orderBandaLargaPF?.length ?? 0;

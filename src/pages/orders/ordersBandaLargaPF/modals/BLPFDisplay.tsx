@@ -1,7 +1,6 @@
 import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import { formatCEP } from "@/utils/formatCEP";
 import { formatCPF } from "@/utils/formatCPF";
-
 import {
   formatBrowserDisplay,
   formatDevice,
@@ -13,7 +12,7 @@ import { Button, ConfigProvider, Form, Input } from "antd";
 import { useEffect } from "react";
 import { ExclamationOutlined } from "@ant-design/icons";
 import { EmpresasDisplay } from "@/components/empresasDisplay";
-import { PlanosTable } from "./PlanosTable";
+import { PlanosTable } from "../../../../components/orders/PlanosTable";
 import { OrderBandaLarga } from "@/interfaces/orderBandaLarga";
 import { formatPaymentMethod } from "@/utils/formatPaymentMethod";
 import { AvailabilityStatus, PAPStatus } from "../../../../components/orders/availabilityLayout";

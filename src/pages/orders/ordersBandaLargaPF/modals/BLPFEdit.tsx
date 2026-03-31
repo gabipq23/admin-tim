@@ -1,22 +1,35 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   Button,
   Form,
   Select,
   DatePicker,
   Checkbox,
-
 } from "antd";
 import { FormInstance } from "antd/es/form";
 import InputGenerator from "@/components/inputGenerator";
 import { blueOutlineButtonClass } from "@/utils/buttonStyles";
-import { OrderBandaLarga } from "@/interfaces/orderBandaLarga";
+import { OrderBandaLarga, PlanSelectedExtra } from "@/interfaces/orderBandaLarga";
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
+
+interface PlanOption {
+  value: number | string;
+  label: string;
+  name: string;
+  price: number;
+  plan: {
+    online?: boolean;
+    extras?: {
+      non_client?: PlanSelectedExtra[];
+    };
+  };
+}
 
 interface OrderBandaLargaPFEditProps {
   localData: OrderBandaLarga;
   form: FormInstance;
   onPlanChange: (planId: number) => void;
-  planOptions: any;
+  planOptions: PlanOption[];
   handleSave: () => void;
   handleCancel: () => void;
   loading: boolean;
@@ -32,26 +45,27 @@ export function OrderBandaLargaPFEdit({
   loading,
 }: OrderBandaLargaPFEditProps) {
 
-  const [extrasOptions, setExtrasOptions] = useState<any[]>([]);
+  const [extrasOptions, setExtrasOptions] = useState<PlanSelectedExtra[]>([]);
 
-  const handlePlanChange = (planId: number) => {
+  const handlePlanChange = useCallback((planId: number) => {
     onPlanChange(planId);
-    const found = planOptions.find((p: any) => p.value === planId);
+    const found = planOptions.find((p) => p.value === planId);
     if (found && found.plan && found.plan.online) {
       setExtrasOptions(found.plan.extras?.non_client || []);
-      form.setFieldsValue({ selected_extras: [] });
+
     } else {
       setExtrasOptions([]);
-      form.setFieldsValue({ selected_extras: [] });
     }
-  };
+  }, [onPlanChange, planOptions]);
 
 
   useEffect(() => {
-    if (form.getFieldValue("plan_id")) {
-      handlePlanChange(form.getFieldValue("plan_id"));
+    const currentExtras = form.getFieldValue("selected_extras");
+    if ((!currentExtras || currentExtras.length === 0) && localData.selected_extras && Array.isArray(localData.selected_extras)) {
+      const selectedIds = localData.selected_extras.map((extra: PlanSelectedExtra) => extra.id);
+      form.setFieldsValue({ selected_extras: selectedIds });
     }
-  }, []);
+  }, [localData, form]);
   return (
     <Form
       form={form}
@@ -69,7 +83,7 @@ export function OrderBandaLargaPFEdit({
           <div className="mt-4 flex w-full flex-col  text-neutral-700">
             {/* Header da tabela */}
             <div className="flex items-center  px-8 justify-between font-semibold text-[#666666] text-[14px]">
-              <p className="w-66 text-center">Plano</p>
+              <p className="w-72 text-center">Plano</p>
               <p className="w-28 text-center">Data Instalação 1</p>
               <p className="w-20 text-center">Período 1</p>
               <p className="w-28 text-center">Data Instalação 2</p>
@@ -81,13 +95,13 @@ export function OrderBandaLargaPFEdit({
             {/* Linha editável */}
             <div className="flex px-8 items-center justify-between py-4 pb-0 text-[14px]">
               {/* Plano */}
-              <div className="w-66 flex justify-center">
+              <div className="w-72 flex justify-center">
                 <Form.Item name="plan_id" className="mb-0">
                   <Select
                     size="small"
                     showSearch
                     placeholder="Selecione o plano"
-                    className="min-w-64"
+                    className="min-w-72"
                     onChange={handlePlanChange}
                     options={planOptions}
                   />
@@ -189,8 +203,8 @@ export function OrderBandaLargaPFEdit({
               {/* Agrupa todos os checkboxes em um Checkbox.Group controlado por selected_extras */}
               <Form.Item name="selected_extras" valuePropName="value" className="mb-0">
                 <Checkbox.Group style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {extrasOptions.map((extra) => (
-                    <Checkbox key={extra.id} value={extra.id}>
+                  {extrasOptions.map((extra, idx) => (
+                    <Checkbox key={extra.id + '-' + idx} value={extra.id}>
                       <span className="font-medium text-sm">{extra.label}</span>
                       {extra.options && extra.options[0] && (
                         <>
@@ -275,14 +289,20 @@ export function OrderBandaLargaPFEdit({
                 <InputGenerator
                   title="Telefone:"
                   formItemName="phone"
-                  formItemValue={localData.phone || ""}
+                  formItemValue={
+                    formatPhoneNumber(localData?.phone) || ""
+                  }
                   placeholder="Telefone"
                 />
 
                 <InputGenerator
                   title="Telefone Adicional:"
                   formItemName="additional_phone"
-                  formItemValue={localData.additional_phone || ""}
+                  formItemValue={
+                    localData?.additional_phone
+                      ? formatPhoneNumber(localData.additional_phone)
+                      : ""
+                  }
                   placeholder="Telefone"
                 />
               </div>

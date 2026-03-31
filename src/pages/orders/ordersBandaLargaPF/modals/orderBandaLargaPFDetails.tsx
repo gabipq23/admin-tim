@@ -54,8 +54,8 @@ export function OrderBandaLargaPFDetailsModal({
       .filter((plan: any) => plan.client_type === 'PF')
       .map((plan: any) => ({
         value: plan.id,
-        label: plan.name,
-        name: plan.name,
+        label: plan.name + " " + plan.pricing?.base_monthly?.current_price,
+        name: plan.name + " " + plan.pricing?.base_monthly?.current_price,
         price: plan.pricing?.base_monthly?.current_price,
         plan,
       }))
@@ -142,7 +142,6 @@ export function OrderBandaLargaPFDetailsModal({
         line_number_informed: localData.line_number_informed,
         line_action: localData.line_action,
         address_reference_point: localData.address_reference_point,
-
         due_day: localData.due_day,
         accept_offers: localData.accept_offers,
         terms_accepted: localData.terms_accepted,
@@ -175,32 +174,35 @@ export function OrderBandaLargaPFDetailsModal({
         building_or_house: values.building_or_house,
         zip_code: values.zip_code,
         single_zip_code: values.single_zip_code,
-        due_day: values.due_day,
+        due_day: typeof values.due_day === "number" ? String(values.due_day) : values.due_day,
       };
 
       const selectedExtrasIds = Array.isArray(values.selected_extras) ? values.selected_extras : [];
       const extraOptions = values.extra_option || {};
       const selectedPlanObj = planBLPFStock.find((plan: any) => plan.id === values.plan_id);
-      let selected_extras = [];
+      let selected_extras: import("@/interfaces/orderBandaLarga").PlanSelectedExtra[] = [];
       if (selectedPlanObj && selectedPlanObj.extras) {
-        const extrasArr = selectedPlanObj.extras.non_client || [];
+        const extrasArr = selectedPlanObj.extras.non_client as import("@/interfaces/orderBandaLarga").PlanSelectedExtra[] || [];
         selected_extras = extrasArr
-          .map((extra) => {
-            if (extra.input_type === 'checkbox' && selectedExtrasIds.includes(extra.id)) {
-              return extra;
+          .map(function (extra) {
+            const extraTyped = extra as import("@/interfaces/orderBandaLarga").PlanSelectedExtra;
+            if (extraTyped.input_type === 'checkbox' && selectedExtrasIds.includes(extraTyped.id)) {
+              return extraTyped;
             }
-            if (extra.input_type === 'radio' && extraOptions[extra.id]) {
-              const chosenOption = extra.options.find((o) => o.id === extraOptions[extra.id]);
+            if (extraTyped.input_type === 'radio' && extraOptions[extraTyped.id]) {
+              const chosenOption = (extraTyped.options as import("@/interfaces/orderBandaLarga").PlanExtraOption[]).find(function (o) {
+                return o.id === extraOptions[extraTyped.id];
+              });
               if (chosenOption) {
                 return {
-                  ...extra,
+                  ...extraTyped,
                   options: [chosenOption],
                 };
               }
             }
             return null;
           })
-          .filter(Boolean);
+          .filter((x): x is import("@/interfaces/orderBandaLarga").PlanSelectedExtra => x != null) as import("@/interfaces/orderBandaLarga").PlanSelectedExtra[];
       }
 
       let selectedPlan = planBLPFStock.find(
@@ -243,10 +245,10 @@ export function OrderBandaLargaPFDetailsModal({
           },
         ];
         let extras_price = 0;
-        selected_extras.forEach((extra: any) => {
+        (selected_extras as import("@/interfaces/orderBandaLarga").PlanSelectedExtra[]).forEach((extra) => {
           // Soma price de cada option selecionada
           if (Array.isArray(extra.options)) {
-            extra.options.forEach((opt: any) => {
+            (extra.options as import("@/interfaces/orderBandaLarga").PlanExtraOption[]).forEach((opt) => {
               if (typeof opt.price === 'number') extras_price += opt.price;
               if (opt.bonus && typeof opt.bonus.price === 'number') extras_price += opt.bonus.price;
             });
@@ -274,14 +276,19 @@ export function OrderBandaLargaPFDetailsModal({
           data: formattedData,
         });
 
-        setLocalData((prev) =>
-          prev
-            ? {
-              ...prev,
-              ...normalizedValues,
-            }
-            : null,
-        );
+        setLocalData((prev) => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            ...normalizedValues,
+            selected_extras,
+            price_summary: formattedData.price_summary,
+            plan: {
+              ...prev.plan,
+              ...formattedData.plan,
+            },
+          };
+        });
         setIsEditing(false);
       }
     } catch (error) {
@@ -293,6 +300,9 @@ export function OrderBandaLargaPFDetailsModal({
 
   const handleCancel = () => {
     setIsEditing(false);
+    if (selectedId) {
+      setLocalData(selectedId);
+    }
     form.resetFields();
   };
 

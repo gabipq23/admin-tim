@@ -1,21 +1,36 @@
+import { useEffect, useState, useCallback } from "react";
 import {
   Button,
   Form,
   Select,
   DatePicker,
+  Checkbox,
 } from "antd";
 import { FormInstance } from "antd/es/form";
 import InputGenerator from "@/components/inputGenerator";
 import { blueOutlineButtonClass } from "@/utils/buttonStyles";
+import { OrderBandaLarga, PlanSelectedExtra } from "@/interfaces/orderBandaLarga";
 import { formatCPF } from "@/utils/formatCPF";
 import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
-import { OrderBandaLarga } from "@/interfaces/orderBandaLarga";
+
+interface PlanOption {
+  value: number | string;
+  label: string;
+  name: string;
+  price: number;
+  plan: {
+    online?: boolean;
+    extras?: {
+      non_client?: PlanSelectedExtra[];
+    };
+  };
+}
 
 interface OrderBandaLargaPJEditProps {
   localData: OrderBandaLarga;
   form: FormInstance;
   onPlanChange: (planId: number) => void;
-  planOptions: any;
+  planOptions: PlanOption[];
   handleSave: () => void;
   handleCancel: () => void;
   loading: boolean;
@@ -30,6 +45,28 @@ export function OrderBandaLargaPJEdit({
   handleCancel,
   loading,
 }: OrderBandaLargaPJEditProps) {
+
+  const [extrasOptions, setExtrasOptions] = useState<PlanSelectedExtra[]>([]);
+
+  const handlePlanChange = useCallback((planId: number) => {
+    onPlanChange(planId);
+    const found = planOptions.find((p) => p.value === planId);
+    if (found && found.plan && found.plan.online) {
+      setExtrasOptions(found.plan.extras?.non_client || []);
+
+    } else {
+      setExtrasOptions([]);
+    }
+  }, [onPlanChange, planOptions]);
+
+
+  useEffect(() => {
+    const currentExtras = form.getFieldValue("selected_extras");
+    if ((!currentExtras || currentExtras.length === 0) && localData.selected_extras && Array.isArray(localData.selected_extras)) {
+      const selectedIds = localData.selected_extras.map((extra: PlanSelectedExtra) => extra.id);
+      form.setFieldsValue({ selected_extras: selectedIds });
+    }
+  }, [localData, form]);
   return (
     <Form
       form={form}
@@ -47,7 +84,7 @@ export function OrderBandaLargaPJEdit({
           <div className="mt-4 flex w-full flex-col  text-neutral-700">
             {/* Header da tabela */}
             <div className="flex items-center  px-8 justify-between font-semibold text-[#666666] text-[14px]">
-              <p className="w-66 text-center">Plano</p>
+              <p className="w-72 text-center">Plano</p>
               <p className="w-28 text-center">Data Instalação 1</p>
               <p className="w-20 text-center">Período 1</p>
               <p className="w-28 text-center">Data Instalação 2</p>
@@ -59,14 +96,14 @@ export function OrderBandaLargaPJEdit({
             {/* Linha editável */}
             <div className="flex px-8 items-center justify-between py-4 pb-0 text-[14px]">
               {/* Plano */}
-              <div className="w-66 flex justify-center">
+              <div className="w-72 flex justify-center">
                 <Form.Item name="plan_id" className="mb-0">
                   <Select
                     size="small"
                     showSearch
                     placeholder="Selecione o plano"
-                    className="min-w-64"
-                    onChange={onPlanChange}
+                    className="min-w-72"
+                    onChange={handlePlanChange}
                     options={planOptions}
                   />
                 </Form.Item>
@@ -160,6 +197,27 @@ export function OrderBandaLargaPJEdit({
             </div>
             <hr className="border-t border-neutral-300 mx-2" />
           </div>
+
+          {extrasOptions.length > 0 && (
+            <div className="mt-4 bg-neutral-50 rounded-md p-4">
+              <div className="font-semibold text-[#666666] text-[14px] mb-2">Extras disponíveis</div>
+              {/* Agrupa todos os checkboxes em um Checkbox.Group controlado por selected_extras */}
+              <Form.Item name="selected_extras" valuePropName="value" className="mb-0">
+                <Checkbox.Group style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {extrasOptions.map((extra, idx) => (
+                    <Checkbox key={extra.id + '-' + idx} value={extra.id}>
+                      <span className="font-medium text-sm">{extra.label}</span>
+                      {extra.options && extra.options[0] && (
+                        <>
+                          &nbsp; R${extra.options[0].price} <span className="text-xs text-neutral-600">{extra.options[0].description}</span>
+                        </>
+                      )}
+                    </Checkbox>
+                  ))}
+                </Checkbox.Group>
+              </Form.Item>
+            </div>
+          )}
         </div>
         {/* Seção de Disponibilidade */}
         <div className="flex flex-col bg-neutral-100 mb-3 rounded-[4px] p-3 pb-0 w-full">

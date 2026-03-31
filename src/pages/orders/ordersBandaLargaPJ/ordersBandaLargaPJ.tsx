@@ -1,5 +1,4 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
 import { ConfigProvider, Modal, Table } from "antd";
 import { customLocale } from "@/utils/customLocale";
 import { useAllOrdersController } from "./controllers/dataController";
@@ -13,22 +12,6 @@ import { OrderBandaLargaPJDetailsModal } from "./modals/orderBandaLargaPJDetails
 import { useProductBLController } from "@/pages/products/productBandaLarga/controllers/dataController";
 export default function OrdersBandaLargaPJ() {
   const queryClient = new QueryClient();
-  const {
-    ordersBandaLarga,
-
-    showModal,
-    closeModal,
-    isModalOpen,
-    isLoading,
-    orderBandaLargaPJ,
-    updateBandaLargaOrder,
-    removeBandaLargaOrder,
-    isRemoveBandaLargaOrderFetching,
-    changeBandaLargaOrderStatus,
-    updateDataIdCRMAndConsultorResponsavel
-  } = useAllOrdersController();
-  const navigate = useNavigate();
-  const { productsBL } = useProductBLController();
   const {
     control,
     onSubmit,
@@ -47,6 +30,21 @@ export default function OrdersBandaLargaPJ() {
     setIsModalAvatarOpen,
     selectedAvatar,
   } = useAllOrdersFilterController();
+  const {
+    ordersBandaLarga,
+    showModal,
+    closeModal,
+    isModalOpen,
+    isLoading,
+    orderBandaLargaPJ,
+    updateBandaLargaOrder,
+    removeBandaLargaOrder,
+    isRemoveBandaLargaOrderFetching,
+    changeBandaLargaOrderStatus,
+    updateDataIdCRMAndConsultorResponsavel
+  } = useAllOrdersController(setSelectedBLOrder);
+  const navigate = useNavigate();
+  const { productsBL } = useProductBLController();
 
   const totalItems =
     ordersBandaLarga?.total ?? orderBandaLargaPJ?.length ?? 0;
@@ -55,7 +53,7 @@ export default function OrdersBandaLargaPJ() {
     const hasAvaiability = record?.availability;
     const isCoveredByRange = record?.found_via_range;
     const hasUnicCep = record?.single_zip_code;
-    if (record?.status === "FECHADO") {
+    if (record?.status === "FECHADO" || record?.status === "fechado") {
       if (
         hasAvaiability === false ||
         hasAvaiability === null ||
