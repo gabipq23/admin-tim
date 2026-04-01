@@ -57,7 +57,7 @@ export function OrderBandaLargaPJDetailsModal({
 
   const planOptions = Array.isArray(planBLPJStock)
     ? planBLPJStock
-      .filter((plan: any) => plan.client_type === 'PJ')
+      .filter((plan: any) => plan.client_type === 'PJ' && plan.online === true && plan.uf.includes(localData?.state || ""))
       .map((plan: any) => ({
         value: plan.id,
         label: plan.name + " " + plan.pricing?.base_monthly?.current_price,
