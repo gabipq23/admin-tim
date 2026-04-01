@@ -31,6 +31,7 @@ export function useProductsBLFilterController(
     if (data.order) params.set("order", data.order);
     if (data.sort) params.set("sort", data.sort);
     if (data.client_type) params.set("client_type", data.client_type);
+    if (data.uf) params.set("uf", data.uf);
     navigate(`?${params.toString()}`);
     setIsFiltered(true);
   };
@@ -47,6 +48,7 @@ export function useProductsBLFilterController(
       order: null,
       sort: null,
       client_type: null,
+      uf: null,
     });
 
     navigate("");

@@ -53,6 +53,7 @@ export interface ProductExtras {
 
 export interface IProduct {
   id: number;
+  uf: string[];
   company: string;
   business_partner: string;
   category: string;

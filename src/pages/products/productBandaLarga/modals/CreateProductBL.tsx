@@ -5,7 +5,8 @@ import {
 } from "antd";
 import { useEffect, useState } from "react";
 import { parseBRLInput } from "@/utils/formatBRL";
-import type { CreatedProductResponse } from "@/services/products";
+import { ProductsService, type CreatedProductResponse } from "@/services/products";
+import type { ProductExtraGroup } from "@/interfaces/products";
 import type { ExtraGroupFormValue } from "../components/ProductBLExtrasBuilder";
 import { normalizeExtras } from "./productBL.helpers";
 import { ProductBLDetailFields } from "../components/ProductBLDetailFields";
@@ -29,6 +30,7 @@ type CreateProductBLFormValues = {
     business_partner?: string;
     category?: string;
     client_type?: string;
+    uf?: string[];
     landing_page?: string;
     name?: string;
     online?: boolean;
@@ -74,6 +76,7 @@ export default function CreateProductBL({
 }: CreateProductBLProps) {
     const [form] = Form.useForm<CreateProductBLFormValues>();
     const [activeExtrasTab, setActiveExtrasTab] = useState<"non_client" | "client">("non_client");
+    const productService = new ProductsService();
 
     useEffect(() => {
         if (showCreateModal) {
@@ -85,6 +88,28 @@ export default function CreateProductBL({
             setActiveExtrasTab("non_client");
         }
     }, [showCreateModal, form]);
+
+    const resolveCreatedExtraId = (
+        createdGroups: ProductExtraGroup[],
+        formGroup: ExtraGroupFormValue,
+        formGroupIndex: number,
+    ): string | null => {
+        const foundByLabelAndType = createdGroups.find(
+            (group) =>
+                group?.label?.trim() === formGroup.label?.trim()
+                && group?.input_type === formGroup.input_type,
+        );
+
+        if (foundByLabelAndType?.id) {
+            return foundByLabelAndType.id;
+        }
+
+        if (createdGroups[formGroupIndex]?.id) {
+            return createdGroups[formGroupIndex].id;
+        }
+
+        return null;
+    };
 
     const handleSave = async () => {
         try {
@@ -115,6 +140,7 @@ export default function CreateProductBL({
                 category: "Banda Larga",
                 landing_page: "banda_larga",
                 client_type: values.client_type || "",
+                uf: Array.isArray(values.uf) ? values.uf : [],
                 name: values.name || "",
                 online: values.online ?? true,
                 badge: values.badge || null,
@@ -165,24 +191,47 @@ export default function CreateProductBL({
             }
 
             if (Number.isFinite(createdProductId) && createdProductId > 0) {
-                const uploadExtrasImages = async (extrasArr?: ExtraGroupFormValue[]) => {
+                const createdProductData = await productService.getProductById(createdProductId);
+
+                const uploadExtrasImages = async (
+                    extrasArr: ExtraGroupFormValue[] | undefined,
+                    groupType: "client" | "non_client",
+                ) => {
                     if (!Array.isArray(extrasArr)) return;
-                    for (const extra of extrasArr) {
-                        const extraId = extra.id || extra.label;
-                        const files: File[] = (extra.images || [])
-                            .map((fileObj: any) => fileObj?.originFileObj)
+
+                    const createdGroups: ProductExtraGroup[] = createdProductData?.extras?.[groupType] || [];
+
+                    for (const [extraIndex, extra] of extrasArr.entries()) {
+                        const extraId = resolveCreatedExtraId(createdGroups, extra, extraIndex);
+                        const extraImages = (extra.images || []) as Array<string | { originFileObj?: File }>;
+                        const files: File[] = extraImages
+                            .flatMap((fileObj) =>
+                                typeof fileObj === "string" || !fileObj?.originFileObj
+                                    ? []
+                                    : [fileObj.originFileObj],
+                            )
                             .filter((file: File | undefined): file is File => Boolean(file));
-                        if (extraId && files.length > 0) {
+
+                        if (files.length > 0 && !extraId) {
+                            console.warn("Nao foi possivel resolver extra_id para upload na criacao", {
+                                groupType,
+                                extraIndex,
+                                label: extra.label,
+                            });
+                            continue;
+                        }
+
+                        if (files.length > 0 && extraId) {
                             await uploadProductExtrasBL({
                                 id: createdProductId,
-                                extraId: String(extraId),
+                                extraId,
                                 files,
                             });
                         }
                     }
                 };
-                await uploadExtrasImages(values.extras_client);
-                await uploadExtrasImages(values.extras_non_client);
+                await uploadExtrasImages(values.extras_client, "client");
+                await uploadExtrasImages(values.extras_non_client, "non_client");
             }
 
             setShowCreateModal(false);

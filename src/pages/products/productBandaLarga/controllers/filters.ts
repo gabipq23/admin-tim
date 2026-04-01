@@ -9,6 +9,7 @@ export interface ProductBLFiltersFormValues {
   client_type: string | null;
   page: number;
   per_page: number;
+  uf: string | null;
 }
 
 export function getFiltersFromURL(): ProductBLFiltersFormValues {
@@ -25,6 +26,7 @@ export function getFiltersFromURL(): ProductBLFiltersFormValues {
     order: params.get("order"),
     sort: params.get("sort"),
     client_type: params.get("client_type"),
+    uf: params.get("uf"),
     page: params.get("page") ? parseInt(params.get("page")!, 10) : 1,
     per_page: params.get("per_page")
       ? parseInt(params.get("per_page")!, 10)

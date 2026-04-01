@@ -36,6 +36,7 @@ export function useProductBLController() {
         filters.order || "",
         filters.sort || "",
         filters.client_type || "",
+        filters.uf || "",
       ],
       queryFn: async (): Promise<ProductsResponse> => {
         const response = await productBLService.allProductsFiltered({
@@ -49,12 +50,13 @@ export function useProductBLController() {
           order: filters.order ?? undefined,
           sort: filters.sort ?? undefined,
           client_type: filters.client_type ?? undefined,
+          uf: filters.uf ?? undefined,
         });
         return response;
       },
     });
 
-  const { mutate: updateProductBL } = useMutation({
+  const { mutateAsync: updateProductBL } = useMutation({
     mutationFn: async ({
       id,
       values,
