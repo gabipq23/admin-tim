@@ -7,8 +7,10 @@ import { useEffect, useState } from "react";
 import type {
   IProduct,
   ProductDetail,
+  ProductExtraGroup,
   ProductOfferConditionFile,
 } from "@/interfaces/products";
+import { ProductsService } from "@/services/products";
 
 import ConfirmDeleteModal from "@/components/confirmDeleteModal";
 import EditProductBL from "./EditProductBL";
@@ -36,6 +38,7 @@ interface ProductFormValues {
   offer_title: string;
   offer_subtitle?: string;
   client_type: "PF" | "PJ";
+  uf?: string[];
   online: boolean;
   details?: ProductFormDetail[];
   offer_conditions?: ModalUploadFile[];
@@ -50,7 +53,7 @@ interface BLPJInfoModalProps {
   setShowEditProductLayout: (value: boolean) => void;
   planData?: IProduct | null;
   removeProductBL: (id: number) => void;
-  updateProductBL?: (payload: { id: number; values: Partial<IProduct> }) => void;
+  updateProductBL?: (payload: { id: number; values: Partial<IProduct> }) => Promise<unknown>;
   uploadProductConditionsBL?: (payload: { id: number; files: File[] }) => Promise<unknown>;
   uploadProductDetailsBL?: (payload: { id: number; detailIndex: number; files: File[] }) => Promise<unknown>;
   uploadProductExtrasBL: (payload: {
@@ -74,6 +77,7 @@ function ProductBLInfoModal({
 }: BLPJInfoModalProps) {
   const [form] = Form.useForm();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const productService = new ProductsService();
 
   const getMonthlyOriginalPrice = (pricing: IProduct["pricing"]): number | undefined => {
     if (typeof pricing?.base_monthly === "number") return pricing.base_monthly;
@@ -89,6 +93,32 @@ function ProductBLInfoModal({
   const getInstallationCurrentPrice = (pricing: IProduct["pricing"]): number => {
     if (typeof pricing?.installation === "number") return pricing.installation;
     return Number(pricing?.installation?.current_price ?? 0);
+  };
+
+  const resolveCreatedExtraId = (
+    createdGroups: ProductExtraGroup[],
+    formGroup: ExtraGroupFormValue,
+    formGroupIndex: number,
+  ): string | null => {
+    if (formGroup.id?.trim() && createdGroups.some((group) => group.id === formGroup.id?.trim())) {
+      return formGroup.id.trim();
+    }
+
+    const foundByLabelAndType = createdGroups.find(
+      (group) =>
+        group?.label?.trim() === formGroup.label?.trim()
+        && group?.input_type === formGroup.input_type,
+    );
+
+    if (foundByLabelAndType?.id) {
+      return foundByLabelAndType.id;
+    }
+
+    if (createdGroups[formGroupIndex]?.id) {
+      return createdGroups[formGroupIndex].id;
+    }
+
+    return null;
   };
 
   useEffect(() => {
@@ -147,9 +177,8 @@ function ProductBLInfoModal({
         pricing_installation: formatBRL(getInstallationCurrentPrice(planData.pricing)),
         badge: planData.badge,
         offer_title: planData.offer_title,
-        uploadProductDetailsBL,
-        uploadProductExtrasBL,
         client_type: planData.client_type,
+        uf: planData.uf,
         online: planData.online,
         details,
         offer_conditions: offerConditionsFileList,
@@ -233,6 +262,7 @@ function ProductBLInfoModal({
         business_partner: planData.business_partner,
         category: planData.category,
         client_type: values.client_type,
+        uf: values.uf,
         landing_page: planData.landing_page,
         online: values.online ?? true,
         badge: values.badge,
@@ -256,7 +286,7 @@ function ProductBLInfoModal({
       };
 
       if (updateProductBL && payload.id) {
-        updateProductBL({ id: payload.id, values: payload });
+        await updateProductBL({ id: payload.id, values: payload });
       }
 
       if (newConditionFiles.length > 0 && uploadProductConditionsBL && planData.id) {
@@ -277,20 +307,37 @@ function ProductBLInfoModal({
       }
 
       if (uploadProductExtrasBL && planData.id) {
-        const processExtrasImages = async (groups: any[] = []) => {
-          for (const group of groups) {
-            const groupId = group.id;
-            const newExtraFiles: File[] = (group.images || [])
-              .filter((img: any) => img && typeof img === 'object' && !img.isExisting && img.originFileObj)
-              .map((img: any) => img.originFileObj as File)
+        const refreshedProduct = await productService.getProductById(planData.id);
+
+        const processExtrasImages = async (
+          groups: ExtraGroupFormValue[] = [],
+          groupType: "client" | "non_client",
+        ) => {
+          const createdGroups: ProductExtraGroup[] = refreshedProduct?.extras?.[groupType] || [];
+
+          for (const [groupIndex, group] of groups.entries()) {
+            const groupId = resolveCreatedExtraId(createdGroups, group, groupIndex);
+            const groupImages = (group.images || []) as Array<string | ModalUploadFile>;
+            const newExtraFiles: File[] = groupImages
+              .filter((img) => typeof img !== "string" && !img.isExisting && Boolean(img.originFileObj))
+              .map((img) => (img as ModalUploadFile).originFileObj as File)
               .filter(Boolean);
-            if (newExtraFiles.length > 0) {
+
+            if (newExtraFiles.length > 0 && !groupId) {
+              console.warn("Upload de extra ignorado por falta de extra_id na edicao", {
+                groupIndex,
+                label: group.label,
+              });
+              continue;
+            }
+
+            if (newExtraFiles.length > 0 && groupId) {
               await uploadProductExtrasBL({ id: planData.id, extraId: groupId, files: newExtraFiles });
             }
           }
         };
-        await processExtrasImages(values.extras_client);
-        await processExtrasImages(values.extras_non_client);
+        await processExtrasImages(values.extras_client, "client");
+        await processExtrasImages(values.extras_non_client, "non_client");
       }
 
       setShowEditProductLayout(false);

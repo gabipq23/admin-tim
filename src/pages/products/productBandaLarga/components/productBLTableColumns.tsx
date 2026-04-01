@@ -56,7 +56,13 @@ export const useAllTableColumns = (updateProductBL: (payload: { id: number; valu
                             size="small"
                             checked={!!record.online}
                             onChange={(checked) => {
-                                updateProductBL({ id: record.id, values: { online: checked } });
+                                updateProductBL({
+                                    id: record.id,
+                                    values: {
+                                        online: checked,
+                                        uf: Array.isArray(record.uf) ? record.uf : [],
+                                    },
+                                });
                             }}
                         />
                     </Tooltip>

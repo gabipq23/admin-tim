@@ -26,6 +26,8 @@ export default function ProductBLInfoView({
     setShowEditProductLayout,
     setShowDeleteModal,
 }: ProductBLInfoViewProps) {
+    const planUfs = Array.isArray(planData.uf) ? planData.uf : [];
+
     const monthlyCurrentPrice =
         typeof planData.pricing?.base_monthly === "number"
             ? planData.pricing.base_monthly
@@ -59,6 +61,23 @@ export default function ProductBLInfoView({
                                 <h2 className="text-2xl font-bold text-gray-800 mb-2">
                                     {planData.name} - {planData.client_type}
                                 </h2>
+                                <div className="flex flex-wrap items-center gap-2 mt-1">
+                                    <span className="text-sm text-gray-500">Disponivel em:</span>
+                                    {planUfs.length > 0 ? (
+                                        planUfs.map((uf) => (
+                                            <span
+                                                key={uf}
+                                                className="text-xs font-medium text-[#0026d9] bg-blue-50 border border-blue-100 px-2 py-1 rounded"
+                                            >
+                                                {uf}
+                                            </span>
+                                        ))
+                                    ) : (
+                                        <span className="text-xs font-medium text-[#0026d9] bg-blue-50 border border-blue-100 px-2 py-1 rounded">
+                                            Todas as UFs
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                         </div>
 

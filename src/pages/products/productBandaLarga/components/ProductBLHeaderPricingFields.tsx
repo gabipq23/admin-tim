@@ -1,24 +1,47 @@
+import { UF_OPTIONS } from "@/utils/ufOptions";
 import {
     ExclamationCircleOutlined,
     FilePdfOutlined,
     FileZipOutlined,
     UploadOutlined,
+    DownOutlined,
 } from "@ant-design/icons";
 import {
     Button,
+    Checkbox,
+    Dropdown,
     Form,
     Input,
     Select,
     Tooltip,
     Upload,
 } from "antd";
+import type { CheckboxChangeEvent } from "antd/es/checkbox";
 
 export function ProductBLHeaderPricingFields() {
+    const form = Form.useFormInstance();
+
+    const selectedUFs = Form.useWatch("uf", form) || [];
+    const allUFValues = UF_OPTIONS.map((uf) => uf.value);
+    const isAllSelected = allUFValues.length > 0 && selectedUFs.length === allUFValues.length;
+
+    const handleSelectAll = (e: CheckboxChangeEvent) => {
+        if (e.target.checked) {
+            form?.setFieldValue("uf", allUFValues);
+        } else {
+            form?.setFieldValue("uf", []);
+        }
+    };
+
+    const handleUFChange = (values: string[]) => {
+        form?.setFieldValue("uf", values);
+    };
+
     return (
         <>
             {/* HEADER DO PLANO */}
             <div className="bg-neutral-50 p-4 rounded-lg mb-4">
-                <div className="grid grid-cols-3 w-full gap-4 mb-4">
+                <div className="grid grid-cols-2 w-full gap-4 mb-4">
                     <Form.Item
                         label="Nome"
                         name="name"
@@ -36,6 +59,24 @@ export function ProductBLHeaderPricingFields() {
                         <Input placeholder="Ex: Recomendado" />
                     </Form.Item>
 
+
+                </div>
+
+                <div className="grid grid-cols-2 w-full gap-4 mb-4">
+                    <Form.Item
+                        label="Título da Oferta"
+                        name="offer_title"
+                        rules={[{ required: true, message: "Título da oferta é obrigatório" }]}
+                    >
+                        <Input placeholder="Ex: Internet para jogar sem travar" />
+                    </Form.Item>
+
+                    <Form.Item label="Subtítulo da Oferta" name="offer_subtitle">
+                        <Input placeholder="Ex: Mais velocidade, estabilidade e benefícios" />
+                    </Form.Item>
+
+                </div>
+                <div className="grid grid-cols-3 w-full gap-4 mb-4">
                     <Form.Item
                         label="Tipo de Cliente"
                         name="client_type"
@@ -51,19 +92,66 @@ export function ProductBLHeaderPricingFields() {
                             <Select.Option value="PJ">Pessoa Jurídica (PJ)</Select.Option>
                         </Select>
                     </Form.Item>
-                </div>
 
-                <div className="grid grid-cols-3 w-full gap-4 mb-4">
                     <Form.Item
-                        label="Título da Oferta"
-                        name="offer_title"
-                        rules={[{ required: true, message: "Título da oferta é obrigatório" }]}
+                        label="UF"
+                        name="uf"
+                        rules={[{ required: true, message: "Seleção de UF é obrigatória" }]}
                     >
-                        <Input placeholder="Ex: Internet para jogar sem travar" />
-                    </Form.Item>
-
-                    <Form.Item label="Subtítulo da Oferta" name="offer_subtitle">
-                        <Input placeholder="Ex: Mais velocidade, estabilidade e benefícios" />
+                        <Dropdown
+                            popupRender={() => (
+                                <div
+                                    style={{
+                                        width: 315,
+                                        background: "#fff",
+                                        border: "1px solid #e5e7eb",
+                                        borderRadius: 8,
+                                        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                                        padding: 12,
+                                        maxHeight: 240,
+                                        overflowY: "auto",
+                                        scrollbarWidth: "none",
+                                        msOverflowStyle: "none",
+                                    }}
+                                >
+                                    <style>
+                                        {
+                                            `
+                                            .hide-scrollbar-uf::-webkit-scrollbar {
+                                                display: none;
+                                            }
+                                            `
+                                        }
+                                    </style>
+                                    <div className="hide-scrollbar-uf">
+                                        <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: "1px solid #e5e7eb" }}>
+                                            <Checkbox
+                                                checked={isAllSelected}
+                                                onChange={handleSelectAll}
+                                                style={{ fontWeight: 500 }}
+                                            >
+                                                Selecionar Todos
+                                            </Checkbox>
+                                        </div>
+                                        <Checkbox.Group
+                                            options={UF_OPTIONS}
+                                            value={selectedUFs}
+                                            onChange={handleUFChange}
+                                            style={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                gap: 8,
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                            trigger={["click"]}
+                        >
+                            <Button style={{ width: "100%" }}>
+                                Selecionar UF <DownOutlined />
+                            </Button>
+                        </Dropdown>
                     </Form.Item>
                     <Form.Item
                         label={
@@ -116,7 +204,6 @@ export function ProductBLHeaderPricingFields() {
                         </Upload>
                     </Form.Item>
                 </div>
-
             </div>
 
             {/* PREÇOS */}
