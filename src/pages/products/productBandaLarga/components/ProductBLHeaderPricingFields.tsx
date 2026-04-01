@@ -125,6 +125,7 @@ export function ProductBLHeaderPricingFields() {
                     <Form.Item
                         label="UF"
                         name="uf"
+                        rules={[{ required: true, message: "Seleção de UF é obrigatória" }]}
                     >
                         <Dropdown
                             popupRender={() => (
