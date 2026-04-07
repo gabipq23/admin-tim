@@ -5,8 +5,8 @@ export const AvailabilityStatus = ({ localData }: { localData: OrderBandaLarga }
     const timAvailability = localData.operators_availability?.tim;
 
     if (
-        timAvailability?.availability === null ||
-        timAvailability?.availability === undefined
+        timAvailability?.available === null ||
+        timAvailability?.available === undefined
     ) {
         return (
             <div className="flex flex-col items-center mt-2">
@@ -15,8 +15,8 @@ export const AvailabilityStatus = ({ localData }: { localData: OrderBandaLarga }
         );
     }
 
-    if (timAvailability.availability) {
-        if (timAvailability.encontrado_via_range) {
+    if (timAvailability.available) {
+        if (timAvailability.found_via_range) {
             return (
                 <div className="flex flex-col items-center mt-2">
                     <div className="flex items-center justify-center mb-2">

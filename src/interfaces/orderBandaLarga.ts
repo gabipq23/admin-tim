@@ -12,8 +12,8 @@ export interface OrderBandaLargaResponse {
 export interface OperatorAvailabilityItem {
   range_max: number | null;
   range_min: number | null;
-  availability: boolean;
-  encontrado_via_range: boolean;
+  available: boolean;
+  found_via_range: boolean;
 }
 
 export interface OperatorsAvailability {

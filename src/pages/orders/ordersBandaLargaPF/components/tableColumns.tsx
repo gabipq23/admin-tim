@@ -197,8 +197,8 @@ export const useAllTableColumns = ({
             dataIndex: ["operators_availability", "tim"],
             width: 120,
             render: (timAvailability) =>
-                timAvailability?.availability ? (
-                    timAvailability?.encontrado_via_range ? (
+                timAvailability?.available ? (
+                    timAvailability?.found_via_range ? (
                         <div className="flex items-center justify-center ">
                             <Tooltip
                                 title="Disponível (via range numérico)"
