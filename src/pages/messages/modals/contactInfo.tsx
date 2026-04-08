@@ -1,11 +1,9 @@
 import { IContact } from "@/interfaces/contacts";
-import { formatCNPJ } from "@/utils/formatCNPJ";
 import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import { CopyOutlined } from "@ant-design/icons";
 import { Button, ConfigProvider, Modal, Select, Tooltip } from "antd";
 import { useEffect, useState } from "react";
 import { blueOutlineButtonClass } from "@/utils/buttonStyles";
-import { formatCPF } from "@/utils/formatCPF";
 
 export function ContactInfoModal({
   isModalOpen,
@@ -104,16 +102,18 @@ export function ContactInfoModal({
       width={1000}
     >
       <div className="flex flex-col mr-4">
-        <p className="flex text-[22px] gap-2 ">
+        {/* <p className="flex text-[22px] gap-2 ">
           {selectedId?.subject} {copyComponent(selectedId?.subject ?? "")}
-        </p>
+        </p> */}
         <div className="flex ">
           <div className="flex flex-col md:flex-row lg:flex-row w-full justify-between text-[#666666]">
             <p className="flex gap-2 text-[15px]">
               {selectedId?.name} {copyComponent(selectedId?.name ?? "")} &bull;{" "}
-              {formatPhoneNumber(selectedId?.phone ?? "")} &bull;{" "}
-              {formatCNPJ(selectedId?.cnpj ?? "")} &bull; {formatCPF(selectedId?.cpf ?? "")}{" "}&bull; {selectedId?.email}{" "}
-              {copyComponent(selectedId?.email ?? "")}{" "}
+              {formatPhoneNumber(selectedId?.phone ?? "")}{" "}
+              {copyComponent(selectedId?.phone ?? "")}{" "} &bull;{" "}
+              {/* {formatCNPJ(selectedId?.cnpj ?? "")} &bull; {formatCPF(selectedId?.cpf ?? "")}{" "}&bull;  */}
+              {selectedId?.email}{" "}
+              {selectedId?.email && copyComponent(selectedId?.email ?? "")}{" "}
             </p>
             <div className="flex gap-2">
               {selectedId?.created_at && (

@@ -14,35 +14,35 @@ interface FiltroPedidosFormProps {
   contactsQuery: any;
   removeContacts: () => void;
 }
-import { PatternFormat, PatternFormatProps } from "react-number-format";
+// import { PatternFormat, PatternFormatProps } from "react-number-format";
 
-const CNPJInput = (props: PatternFormatProps) => (
-  <PatternFormat
-    {...props}
-    format="##.###.###/####-##"
-    customInput={Input}
-    placeholder="CNPJ"
-    size="middle"
-    allowEmptyFormatting
-  />
-);
-const CPFInput = (props: PatternFormatProps) => (
-  <PatternFormat
-    {...props}
-    format="###.###.###-##"
-    customInput={Input}
-    placeholder="CPF"
-    size="middle"
-    allowEmptyFormatting
-  />
-);
+// const CNPJInput = (props: PatternFormatProps) => (
+//   <PatternFormat
+//     {...props}
+//     format="##.###.###/####-##"
+//     customInput={Input}
+//     placeholder="CNPJ"
+//     size="middle"
+//     allowEmptyFormatting
+//   />
+// );
+// const CPFInput = (props: PatternFormatProps) => (
+//   <PatternFormat
+//     {...props}
+//     format="###.###.###-##"
+//     customInput={Input}
+//     placeholder="CPF"
+//     size="middle"
+//     allowEmptyFormatting
+//   />
+// );
 export function FiltroContactForm({
   control,
   handleSubmit,
   onSubmit,
   onClear,
   removeContacts,
-  contactsQuery,
+  // contactsQuery,
 }: FiltroPedidosFormProps) {
   const { RangePicker } = DatePicker;
   return (
@@ -104,7 +104,7 @@ export function FiltroContactForm({
               />
             )}
           />
-          <Controller
+          {/* <Controller
             control={control}
             name="cnpj"
             render={({ field }) => (
@@ -129,7 +129,7 @@ export function FiltroContactForm({
                 style={{ width: "150px" }}
               />
             )}
-          />
+          /> */}
 
           <Controller
             control={control}
@@ -151,7 +151,7 @@ export function FiltroContactForm({
               />
             )}
           />
-          <Controller
+          {/* <Controller
             control={control}
             name="subject"
             render={({ field }) => (
@@ -173,7 +173,7 @@ export function FiltroContactForm({
                 allowClear
               />
             )}
-          />
+          /> */}
           {/* Período de datas: data_from (início) e data_to (fim) */}
           <Controller
             control={control}

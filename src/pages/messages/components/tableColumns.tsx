@@ -1,6 +1,5 @@
 import { IContact } from "@/interfaces/contacts";
-import { formatCNPJ } from "@/utils/formatCNPJ";
-import { formatCPF } from "@/utils/formatCPF";
+
 import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import { TableColumnsType, Tooltip } from "antd";
 
@@ -52,35 +51,35 @@ export const tableColumns: TableColumnsType<IContact> = [
         width: 100,
         render: (value) => formatPhoneNumber(value),
     },
-    {
-        title: "CPF",
-        dataIndex: "cpf",
-        width: 120,
-        render: (value) => formatCPF(value),
-    },
-    {
-        title: "CNPJ",
-        dataIndex: "cnpj",
-        width: 120,
-        render: (value) => formatCNPJ(value),
-    },
-    {
-        title: "Assunto",
-        dataIndex: "subject",
-        width: 160,
-        ellipsis: {
-            showTitle: false,
-        },
-        render: (subject) => (
-            <Tooltip
-                placement="topLeft"
-                title={subject}
-                styles={{ body: { fontSize: "12px" } }}
-            >
-                {subject}
-            </Tooltip>
-        ),
-    },
+    // {
+    //     title: "CPF",
+    //     dataIndex: "cpf",
+    //     width: 120,
+    //     render: (value) => formatCPF(value),
+    // },
+    // {
+    //     title: "CNPJ",
+    //     dataIndex: "cnpj",
+    //     width: 120,
+    //     render: (value) => formatCNPJ(value),
+    // },
+    // {
+    //     title: "Assunto",
+    //     dataIndex: "subject",
+    //     width: 160,
+    //     ellipsis: {
+    //         showTitle: false,
+    //     },
+    //     render: (subject) => (
+    //         <Tooltip
+    //             placement="topLeft"
+    //             title={subject}
+    //             styles={{ body: { fontSize: "12px" } }}
+    //         >
+    //             {subject}
+    //         </Tooltip>
+    //     ),
+    // },
     {
         title: "Data de Envio",
         dataIndex: "created_at",
