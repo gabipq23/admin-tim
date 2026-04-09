@@ -33,6 +33,29 @@ const getBase64FromImageUrl = (url: string): Promise<string> => {
 export const generatePDF = async (order: OrderBandaLarga | undefined) => {
   if (!order) return;
 
+  const addressComplement = order.address_complement;
+  const buildingOrHouse =
+    addressComplement?.building_or_house || order.building_or_house;
+  const complementoEndereco =
+    buildingOrHouse === "house"
+      ? addressComplement?.home_complement || "-"
+      : buildingOrHouse === "building"
+        ? `${addressComplement?.unit_type || "-"} ${addressComplement?.unit_number || "-"
+          }`.trim()
+        : "-";
+  const lote = addressComplement?.lot || order.address_lot || "-";
+  const quadra =
+    addressComplement?.square || addressComplement?.block || order.address_block || "-";
+  const andar = addressComplement?.floor || order.address_floor || "-";
+  const tipoImovel =
+    buildingOrHouse === "building"
+      ? "Edifício"
+      : buildingOrHouse === "house"
+        ? "Casa"
+        : "-";
+  const pontoReferencia =
+    addressComplement?.reference_point || order.address_reference_point || "-";
+
   const paymentMethodLabel =
     order.payment_method === "automatic_debit"
       ? "Debito Automatico"
@@ -149,14 +172,15 @@ export const generatePDF = async (order: OrderBandaLarga | undefined) => {
           `CEP: ${formatCEP(order.zip_code || "") || "-"}`,
           `Endereço: ${order.address || "-"}`,
           `Número: ${order.address_number || "-"}`,
-          `Complemento: ${order.address_complement || "-"}`,
-          `Lote: ${order.address_lot || "-"}`,
-          `Quadra: ${order.address_block || "-"}`,
-          `Andar: ${order.address_floor || "-"}`,
-          `Tipo: ${order.building_or_house === "building" ? "Prédio" : "Casa"}`,
+          `Complemento: ${complementoEndereco}`,
+          `Lote: ${lote}`,
+          `Quadra: ${quadra}`,
+          `Andar: ${andar}`,
+          `Tipo: ${tipoImovel}`,
+          `Ponto de referência: ${pontoReferencia}`,
           `Bairro: ${order.district || "-"}`,
           `Cidade: ${order.city || "-"}`,
-          `Estado: ${order.state || "-"}`,
+          `UF: ${order.state || "-"}`,
         ],
         style: "content",
       },

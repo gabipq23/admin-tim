@@ -15,6 +15,13 @@ const getFlatValue = (obj: unknown, key: string): unknown => {
   return (obj as unknown as Record<string, unknown>)[key];
 };
 
+const getAddressComplementObject = (
+  value: unknown,
+): OrderBandaLarga["address_complement"] | null => {
+  if (!value || typeof value !== "object") return null;
+  return value as OrderBandaLarga["address_complement"];
+};
+
 const toYesNo = (value: unknown): string => {
   if (value === null || value === undefined) return "-";
   return value === true || value === 1 ? "Sim" : "Nao";
@@ -103,6 +110,7 @@ export const handleExportXLSX = (
     "address_block",
     "address_floor",
     "building_or_house",
+    "address_reference_point",
     "district",
     "city",
     "state",
@@ -177,10 +185,11 @@ export const handleExportXLSX = (
     address_lot: "Lote",
     address_block: "Quadra",
     address_floor: "Andar",
-    building_or_house: "Predio ou Casa",
+    building_or_house: "Tipo",
+    address_reference_point: "Ponto de referência",
     district: "Bairro",
     city: "Cidade",
-    state: "Estado",
+    state: "UF",
     "plan.name": "Nome do Plano",
 
 
@@ -239,6 +248,9 @@ export const handleExportXLSX = (
 
   const pedidosFormatados = pedidosSelecionados.map((pedido) => {
     const linha: Record<string, unknown> = {};
+    const addressComplementObj = getAddressComplementObject(
+      pedido.address_complement,
+    );
 
     ordemColunas.forEach((key) => {
       const columnName = colNames[key] || key;
@@ -290,8 +302,39 @@ export const handleExportXLSX = (
     linha[colNames["payment_method"]] = formatPaymentMethod(
       pedido.payment_method,
     );
+    const buildingOrHouse =
+      addressComplementObj?.building_or_house || pedido.building_or_house;
+    const complementoCasa = addressComplementObj?.home_complement || "-";
+    const complementoPredio = [
+      addressComplementObj?.unit_type || "-",
+      addressComplementObj?.unit_number || "-",
+    ]
+      .join(" ")
+      .trim();
+
+    linha[colNames["address_complement"]] =
+      buildingOrHouse === "house"
+        ? complementoCasa
+        : buildingOrHouse === "building"
+          ? complementoPredio
+          : "-";
+    linha[colNames["address_lot"]] =
+      addressComplementObj?.lot || pedido.address_lot || "-";
+    linha[colNames["address_block"]] =
+      addressComplementObj?.square ||
+      addressComplementObj?.block ||
+      pedido.address_block ||
+      "-";
+    linha[colNames["address_floor"]] =
+      addressComplementObj?.floor || pedido.address_floor || "-";
+    linha[colNames["address_reference_point"]] =
+      addressComplementObj?.reference_point || pedido.address_reference_point || "-";
     linha[colNames["building_or_house"]] =
-      pedido.building_or_house === "building" ? "Predio" : "Casa";
+      buildingOrHouse === "building"
+        ? "Edificio"
+        : buildingOrHouse === "house"
+          ? "Casa"
+          : "-";
     linha[colNames["availability"]] = toYesNo(pedido.availability);
     linha[colNames["availability_pap"]] = toYesNo(pedido.availability_pap);
     linha[colNames["single_zip_code"]] = toYesNo(pedido.single_zip_code);
