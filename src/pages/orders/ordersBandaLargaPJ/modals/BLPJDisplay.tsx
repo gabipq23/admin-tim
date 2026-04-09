@@ -365,18 +365,38 @@ export function OrderBandaLargaPJDisplay({
           {/* Dados do Endereço */}
           <div className="bg-white rounded-md p-2">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-              <DisplayGenerator title="Rua:" value={localData.address} />
+              <DisplayGenerator title="Rua:" value={localData.address || "-"} />
               <DisplayGenerator
                 title="Número:"
-                value={localData.address_number}
+                value={localData.address_number || "-"}
               />
+              {localData.address_complement?.building_or_house === "house" ? (
+                <DisplayGenerator
+                  title="Complemento:"
+                  value={localData.address_complement?.home_complement || "-"}
+                />
+              ) : localData.address_complement?.building_or_house === "building" ? (
+                <DisplayGenerator
+                  title="Complemento:"
+                  value={`${localData.address_complement?.unit_type || "-"}  ${localData.address_complement?.unit_number || "-"}`}
+                />
+              ) : null}
+
+              <DisplayGenerator title="Bairro:" value={localData.district || "-"} />
+              <DisplayGenerator title="Cidade:" value={localData.city || "-"} />
+              <DisplayGenerator title="UF:" value={localData.state || "-"} />
+
+
               <DisplayGenerator
-                title="Complemento:"
-                value={localData.address_complement}
+                title="Quadra:"
+                value={localData.address_complement?.square || "-"}
               />
-              <DisplayGenerator title="Bairro:" value={localData.district} />
-              <DisplayGenerator title="Cidade:" value={localData.city} />
-              <DisplayGenerator title="UF:" value={localData.state} />
+
+              <DisplayGenerator
+                title="Lote:"
+                value={localData.address_complement?.lot || "-"}
+              />
+
             </div>
           </div>
 
@@ -387,14 +407,14 @@ export function OrderBandaLargaPJDisplay({
                 <DisplayGenerator
                   title="Tipo:"
                   value={
-                    localData.building_or_house === "building"
+                    localData.address_complement?.building_or_house === "building"
                       ? "Edifício"
                       : "Casa"
                   }
                 />
                 <DisplayGenerator
                   title="Andar:"
-                  value={localData.address_floor}
+                  value={localData.address_complement?.floor || "-"}
                 />
               </div>
               <div className="space-y-2">
@@ -407,56 +427,47 @@ export function OrderBandaLargaPJDisplay({
                   value={localData.single_zip_code ? "Sim" : "Não"}
                 />
               </div>
-              <div className="space-y-2">
-                <DisplayGenerator title="Lote:" value={localData.address_lot} />
-                <DisplayGenerator
-                  title="Quadra:"
-                  value={localData.address_block}
-                />
-              </div>
-              <div className="md:col-span-3">
-                <DisplayGenerator
-                  title="Ponto de Referência:"
-                  value={localData.address_reference_point}
-                />
-              </div>
-            </div>
-          </div>
-          {/* Detalhes Técnicos */}
-          <div className="bg-white rounded-md p-2">
-            <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-2">
               <DisplayGenerator
-                title="Coordenadas:"
-                value={
-                  localData.geolocation
-                    ?.latitude &&
-                    localData.geolocation?.longitude
-                    ? `${localData.geolocation.latitude}, ${localData.geolocation.longitude}`
-                    : "-"
-                }
+                title="Ponto de referência:"
+                value={localData.address_complement?.reference_point || "-"}
               />
-
-              <a
-                href={localData.geolocation?.maps_link
-                }
-                target="_blank"
-                style={{ color: "#0026d9", textDecoration: "underline" }}
-                rel="noopener noreferrer"
-              >
-                Ver no Google Maps
-              </a>
-
-              <a
-                href={localData.geolocation?.street_view_link
-                }
-                target="_blank"
-                style={{ color: "#0026d9", textDecoration: "underline" }}
-                rel="noopener noreferrer"
-                className="text-[#0026d9]  underline"
-              >
-                Ver no Street View
-              </a>
             </div>
+
+          </div>
+        </div>
+        {/* Detalhes Técnicos */}
+        <div className="bg-white rounded-md p-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-2">
+            <DisplayGenerator
+              title="Coordenadas:"
+              value={
+                localData.geolocation
+                  ?.latitude &&
+                  localData.geolocation?.longitude
+                  ? `${localData.geolocation.latitude}, ${localData.geolocation.longitude}`
+                  : "-"
+              }
+            />
+            <a
+              href={localData.geolocation?.maps_link
+              }
+              target="_blank"
+              style={{ color: "#0026d9", textDecoration: "underline" }}
+              rel="noopener noreferrer"
+            >
+              Ver no Google Maps
+            </a>
+
+            <a
+              href={localData.geolocation?.street_view_link
+              }
+              target="_blank"
+              style={{ color: "#0026d9", textDecoration: "underline" }}
+              rel="noopener noreferrer"
+              className="text-[#0026d9]  underline"
+            >
+              Ver no Street View
+            </a>
           </div>
         </div>
       </div>

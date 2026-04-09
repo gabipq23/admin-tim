@@ -73,7 +73,17 @@ export interface OrderBandaLarga {
   zip_code: string;
   address: string;
   address_number: string;
-  address_complement?: string | null;
+  address_complement?: {
+    lot: string | null;
+    block: string | null;
+    floor: string | null;
+    square: string | null;
+    unit_type: string | null;
+    unit_number: string | null;
+    building_or_house: string;
+    home_complement: string | null;
+    reference_point: string | null;
+  } | null;
   address_block?: string | null;
   address_lot?: string | null;
   address_floor?: string | null;
