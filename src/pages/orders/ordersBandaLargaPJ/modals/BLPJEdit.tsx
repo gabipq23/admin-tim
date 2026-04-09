@@ -47,7 +47,11 @@ export function OrderBandaLargaPJEdit({
 }: OrderBandaLargaPJEditProps) {
 
   const [extrasOptions, setExtrasOptions] = useState<PlanSelectedExtra[]>([]);
-
+  const selectedPropertyType =
+    Form.useWatch(["address_complement", "building_or_house"], form) ||
+    localData.address_complement?.building_or_house ||
+    localData.building_or_house ||
+    "house";
   const handlePlanChange = useCallback((planId: number) => {
     onPlanChange(planId);
     const found = planOptions.find((p) => p.value === planId);
@@ -351,36 +355,55 @@ export function OrderBandaLargaPJEdit({
                   formItemValue={localData.address_number || ""}
                   placeholder="Número"
                 />
-                <InputGenerator
-                  title="Complemento:"
-                  formItemName="address_complement"
-                  formItemValue={localData.address_complement || ""}
-                  placeholder="Complemento"
-                />
+
+                {selectedPropertyType === "house" ? (
+                  <InputGenerator
+                    title="Complemento:"
+                    formItemName={["address_complement", "home_complement"]}
+                    formItemValue={localData.address_complement?.home_complement || ""}
+                    placeholder="Complemento"
+                  />
+                ) : (
+                  <>
+                    <InputGenerator
+                      title="Tipo da unidade:"
+                      formItemName={["address_complement", "unit_type"]}
+                      formItemValue={localData.address_complement?.unit_type || ""}
+                      placeholder="Ex: Apto"
+                    />
+                    <InputGenerator
+                      title="Número da unidade:"
+                      formItemName={["address_complement", "unit_number"]}
+                      formItemValue={localData.address_complement?.unit_number || ""}
+                      placeholder="Ex: 1203"
+                    />
+                  </>
+                )}
+
                 <InputGenerator
                   title="Andar:"
-                  formItemName="address_floor"
-                  formItemValue={localData.address_floor || ""}
+                  formItemName={["address_complement", "floor"]}
+                  formItemValue={localData.address_complement?.floor || localData.address_floor || ""}
                   placeholder="Andar"
                 />
                 <InputGenerator
                   title="Lote:"
-                  formItemName="address_lot"
-                  formItemValue={localData.address_lot || ""}
+                  formItemName={["address_complement", "lot"]}
+                  formItemValue={localData.address_complement?.lot || localData.address_lot || ""}
                   placeholder="Lote"
                 />
 
                 <InputGenerator
                   title="Quadra:"
-                  formItemName="address_block"
-                  formItemValue={localData.address_block || ""}
+                  formItemName={["address_complement", "square"]}
+                  formItemValue={localData.address_complement?.square || localData.address_block || ""}
                   placeholder="Quadra"
                 />
 
                 <InputGenerator
                   title="Ponto de Referência"
-                  formItemName="address_reference_point"
-                  formItemValue={localData.address_reference_point || ""}
+                  formItemName={["address_complement", "reference_point"]}
+                  formItemValue={localData.address_complement?.reference_point || localData.address_reference_point || ""}
                   placeholder="Ponto de Referência"
                 />
               </div>
@@ -394,7 +417,7 @@ export function OrderBandaLargaPJEdit({
                     </p>
                   </div>
                   <div className="flex flex-1">
-                    <Form.Item name="building_or_house" className="mb-0 ">
+                    <Form.Item name={["address_complement", "building_or_house"]} className="mb-0 ">
                       <Select
                         placeholder="Tipo de imóvel"
                         className="min-w-[150px]"
