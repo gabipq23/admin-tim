@@ -348,12 +348,31 @@ export function OrderBandaLargaPFEdit({
                   />
                 ) : (
                   <>
-                    <InputGenerator
-                      title="Tipo da unidade:"
-                      formItemName={["address_complement", "unit_type"]}
-                      formItemValue={localData.address_complement?.unit_type || ""}
-                      placeholder="Ex: Apto"
-                    />
+                    <div className="flex h-9 gap-4 text-[14px] w-full text-neutral-700">
+                      <div className="flex ">
+                        <p>
+                          <strong>Tipo da unidade:</strong>
+                        </p>
+                      </div>
+                      <div className="flex flex-1">
+                        <Form.Item
+                          name={["address_complement", "unit_type"]}
+                          className="mb-0 "
+                        >
+                          <Select
+                            placeholder="Tipo da unidade"
+                            className="min-w-[150px]"
+                            size="small"
+                          >
+                            <Select.Option value="apto">Apartamento</Select.Option>
+                            <Select.Option value="sala">Sala</Select.Option>
+                            <Select.Option value="conjunto">Conjunto</Select.Option>
+                            <Select.Option value="loja">Loja</Select.Option>
+                            <Select.Option value="outros">Outros</Select.Option>
+                          </Select>
+                        </Form.Item>
+                      </div>
+                    </div>
                     <InputGenerator
                       title="Número da unidade:"
                       formItemName={["address_complement", "unit_number"]}
