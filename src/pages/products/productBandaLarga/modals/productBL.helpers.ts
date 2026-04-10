@@ -1,4 +1,5 @@
 import type { ProductExtraGroup } from "@/interfaces/products";
+import { parseBRLInput } from "@/utils/formatBRL";
 import { type ExtraGroupFormValue } from "../components/ProductBLExtrasBuilder";
 
 export const normalizeExtras = (
@@ -28,7 +29,7 @@ export const normalizeExtras = (
             type: option.bonus?.type || "",
             speed: Number(option.bonus?.speed || 0),
             description: option.bonus?.description || "",
-            price: Number(option.bonus?.price || 0),
+            price: parseBRLInput(option.bonus?.price || 0),
           };
           const hasBonus = !!(
             bonus.type ||
@@ -39,7 +40,7 @@ export const normalizeExtras = (
           const base = {
             id: option.id ?? "",
             label: option.label!,
-            price: Number(option.price || 0),
+            price: parseBRLInput(option.price || 0),
             description: option.description || null,
           };
           return hasBonus ? { ...base, bonus } : base;
