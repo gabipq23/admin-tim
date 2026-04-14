@@ -177,6 +177,7 @@ function ProductBLInfoModal({
         pricing_installation: formatBRL(getInstallationCurrentPrice(planData.pricing)),
         badge: planData.badge,
         offer_title: planData.offer_title,
+        offer_subtitle: planData.offer_subtitle,
         client_type: planData.client_type,
         uf: planData.uf,
         online: planData.online,
