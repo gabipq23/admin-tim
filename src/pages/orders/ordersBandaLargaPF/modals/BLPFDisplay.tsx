@@ -120,6 +120,7 @@ export function OrderBandaLargaPFDisplay({
 
         </div>
       </div>
+
       {/* Informacoes de Pagamento */}
       <div className="flex flex-col bg-neutral-100 mb-3 rounded-[4px] p-3 w-full">
         <div className="flex items-center mb-3">

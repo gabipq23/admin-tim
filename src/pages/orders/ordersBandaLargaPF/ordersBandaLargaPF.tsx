@@ -10,6 +10,7 @@ import { OrderBandaLarga } from "@/interfaces/orderBandaLarga";
 import { TableProps } from "antd/lib";
 import { useState } from "react";
 import { useProductBLController } from "@/pages/products/productBandaLarga/controllers/dataController";
+
 export default function OrdersBandaLargaPF() {
   const queryClient = new QueryClient();
   const {

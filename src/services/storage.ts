@@ -1,5 +1,5 @@
 enum LocalStorageKeys {
-  accessToken = "tim@accessToken",
+  // accessToken = "tim@accessToken",
   user = "tim@user",
 }
 
