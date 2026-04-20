@@ -27,7 +27,7 @@ interface ILoginResponse {
 class AuthService {
   async login({ email, password }: ILoginRequest): Promise<ILoginResponse> {
     const response = await apiPurchase.post<ILoginApiResponse>(
-      "/tim/auth/login",
+      "/telecom/tim/auth/login",
       {
         email,
         password,
@@ -71,7 +71,7 @@ class AuthService {
   }
 
   async logout() {
-    await apiPurchase.post("/tim/auth/logout");
+    await apiPurchase.post("/telecom/tim/auth/logout");
     localStorage.removeItem("tim@user");
   }
 }
