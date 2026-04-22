@@ -18,7 +18,7 @@ export class OffersService {
     name?: string;
     per_page?: number;
   }): Promise<MonthOffersResponse> {
-    const res = await apiPurchase.get(`/tim/offers`, {
+    const res = await apiPurchase.get(`/telecom/tim/offers`, {
       params: {
         pagina: page,
         date_from: date_from,
@@ -36,7 +36,7 @@ export class OffersService {
     formData.append("file", file);
     formData.append("description", description);
 
-    const response = await apiPurchase.post(`/tim/offers`, formData, {
+    const response = await apiPurchase.post(`/telecom/tim/offers`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -46,7 +46,9 @@ export class OffersService {
 
   // aguardando infos
   async downloadOfferFile(id: number, fileName: string): Promise<void> {
-    const response = await apiPurchase.get(`/tim/offers/${id}/download`);
+    const response = await apiPurchase.get(
+      `/telecom/tim/offers/${id}/download`,
+    );
     const downloadUrl = response.data.url || response.data;
 
     const link = document.createElement("a");
@@ -59,11 +61,11 @@ export class OffersService {
   }
 
   async updateOffers(id: number, data: UpdateMonthOfferData): Promise<unknown> {
-    const response = await apiPurchase.put(`/tim/offers/${id}`, data);
+    const response = await apiPurchase.put(`/telecom/tim/offers/${id}`, data);
     return response.data;
   }
 
   async removeOffers(id: number) {
-    await apiPurchase.delete(`/tim/offers/${id}`);
+    await apiPurchase.delete(`/telecom/tim/offers/${id}`);
   }
 }
