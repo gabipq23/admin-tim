@@ -38,7 +38,7 @@ export class ProductsService {
     client_type?: string;
     uf?: string;
   }): Promise<ProductsResponse> {
-    const res = await apiPurchase.get(`/telecom/tim/products`, {
+    const res = await apiPurchase.get(`/telecom-products`, {
       params: {
         page,
         per_page,
@@ -68,7 +68,7 @@ export class ProductsService {
         : undefined;
 
     try {
-      const response = await apiPurchase.post(`/telecom/tim/products`, data, {
+      const response = await apiPurchase.post(`/telecom-products`, data, {
         headers,
       });
 
@@ -88,7 +88,7 @@ export class ProductsService {
   }
 
   async getProductById(id: number): Promise<IProduct> {
-    const response = await apiPurchase.get(`/telecom/tim/products/${id}`);
+    const response = await apiPurchase.get(`/telecom-products/${id}`);
     return (response.data?.product ?? response.data) as IProduct;
   }
 
@@ -101,7 +101,7 @@ export class ProductsService {
 
     try {
       const response = await apiPurchase.post(
-        `/telecom/tim/products/${id}/conditions`,
+        `/telecom-products/${id}/conditions`,
         formData,
         {
           headers: {
@@ -130,7 +130,7 @@ export class ProductsService {
 
     try {
       const response = await apiPurchase.post(
-        `/telecom/tim/products/${id}/details`,
+        `/telecom-products/${id}/details`,
         formData,
         {
           headers: {
@@ -167,7 +167,7 @@ export class ProductsService {
 
     try {
       const response = await apiPurchase.post(
-        `/telecom/tim/products/${id}/extras-images`,
+        `/telecom-products/${id}/extras-images`,
         formData,
         {
           headers: {
@@ -195,10 +195,10 @@ export class ProductsService {
     id: number,
     data: Partial<IProduct> | Record<string, unknown>,
   ): Promise<unknown> {
-    const response = await apiPurchase.put(`/telecom/tim/products/${id}`, data);
+    const response = await apiPurchase.put(`/telecom-products/${id}`, data);
     return response.data;
   }
   async removeProduct(id: number) {
-    await apiPurchase.delete(`/telecom/tim/products/${id}`);
+    await apiPurchase.delete(`/telecom-products/${id}`);
   }
 }
