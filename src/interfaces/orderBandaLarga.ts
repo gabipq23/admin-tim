@@ -111,10 +111,14 @@ export interface OrderBandaLarga {
   installation_preferred_period_two: string;
   installation_preferred_date_three?: string | null;
   installation_preferred_period_three?: string | null;
+
   payment_method?: string;
   bank_name?: string;
   bank_branch?: string;
   bank_account_number?: string;
+  bank_account_holder_name?: string;
+  bank_account_holder_cpf?: string;
+
   has_fixed_line_portability?: boolean | null;
   fixed_line_number_to_port?: string | null;
   wants_fixed_ip?: boolean | null;

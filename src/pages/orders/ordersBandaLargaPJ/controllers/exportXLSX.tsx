@@ -119,6 +119,8 @@ export const handleExportXLSX = (
     "bank_name",
     "bank_branch",
     "bank_account_number",
+    "bank_account_holder_name",
+    "bank_account_holder_cpf",
     "installation_preferred_date_one",
     "installation_preferred_date_two",
     "installation_preferred_date_three",
